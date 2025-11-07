@@ -1,0 +1,225 @@
+﻿body {
+}
+
+/*-- -------------------estilo para alinear el contenido del radiobuton-------------------- --*/
+.FormatRadioButtonList label {
+    margin-right: 15px;
+    padding-left: 5px;
+}
+
+/*-- -------------------estilo para alinear el contenido del radiobuton-------------------- --*/
+.checkboxlist-spaced label {
+    padding-left: 5px;
+}
+
+/*-- -------------------estilo para el butón de limpiar textbox-------------------- --*/
+.btnClear {
+    position: absolute;
+    /*right: 5px;*/
+    right: 10px;
+    /*top: 5px;*/
+    top: 10px;
+    /*height: 16px;*/
+    height: 100%;
+    width: 100%;
+    /*width: 16px;*/
+    max-width: 30px;
+    cursor: pointer;
+}
+
+/*-- -------------------estilo para los iconos del modal confirm-------------------- --*/
+.my-icon-check {
+    color: forestgreen;
+}
+
+.my-icon-error {
+    color: crimson;
+}
+
+/*-- -------------------estilo para ocultar elementos-------------------- --*/
+.hideGrid {
+    display: none !important;
+}
+
+/*-- -------------------estilo para iframe PDF-------------------- --*/
+/*.Visualizar {
+    width: 580px;
+    height: 580px;
+}
+
+@media only screen and (max-width:300px) {
+    .Visualizar {
+        width: 100%;
+        height: 100%;
+    }
+}*/
+
+/* Establece un tamaño por defecto para el iframe */
+.Visualizar {
+    width: 470px;
+    height: 470px;
+}
+
+/*-- -------------------estilo para control accordion-------------------- --*/
+.accordion-button:not(.collapsed), .accordion-button- {
+    color: #FFF !important;
+    background-color: #32587a !important;
+}
+
+/*-- -------------------estilo para icono info-------------------- --*/
+.info-text {
+    color: var(--bs-secondary);
+}
+
+/*-- -------------------estilo para tooltip-------------------- --*/
+.custom-tooltip {
+    --bs-tooltip-bg: var(--bs-secondary);
+}
+
+/*-- -------------------estilo para popover-------------------- --*/
+.custom-popover {
+    /*--bs-popover-max-width: 200px;*/
+    --bs-popover-max-width: 276px;
+    --bs-popover-border-color: var(--bs-secondary);
+    --bs-popover-header-bg: var(--bs-secondary);
+    --bs-popover-header-color: var(--bs-white);
+    --bs-popover-body-padding-x: 1rem;
+    --bs-popover-body-padding-y: .5rem;
+    --bs-popover-bg: white;
+    --bs-popover-border-width: .13rem;
+}
+
+/*-- -------------------estilo para colores-------------------- --*/
+.color-btn {
+    color: var(--bs-btn-bg);
+}
+
+.color-btn1 {
+    color: #012970;
+}
+
+.my-icon-warning {
+    color: darkorange;
+}
+
+
+.ChkBoxClassSize input {
+    width: 18px;
+    height: 18px;
+}
+
+.container-checkbox input {
+    /*position: absolute;*/
+    /*opacity: 0;*/
+    height: 16px;
+    width: 16px;
+    padding-right: 0px;
+    padding-left: 0px;
+}
+
+/*-- -------------------estilo para Switch Button-------------------- --*/
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+    .switch input {
+        opacity: 0;
+    }
+
+/*slider de color verde*/
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #A3D69B; /*#ccc*/
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+
+input:checked + .slider {
+    background-color: #A3D69B;
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #A3D69B;
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+}
+
+    .slider.round:before {
+        border-radius: 50%;
+    }
+
+/*slider de color-azul*/
+.sliderPE {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #0d6efd; /*#ccc*/
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+    .sliderPE:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+
+input:checked + .sliderPE {
+    background-color: #0d6efd;
+}
+
+input:focus + .sliderPE {
+    box-shadow: 0 0 1px #0d6efd;
+}
+input:checked + .sliderPE:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+/* Rounded sliders */
+.sliderPE.round {
+    border-radius: 34px;
+}
+
+    .sliderPE.round:before {
+        border-radius: 50%;
+    }
+        

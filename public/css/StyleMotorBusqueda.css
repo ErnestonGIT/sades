@@ -1,0 +1,68 @@
+﻿body {
+}
+
+/*-- -------------------estilo de los texbox del motor de busqueda-------------------- --*/
+/*eliminar viñetas*/
+ul li {
+    list-style: none;
+}
+/*-----------estilo para el autocompletar de los textbox del motor de busqueda----------------*/
+.listMain {
+    background-color: #FFFFFF;
+    max-height: 210px;
+    text-align: inherit;
+    overflow-y: scroll;
+    margin-left: 0px;
+    border-bottom: 1px solid #B5C6D4;
+    border-left: 1px solid #B5C6D4;
+    margin-top: 0px;
+}
+
+.autocomplete .itemsMain {
+    background: none;
+    border-collapse: collapse;
+    color: #00337E;
+    white-space: nowrap;
+    text-align: inherit left;
+}
+
+.autocomplete .itemsSelected {
+    padding: 0px;
+    margin: 1%;
+    background-color: #EED47D;
+    color: #00337E;
+    border-top: 1px solid #FFF8E8;
+    border-left: 1px solid #FFF8E8;
+    border-bottom: 1px solid #00337E;
+    border-right: 1px solid #00337E;
+}
+/*----------------------posicionar la imagen del textbox del lado izquierdo---------------------*/
+/* enable absolute positioning */
+.inner-addon {
+    position: relative;
+}
+
+    /* style icon */
+    .inner-addon .glyphicon {
+        position: absolute;
+        padding: 10px;
+        pointer-events: none;
+    }
+
+/* align icon */
+.left-addon .glyphicon {
+    left: 0px;
+}
+
+.right-addon .glyphicon {
+    right: 0px;
+}
+
+/* add padding  */
+.left-addon input {
+    padding-left: 30px;
+}
+
+.right-addon input {
+    padding-right: 30px;
+}

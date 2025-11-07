@@ -1,0 +1,209 @@
+/*MENU LATERAL*/
+
+
+#menu-principal {
+    /*background: #682444;*/
+    background: #333 !important;
+}
+
+
+#menu-principal .navbar-nav .nav-link {
+    font-size: .95rem !important;
+    font-weight: bold;
+}
+
+
+
+h1{font-size: 2rem;}
+
+/* LIGA A GOOGLE FONTS
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Teko:wght@600&display=swap" rel="stylesheet">*/
+h2{font-size: 1.9rem;
+	font-family: 'Teko', sans-serif !important;
+}
+h3{font-size: 1.6rem;}
+h4{font-size: 1.4rem;}
+h5{font-size: 1.2rem;}
+h6{font-size: 1.1rem;}
+
+
+
+
+
+/*https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/scss/_carousel.scss*/
+/*.carousel {
+	margin-top: -410px;
+}*/
+
+
+
+/*@media screen and (max-width: 576px) {
+    .carousel {
+        margin-top: -110px;
+    }
+}*/
+
+
+/*https://dev.desarrolloweb.ipn.mx/assets/files/main/css/estilo-compresion.min.css*/
+.texto--resaltado {
+    color: #666;
+    font-size: 1.2rem;
+}
+
+.bkMascaraBeige{
+    background-color: rgba(255 ,255 ,255 ,.0);
+}
+
+
+
+.bloque-fecha--blanco {
+    padding: 8px 8px 0 8px;
+}
+
+.u-fullHeight{
+    background: rgb(255, 255, 255, 0.8);
+}
+.u-fullHeight div{
+    padding: 15px;
+}
+
+.u-fullHeight span{
+    color: #666;
+}
+
+.p-2 {
+    padding: .8rem!important;
+}
+
+
+
+/***************************PATRON*/
+/*https://dev.desarrolloweb.ipn.mx/assets/files/main/css/estilo-compresion.min.css*/
+.bg--patron-grisOscuro {
+    background-image: url(../img/bg-patrones/bkg-05.jpg);
+}
+
+
+/*.bg--patron-gris {
+    background-image: url(../img/bg-patrones/bkg-07.jpg);
+    color: #666;
+}*/
+
+.bg--patron-blanco{
+    background-image: url(../img/bg-patrones/bkg-07.jpg);
+}
+
+
+
+
+
+/*
+.carousel-control-next, .carousel-control-prev {
+    width: 1%;
+    margin-left: -15px;
+}*/
+
+
+
+/* .btn {
+    color: #fff;
+    background-color: #ae598a;
+    border-color: none;
+    border: none;
+    border-radius: none;
+    font-weight: 300;
+} */
+
+/**************************************** A M A R I L L O ********************************/
+/*https://dev.desarrolloweb.ipn.mx/assets/files/main/css/estilo-compresion.min.css*/
+.bg--grisMedio {
+    /*background: #e3ad28;*/
+    background: #e2b840;
+    color: #333;
+}
+
+/*.bg--grisMedio .col-lg-6{
+    padding-left: 0px;
+    padding-right: 0px;
+}
+*/
+/*.bg--grisMedio .row{
+	margin-left: 0px;
+	margin-right: 0px;
+}*/
+
+
+
+/**************************************** B L A N C O ********************************/
+/*https://dev.desarrolloweb.ipn.mx/assets/files/main/css/estilo-compresion.min.css*/
+/*.bg--blanco .col-lg-6{
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+.bg--blanco .row{
+	margin-left: 0px;
+	margin-right: 0px;
+}
+*/
+
+
+
+/**************************************** R O S A ********************************/
+/*https://dev.desarrolloweb.ipn.mx/assets/files/main/css/estilo-compresion.min.css*/
+/*.bg--verdeEsmeralda {
+    background: #ae598a;
+    color: #666;
+}*/
+
+
+.bg--verdeEsmeralda h4{
+	color: #333;
+}
+
+
+/*.bg--verdeEsmeralda .col-lg-6{
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+.bg--verdeEsmeralda .row{
+	margin-left: 0px;
+	margin-right: 0px;
+}
+*/
+
+
+/*https://dev.desarrolloweb.ipn.mx/assets/files/main/css/estilos.min.css
+ERROR en el verde esmeralda de esta hoja de estilos, está mal el color del background 
+
+.bg--verdeEsmeralda {
+    background: #5d695d;
+    color: #fff;
+}
+*/
+
+/**************************************** A Z U L ********************************/
+/*https://dev.desarrolloweb.ipn.mx/assets/files/main/css/estilo-compresion.min.css*/
+/*.bg--azulMarino {
+    background: #33dbd7;
+    color: #333;
+}*/
+
+/*.bg--azulMarino .col-lg-6{
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+
+.bg--azulMarino .row{
+	margin-left: 0px;
+	margin-right: 0px;
+}*/
+/*Sombra IPN Noticia - Muestra CCS*/
+.ipn-noticia-shadow {box-shadow: rgb(0 0 0 / 25%) 0px 0px 17px, rgb(0 0 0 / 10%) 0px 10px 10px!important;}
+.ipn-noticia-shadow img{width: 100%!important;}
+.ipn-tit {
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}

@@ -1,0 +1,774 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="MasterPage.master.cs" Inherits="MasterPage" %>
+
+<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head runat="server">
+
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+
+    <title>SADES | Sistema de apoyo para la DES.</title>
+	<%--<title>SAIEE -Sistema Académico para la Integración de la Estructura Educativa</title>--%>
+    <meta content="" name="description" />
+    <meta content="" name="keywords" />
+
+    <!-- Favicons -->
+    <link href="public/img/institucional/ipn-favicon-32x32.png" rel="icon" />
+    <link href="public/img/apple-touch-icon.png" rel="apple-touch-icon" />
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet" />
+
+    <!-- Vendor CSS Files -->
+    <link href="public/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="public/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet" />
+    <link href="public/vendor/boxicons/css/boxicons.min.css" rel="stylesheet" />
+    <link href="public/vendor/quill/quill.snow.css" rel="stylesheet" />
+    <link href="public/vendor/quill/quill.bubble.css" rel="stylesheet" />
+    <link href="public/vendor/remixicon/remixicon.css" rel="stylesheet" />
+    <link href="public/vendor/simple-datatables/style.css" rel="stylesheet" />
+    <link href="public/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" />
+
+    <!-- Template Main CSS File -->
+    <link href="public/css/style.css" rel="stylesheet"/>
+    <link href="public/css/paginacion.css" rel="stylesheet" />
+
+    <style>
+        /*notificaciones*/
+        .media {
+          display: -ms-flexbox;
+          display: flex;
+          -ms-flex-align: start;
+          align-items: flex-start;
+          min-width: 340px;
+        }
+
+        .media-body {
+          -ms-flex: 1;
+          flex: 1;
+          margin-inline-start: 5%;
+        }
+        .img-size {
+          width: 20px;
+          height: auto;
+        }
+        .img-circle {
+          border-radius: 50%;
+        }
+
+        /***/
+        .password
+        {
+            -webkit-text-security: disc;
+        }
+    </style>
+
+</head>
+
+<body id="page-top">
+    <form id="form1" runat="server" enctype="multipart/form-data" method="post">
+
+    <asp:ToolkitScriptManager ID="ToolkitScriptManager1" runat="server" >
+    </asp:ToolkitScriptManager>
+        
+    <!-- ======= Header ======= -->
+	<header id="header" class="header fixed-top d-flex align-items-center">
+
+		<div class="d-flex align-items-center justify-content-between">
+			<!-- <a class="logo d-flex align-items-center"> -->
+				<a  class="logo d-flex align-items-center">
+					<img src="public/img/institucional/logo-ipn.png" alt="" />
+					<!-- <img src="/img/logo.png" alt="" /> -->
+					<span class="d-none d-lg-block">SADES</span>
+				</a>
+			<i class="bi bi-list toggle-sidebar-btn"
+                data-bs-toggle="popover" data-bs-placement="right"
+                data-bs-custom-class="custom-popover"
+                data-bs-trigger="hover focus"
+                data-bs-title="Mostrar / Ocultar"
+                data-bs-content="Muestra u oculta el menú lateral de navegación.">
+			</i>
+		</div>
+        
+		<!-- End Logo -->
+
+		<nav class="header-nav ms-auto">
+			<ul class="d-flex align-items-center">
+
+                <li class="nav-item pe-1 dropdown">
+                <a class="nav-link" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false" style="font-size:x-large; display:none" onclick="mostrarMsg()" data-bs-auto-close="false">
+                    <i class="bi bi-bell position-relative">
+                          <span class="position-absolute top-100 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: xx-small;">
+                        2
+                        <span class="visually-hidden">unread messages</span>
+                        </span>
+                    </i>
+                </a>
+
+                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow mt-2">
+
+                    <li>
+                        <div aria-live="polite" aria-atomic="true" class="d-flex justify-content-center align-items-center w-100" style="margin-block: 5px;">
+                            <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="myToast" data-bs-autohide="false" style="margin-left: 5px;margin-right: 5px;">
+                                <div class="toast-header">
+                                    <div class="me-auto">
+                                        <img src="public/img/Foto_perfil/no_Image.jpg" alt="nombre" class="img-size img-circle mr-4">
+                                        &nbsp;<strong>Bootstrap</strong>
+                                    </div>
+                                    <small>11 mins ago</small>
+                                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                                </div>
+                                <div class="toast-body">
+                                Hello, world! This is a toast message.
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                    </li>
+
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#">Leer todo</a></li>
+                </ul>
+                </li>
+
+
+                <li  id="CambioPerfil" runat="server" class="nav-item dropdown pe-3">
+					<a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+						<i class="bi bi-repeat"></i>
+					    <span class="d-none d-md-block dropdown-toggle ps-2"><asp:Label ID="LabelCambioP" runat="server" Text="CAMBIO DE PERFIL"></asp:Label></span>
+				    </a>
+					<!-- End Profile Iamge Icon -->
+
+					<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">
+						<li class="dropdown-header">
+							<h6><asp:Label ID="LabelCambioPM" runat="server" Text="CAMBIO DE PERFIL"></asp:Label></h6>
+						</li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+						<li class="message-item">
+							<div class="row">
+                                <div class="col-md-12">
+                                    <asp:UpdatePanel ID="UpdatePanel5" runat="server">
+                                        <ContentTemplate>
+                                            <asp:GridView ID="GridViewCambioPerfil" runat="server" AutoGenerateColumns="False" DataSourceID="SqlDataSourceCambioModalidad" 
+                                                CssClass="table table-striped" ShowHeader="false"  OnRowDataBound="GridViewCambioPerfil_RowDataBound">
+                                                <Columns>
+                                                    <asp:BoundField DataField="ID_Perfil" HeaderText="ID_Perfil" SortExpression="ID_Perfil" />
+                                                    <asp:BoundField DataField="DESCRIPCION" HeaderText="DESCRIPCION" SortExpression="DESCRIPCION" />
+                                                    <asp:TemplateField>
+                                                        <ItemTemplate>
+                                                            <asp:Button ID="ButtonCambioP" runat="server" CssClass="btn btn-primary" OnClick="ButtonCambioP_Click" CausesValidation="false" Text="Seleccionar" ></asp:Button>  
+                                                        </ItemTemplate>
+                                                    </asp:TemplateField>
+                                                </Columns>
+                                            </asp:GridView>
+                                            <asp:SqlDataSource ID="SqlDataSourceCambioModalidad" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>" 
+                                             SelectCommand="select p.ID_Perfil, DESCRIPCION from USERS as u, USERS_PERFIL as up, Cat_PERFILES as p where u.ID_USER=up.ID_USER and up.ID_Perfil=p.ID_PERFIL and U.ID_USER = @id_user and up.estatus = 1">
+                                                <SelectParameters>
+                                                    <asp:CookieParameter CookieName="id_usuario" Name="id_user" />
+                                                </SelectParameters>
+                                            </asp:SqlDataSource>
+                                        </ContentTemplate>
+                                    </asp:UpdatePanel>
+                                </div>
+                            </div>             
+					    </li>
+                    </ul>
+                </li>
+                <%--Logo y nombre escuela--%>
+                <li class="nav-item d-block pe-3">
+                    <div class="nav-link nav-profile d-flex align-items-center pe-0">
+                        <asp:Image ID="ImageUAHeader" runat="server" CssClass="rounded-circle" />
+				        <span class="d-md-block ps-2"><asp:Label ID="LabelUAHeader" runat="server" Text=""></asp:Label></span>
+                    </div>
+                </li>
+
+				<li class="nav-item dropdown pe-3">
+					<a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+						<asp:Image ID="ImagePerfil" runat="server" CssClass="rounded-circle" />
+					    <span class="d-none d-md-block dropdown-toggle ps-2"><asp:Label ID="LabelNomC1" runat="server" Text=""></asp:Label><%--<%= user.nombre %>--%></span>
+				    </a>
+					<!-- End Profile Iamge Icon -->
+
+					<ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+						<li class="dropdown-header">
+							<h6><asp:Label ID="LabelNomC2" runat="server" Text=""></asp:Label>
+								<%--<%= user.nombre %>--%> <%--<%= user.apellido_pat %>--%></h6>
+							<span><asp:Label ID="LabelPerfil" runat="server" Text=""></asp:Label><%--<%= user.perfil %>--%></span>
+						</li>
+						<li>
+							<hr class="dropdown-divider" />
+							</li>
+
+						<li>
+                            <asp:UpdatePanel ID="UpdatePanel3" runat="server">
+                                <ContentTemplate>
+                                    <asp:LinkButton ID="LinkButtonPerfil" runat="server" CssClass="dropdown-item d-flex align-items-center" OnClick="LinkButtonPerfil_Click">
+                                        <i class="bi bi-person"></i>
+                                        <span>Perfil</span>
+                                    </asp:LinkButton>
+                                </ContentTemplate>
+                            </asp:UpdatePanel> 
+						</li>
+						<li>
+							<hr class="dropdown-divider" />
+						</li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center" href="#" data-bs-toggle="modal" data-bs-target="#ModalCambioP">
+                                <i class="bi bi-key"></i>
+                                <span>Cambio de contraseña</span>
+                            </a>
+                        </li>
+                        <li>
+                          <hr class="dropdown-divider">
+                        </li>
+						<li>
+							<asp:LinkButton ID="LBcerrarCS" runat="server" class="dropdown-item d-flex align-items-center" OnClick="cerrarCS">
+								<i class="bi bi-box-arrow-right"></i>
+								<span>Cerrar sesión</span>
+							</asp:LinkButton>
+							<%--<a class="dropdown-item d-flex align-items-center" href="/logout" >
+								<i class="bi bi-box-arrow-right"></i>
+								<span>Cerrar sesión</span>
+							</a>--%>
+						</li>
+
+					</ul>
+					<!-- End Profile Dropdown Items -->
+				</li>
+				<!-- End Profile Nav -->
+
+			</ul>
+		</nav>
+		<!-- End Icons Navigation -->
+
+	</header>
+	<!-- End Header -->
+
+	<!-- ======= Menu ======= -->
+	<aside id="sidebar" class="sidebar">
+
+		<ul class="sidebar-nav" id="sidebar-nav">
+
+			<li class="nav-item">
+				<a class="nav-link collapsed" href="Dashboard.aspx">
+					<i class="bi bi-grid"></i>
+					<span>Mi Tablero</span>
+				</a>
+			</li>
+            <!-- Bitácora -->
+			<li class="nav-item" runat="server" visible="false" id="menuBitacora">
+				<a class="nav-link collapsed" href="Bitacora.aspx">
+					<i class="bi bi-list-check"></i>
+					<span>Bitacora</span>
+				</a>
+			</li>
+            <!-- Cambio contraseña -->
+			<li class="nav-item" runat="server" visible="false" id="menuPassword">
+				<a class="nav-link collapsed" href="#" onclick="MostrarModal('ModalCambioP');">
+					<i class="bi bi-key"></i>
+					<span>Cambio de contraseña</span>
+				</a>
+			</li>
+            <!-- Capturar peticion -->
+			<li class="nav-item" runat="server" visible="false" id="menuCaptPeticion">
+				<a class="nav-link collapsed" href="PeticionesEst.aspx">
+					<i class="bi bi-file-text-fill"></i>
+					<span>Capturar petición</span>
+				</a>
+			</li>
+
+		</ul>
+
+	</aside>
+	<!-- End Sidebar-->
+
+	<main id="main" class="main">
+        
+		<asp:UpdatePanel runat="server"><ContentTemplate>
+			<div runat="server" id="ButtonOffCanvas_PEactual" visible="true">
+				<a href="#" class="float-PEactual" 
+					data-bs-toggle="popover" data-bs-placement="left"
+					data-bs-custom-class="custom-popover"
+					data-bs-trigger="hover focus"
+					data-bs-title="Periodo escolar"
+					data-bs-content="Indica el periodo escolar que se encuentra activo en la operación del sistema..">
+					<asp:Label runat="server" ID="LabelFloatIcon_pe" CssClass="fa fa-circle-check floatIcon-PEactual"></asp:Label>
+				</a>
+			</div>
+            <asp:Label runat="server" ID="LabelCambioPassword_valor" style="display:none"></asp:Label>
+
+		</ContentTemplate></asp:UpdatePanel>
+		<h6 class="sys-name">SADES - Sistema de apoyo para la Dirección de la Educación Superior.</h6>
+        
+        
+        <div class="toast-container top-50 start-50 translate-middle" style="z-index:5000">
+          <div id="passToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+            <div class="toast-header">
+              <i class="bi bi-info-circle info-text">&nbsp;</i>
+                
+              <strong class="me-auto">Contraseña obsoleta</strong>
+              <%--<small>11 mins ago</small>--%>
+              <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+             Antes de comenzar, es necesario que actualice su contraseña.
+                <div style="text-align:center;padding-block: inherit;">
+                    <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-dismiss="toast" onclick="mostrarModalCambioP();">Cambiar</button>
+                </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="toast-container bottom-0 end-0" style="z-index:5000">
+          <div id="zpsToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+            <div class="toast-header">
+              <i class="bi bi-info-circle info-text">&nbsp;</i>
+                
+              <strong class="me-auto">Unidades académicas asignadas</strong>
+              <%--<small>11 mins ago</small>--%>
+              <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                <asp:UpdatePanel runat="server"><ContentTemplate>
+                    <div runat="server" id="divContenido_zpsToast">
+
+                    </div>
+                </ContentTemplate></asp:UpdatePanel>
+            </div>
+          </div>
+        </div>
+
+		<asp:ContentPlaceHolder id="ContentPlaceHolder1" runat="server"  >
+			
+
+		</asp:ContentPlaceHolder>
+	</main><!-- End #main -->
+
+
+    <div class="modal fade" id="ModalPerfil" data-bs-backdrop="static" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <asp:UpdatePanel ID="UpdatePanel2" runat="server">
+                        <ContentTemplate>
+                            <h5 class="modal-title" id="exampleModalPerfil"> <asp:Label ID="Label9" runat="server" Text="Perfil" CssClass="fw-bolder"></asp:Label> </h5>
+                        </ContentTemplate>
+                    </asp:UpdatePanel>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="nav nav-tabs nav-tabs-bordered" id="TabPerfil" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="foto-tab" data-bs-toggle="tab" data-bs-target="#bordered-foto" type="button" role="tab" aria-controls="foto" aria-selected="true">Foto</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="datos-tab" data-bs-toggle="tab" data-bs-target="#bordered-datos" type="button" role="tab" aria-controls="datos" aria-selected="false">Datos</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content pt-2" id="borderedTabContent">
+                        <div class="tab-pane fade show active" id="bordered-foto" role="tabpanel" aria-labelledby="home-tab">
+                            <div class="row">
+  		                        <div class="col-lg-6">
+                                    <h6 class="text-sm-center">Agrega una fotografía donde se enfoque solo la parte de tu rostro (formato .jpg o .png)(tamaño máximo 4MB)</h6>
+                                    <div class="text-center"> 
+                                        <asp:Image ID="Avatar" runat="server"  CssClass="img-fluid rounded-circle w-25 h-25"   /> 
+                                        <asp:Image ID="previewImage" runat="server" /> 
+                                        <asp:FileUpload ID="avatarUpload" runat="server" onchange="previewFile()" CssClass=" mt-2" />
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="text-center">
+                                                <asp:UpdatePanel ID="UpdatePanel4" runat="server">
+                                                    <ContentTemplate>
+                                                        <asp:CustomValidator ID="CustomValidator1" CssClass="text-danger"
+                                                            ClientValidationFunction="ValidateFile"  runat="server"
+                                                            ControlToValidate="avatarUpload"
+                                                            Display="dynamic" ErrorMessage="El campo foto solo acepta formatos .jpg y .png">
+                                                        </asp:CustomValidator>
+                                                        <asp:Label ID="Label1" runat="server" Text=""></asp:Label>
+                                                        <asp:Button ID="Guardar_Foto" runat="server" Text="Guardar Foto" CssClass="btn btn-primary mt-2" OnClick="Guardar_Foto_Click"  />
+                                                    </ContentTemplate>
+                                                    <Triggers>
+                                                        <asp:PostBackTrigger ControlID="Guardar_Foto"  />
+                                                    </Triggers>
+                                                </asp:UpdatePanel>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="bordered-datos" role="tabpanel" aria-labelledby="profile-tab">
+                            
+                        </div>
+                    </div><!-- End Bordered Tabs -->  
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal" aria-label="Close">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div> 
+    
+    <div class="modal fade" id="ModalCambioP" data-bs-backdrop="static" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCambioP> <asp:Label ID="Label2" runat="server" Text="Cambio de contraseña" CssClass="fw-bolder"></asp:Label> </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <asp:UpdatePanel ID="UpdatePanel1" runat="server">
+                        <ContentTemplate>
+                            <div>
+                                <asp:Label ID="LabelTitP" runat="server" Text=""></asp:Label>
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <td>
+                                            <asp:Label ID="LabelClaveActual" runat="server" Text="Contraseña actual: " CssClass="text-bold"></asp:Label>
+                                        </td>
+                                        <td>
+                                            <asp:TextBox ID="TextBoxClaveActual" runat="server" CssClass="form-control password" AutoCompleteType="Disabled"></asp:TextBox>
+                                            <asp:Label ID="LabelE0" runat="server" Text="" CssClass="text-danger"></asp:Label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <asp:Label ID="LabelClaveCambio" runat="server" Text="Nueva contraseña: " CssClass="text-bold"></asp:Label>
+                                        </td>
+                                        <td>
+                                            <asp:TextBox ID="TextBoxClaveCambio1" runat="server" CssClass="form-control password" AutoCompleteType="Disabled" ></asp:TextBox>
+                                            <asp:FilteredTextBoxExtender ID="FilteredTextBoxExtender1" runat="server" TargetControlID="TextBoxClaveCambio1" 
+                                                ValidChars="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789*#$%&_-" />
+                                            <asp:Label ID="LabelE1" runat="server" Text="" CssClass="text-danger"></asp:Label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <asp:Label ID="LabelClaveCambioRep" runat="server" Text="Repita la nueva contraseña: " CssClass="text-bold"></asp:Label>
+
+                                        </td>
+                                        <td>
+                                            <asp:TextBox ID="TextBoxClaveCambio" runat="server" CssClass="form-control password" AutoCompleteType="Disabled" ></asp:TextBox>
+                                            <asp:FilteredTextBoxExtender ID="FilteredTextBoxExtenderCC" runat="server" TargetControlID="TextBoxClaveCambio" 
+                                                ValidChars="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789*#$%&_-" />
+                                            <asp:Label ID="LabelE2" runat="server" Text="" CssClass="text-danger"></asp:Label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <div class="mb-3 form-check">
+                                              <input type="checkbox" class="form-check-input" id="inputMostrarPass" onclick="mostrarPass(this)">
+                                              <label class="form-check-label" for="exampleCheck1">Mostrar contraseña</label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class=" text-center">
+                                <asp:Label ID="LabelerrorCC" runat="server" Text="" CssClass="text-danger"></asp:Label>
+                            </div>
+                            <div class=" text-center">
+                                <asp:LinkButton ID="ButtonCambiarPassword" runat="server" Text="Aceptar" CssClass="btn btn-primary" OnClick="ButtonCambiarPassword_Click" />
+                            </div>
+                        </ContentTemplate>
+                    </asp:UpdatePanel>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal ModalConfirm-->
+    <div id="ModalConfirm" class="modal fade" tabindex="-1" data-bs-backdrop="static">
+	  <div class="modal-dialog modal-dialog-centered modal-md">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<h5 class="modal-title titleModal">Cambio de contraseña</h5>
+			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		  </div>
+		  <div class="modal-body">
+              <asp:UpdatePanel runat="server"><ContentTemplate>
+                  <asp:LinkButton runat="server" ID="LinkButtonActualizar_pass" OnClick="LinkButtonActualizar_pass_Click" style="display:none"></asp:LinkButton>
+                </ContentTemplate></asp:UpdatePanel>
+            <div class="alert alert-warning" role="alert">
+              <h4 class="alert-heading">Confirmar actualización</h4>
+              <p>Con esta acción se actualizará su contraseña de acceso al SAIEE, ¿desea continuar?.</p>
+                <div style="text-align:center;padding-block:revert;">
+                    <button type="button" class="btn btn-outline-danger" onclick="actualizarPass();">Continuar</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+              <hr>
+              <p class="mb-0">Al confirmar la acción deberá de acceder nuevamente al sistema utilizando su nueva contraseña.</p>
+            </div>              
+		  </div>
+		  <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+		  </div>
+		</div>
+	  </div>
+	</div>
+
+    <!-- Footer -->
+    <footer id="footer" class="footer">
+		<div class="avprivacidad">
+			<asp:UpdatePanel runat="server"><ContentTemplate>
+
+			</ContentTemplate></asp:UpdatePanel>
+<%--                <a href="#" onclick="ModalShowMaster('ModalAP');">
+				Aviso de privacidad integral
+            </a>--%>
+		</div>
+	    <p></p>
+		<div class="copyright">
+				Copyright <strong>
+				<span>IPN </span>
+			</strong> 2025
+		</div>
+		<div class="credits">
+			Dirección de Educación Superior
+		</div>
+	</footer><!-- End Footer -->
+
+	<a href="#" class="back-to-top d-flex align-items-center justify-content-center">
+		<i class="bi bi-arrow-up-short"></i>
+	</a>
+
+	<!-- Vendor JS Files -->
+	<script src="public/vendor/apexcharts/apexcharts.min.js"></script>
+	<script src="public/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+	<script src="public/vendor/chart.js/chart.min.js"></script>
+	<script src="public/vendor/echarts/echarts.min.js"></script>
+	<script src="public/vendor/quill/quill.min.js"></script>
+	<script src="public/vendor/simple-datatables/simple-datatables.js"></script>
+	<script src="public/vendor/tinymce/tinymce.min.js"></script>
+	<script src="public/vendor/php-email-form/validate.js"></script>
+
+	<!-- Template Main JS File -->
+	<script src="public/js/main.js"></script>
+    
+    <script type="text/javascript"> 
+        function previewFile() {
+            var preview = document.querySelector('#<%=Avatar.ClientID %>');
+            var file = document.querySelector('#<%=avatarUpload.ClientID %>').files[0];
+            var reader = new FileReader();
+
+            reader.onloadend = function () {
+                preview.src = reader.result;
+            }
+
+            if (file) {
+                reader.readAsDataURL(file);
+            } else {
+                preview.src = "";
+            }
+        }
+
+        function ValidateFile(source, args) {
+            try {
+                var fileAndPath =
+                    document.getElementById(source.controltovalidate).value;
+                var lastPathDelimiter = fileAndPath.lastIndexOf("\\");
+                var fileNameOnly = fileAndPath.substring(lastPathDelimiter + 1);
+                var file_extDelimiter = fileNameOnly.lastIndexOf(".");
+                var file_ext = fileNameOnly.substring(file_extDelimiter + 1).toLowerCase();
+                if (file_ext != "jpg") {
+                    args.IsValid = false;
+                    if (file_ext != "gif")
+                        args.IsValid = false;
+                    if (file_ext != "png") {
+                        args.IsValid = false;
+                        return;
+                    }
+                }
+            } catch (err) {
+                txt = "There was an error on this page.\n\n";
+                txt += "Error description: " + err.description + "\n\n";
+                txt += "Click OK to continue.\n\n";
+                txt += document.getElementById(source.controltovalidate).value;
+                alert(txt);
+            }
+
+            args.IsValid = true;
+        }
+    </script>
+
+     <script type="text/javascript">
+
+         $(document).ready(function () {
+                          
+			 infoToolStart(); 
+             onCloseModal();
+         });
+
+         function mostrarMsg() {
+             MostrarToast("myToast");
+         }
+
+         function mostrarUnidadesAsignadas() {
+            
+            MostrarToast('zpsToast');
+        }
+
+        function onCloseModal() {
+
+            $("#ModalCambioP").on('hidden.bs.modal', function () {
+
+                $("[id*='TextBoxClaveActual']").val("");
+                $("[id*='TextBoxClaveCambio']").val("");
+                $("[id*='TextBoxClaveCambio1']").val("");
+
+            });
+        }
+
+        function actualizarPass() {
+             
+            var LinkButton = "<%= LinkButtonActualizar_pass.ClientID %>";
+
+            OcultarModal("ModalConfirm");
+
+            Swal.fire({
+                position: "center",
+                icon: "success",
+                title: "La contraseña se actualizó exitosamente",
+                showConfirmButton: false,
+                timer: 1500
+            });
+
+            setTimeout(function () {
+                LoadingOverlay("show");
+                setTimeout(function () { document.getElementById(LinkButton).click(); }, 500);
+            }, 1500);
+            
+         }
+
+         function mostrarPass(element) {
+             let idCh = element.id;
+             console.log("idCh"+idCh);
+             //TextBoxClaveCambio TextBoxClaveCambio1 TextBoxClaveActual
+             if ($("#"+idCh).is(':checked')) {
+                 $("[id*='TextBoxClaveActual']").removeClass("password");
+                 $("[id*='TextBoxClaveCambio']").removeClass("password");
+                 $("[id*='TextBoxClaveCambio1']").removeClass("password");
+             } else {
+                 $("[id*='TextBoxClaveActual']").addClass("password");
+                 $("[id*='TextBoxClaveCambio']").addClass("password");
+                 $("[id*='TextBoxClaveCambio1']").addClass("password");
+             }
+
+        } 
+
+        function mostrarModalCambioP() {
+            MostrarModal("ModalCambioP");
+        }
+
+        function MostrarModal(id) {
+            var myModal = document.getElementById(id);
+            var modal = bootstrap.Modal.getOrCreateInstance(myModal);
+            modal.show();
+        }
+
+        function MostrarToast(id) {
+            var alrtToast = document.getElementById(id);
+            var bsToast = new bootstrap.Toast(alrtToast);
+            bsToast.show();
+        }
+
+        function ModalConfirm() {
+             MostrarModal("ModalConfirm");
+         }
+
+        function validarCambioPassword() {
+
+            var chP = document.getElementById('<%= LabelCambioPassword_valor.ClientID %>').innerHTML;
+
+            if (chP == '' || chP == null) {
+                MostrarToast('passToast');
+            }
+        }
+
+		function ShowModalModalPerfil() {
+			var myModal = document.getElementById('ModalPerfil');
+			var modal = bootstrap.Modal.getOrCreateInstance(myModal);
+			modal.show();
+			//Toltip();
+		}
+
+		function ShowModalModalPerfil() {
+			var myModal = document.getElementById('ModalPerfil');
+			var modal = bootstrap.Modal.getOrCreateInstance(myModal);
+			modal.show();
+			//Toltip();
+			}
+
+		function ShowModalModalAP() {
+			var myModal = document.getElementById('ModalAP');
+			var modal = bootstrap.Modal.getOrCreateInstance(myModal);
+			modal.show();
+		}
+
+		function infoToolStart() {
+			const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+			const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+			const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+            const popoverList = [...popoverTriggerList].map(popoverTriggerEl => {
+            const popover = new bootstrap.Popover(popoverTriggerEl);
+
+                // Agregar un evento click al botón para cerrar el popover manualmente
+                popoverTriggerEl.addEventListener('click', () => {
+                    popover.hide();
+                });
+
+                return popover;
+            }); 
+
+            validarCambioPassword();
+		}
+
+		function ModalHideMaster(IdModal) {
+		    const modals = document.querySelectorAll("#"+IdModal);
+		    $(modals).modal("hide");
+		}
+
+		function ModalShowMaster(IdModal) {
+			var myModal = document.getElementById(IdModal);
+			var modal = bootstrap.Modal.getOrCreateInstance(myModal);
+			modal.show();
+		}
+
+         function OcultarModal(id) {
+
+             var myModal = document.getElementById(id);
+             var modal = bootstrap.Modal.getOrCreateInstance(myModal);
+             modal.hide();
+         }
+
+     </script>
+
+	 <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            // Obtener el LabelFloatIcon_pe usando el ID generado
+            var labelFloatIcon = document.getElementById('<%= LabelFloatIcon_pe.ClientID %>');
+            if (labelFloatIcon && typeof periodoFloat !== 'undefined') {
+                labelFloatIcon.innerHTML = periodoFloat;
+                console.log("icon " + labelFloatIcon.innerHTML);
+            } else {
+                console.log("LabelFloatIcon_pe no se encontró en el DOM o periodoFloat no está definido.");
+            }
+        });
+    </script>
+  
+</form>
+</body>
+
+</html>

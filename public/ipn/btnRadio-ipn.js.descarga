@@ -1,0 +1,12 @@
+var tagAudio = document.getElementById("ipnAudioRedes"); 
+
+function playAudioRadio() { 
+	tagAudio.play(); 
+	document.getElementById("reproducirRadio").style.display = "none";
+	document.getElementById("stopRadio").style.display = "block";			
+} 
+function pauseAudioRadio() { 
+	tagAudio.pause(); 
+	document.getElementById("stopRadio").style.display = "none";
+	document.getElementById("reproducirRadio").style.display = "block";
+}
