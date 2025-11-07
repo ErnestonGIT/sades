@@ -1604,13 +1604,15 @@ public partial class Dashboard : System.Web.UI.Page
 
         }
 
+        fin = observacion.Substring(0, 3) == "pró" ? "prórroga" : fin;
+
         string datos = "<div class='card-body profile-card pt-4 d-flex flex-column align-items-center'> " +
                         "<img src='public/img/Foto_perfil/autoridades/"+ foto +"' alt='Profile' class='rounded-circle'> " +
                         "<h2 style='text-align: center;'>"+ nombre +"</h2> " +
                         "<h3 style='text-align: center;'>"+ cargo +"</h3> " +
                          "<div class='"+ strClass +"' role='alert' style='text-align:center'> " +
                            ""+ descripcion +"" +
-                            "<br><span class='badge border border-warning border-1 text-secondary'>"+ observacion +"</span>" +
+                            "<br><br><span class='text-secondary'>"+ observacion +"</span>" +
                          "</div> " +
                         "<div class='social-links mt-2'> " +
                             "<a href = '#' class='twitter'><i class='bi bi-twitter'></i></a> " +
@@ -2024,7 +2026,8 @@ public partial class Dashboard : System.Web.UI.Page
     {
         string zp = LabelZP.Text;
 
-        string qryNS = "select au.CLAVE_ZP, au.ID_PERFIL, au.ID_USER, dp.DESCRIPCION_DP, per.DESCRIPCION,us.APELLIDO_PAT,us.APELLIDO_MAT,us.NOMBRE, CONCAT(us.APELLIDO_PAT,' ',us.APELLIDO_MAT,' ',us.NOMBRE) NOMBRE_COMPLETO, FORMAT(au.FECHA_INICIO, 'dd/MM/yyyy', 'es-ES') FECHA_INICIO, FORMAT(au.FECHA_FIN, 'dd/MM/yyyy', 'es-ES') FECHA_FIN, " +
+        string qryNS = "select au.CLAVE_ZP, au.ID_PERFIL, au.ID_USER, dp.DESCRIPCION_DP, per.DESCRIPCION,us.APELLIDO_PAT,us.APELLIDO_MAT,us.NOMBRE, CONCAT(us.APELLIDO_PAT,' ',us.APELLIDO_MAT,' ',us.NOMBRE) NOMBRE_COMPLETO, FORMAT(au.FECHA_INICIO, 'dd/MM/yyyy', 'es-ES') FECHA_INICIO, " +
+            "IIF(SUBSTRING(OBSERVACION,1,3) = 'pró','en prórroga',FORMAT(au.FECHA_FIN, 'dd/MM/yyyy', 'es-ES')) FECHA_FIN, " +
             "case " +
 				"when (DATEDIFF(day, (select FORMAT(GETDATE(),'yyyy-M-dd')),FECHA_FIN)) >= 1 then 'VIGENTE'  " +
                 "when (DATEDIFF(day, (select FORMAT(GETDATE(),'yyyy-M-dd')),FECHA_FIN)) <= 0 then 'VENCIDO'  " +

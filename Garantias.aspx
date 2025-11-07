@@ -373,9 +373,8 @@
                 <asp:Label ID="LabelZPDesc" runat="server" Text="" style="display:none;"></asp:Label>
 
                 <asp:HiddenField runat="server" ID="HiddenFieldPerfil_nivel"/>
-
                 <asp:HiddenField runat="server" ID="HiddenFieldCollapseGarantias_selected" Value="0"/>
-
+                <asp:HiddenField runat="server" ID="HiddenFieldDivPeticiones_selected" Value=""/>
 
                 <section class="section dashboard">
 
@@ -504,8 +503,8 @@
                                                             <asp:SqlDataSource ID="SqlDataSourceDropDownRegistrarGarnatia_ua" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
                                                                 SelectCommand="SELECT CLAVE_ZP, DESCRIPCION_DP FROM  CAT_DEPENDENCIAS_POLITECNICAS
                                                                                 WHERE CLAVE_UA IS NOT NULL
-                                                                                AND ID_NIVEL_EST = 2
-                                                                                ORDER BY CLAVE_UA">
+                                                                                AND ID_NIVEL_EST = 2 and CLAVE_ZP in(select distinct CLAVE_ZP from PLIEGO)
+                                                                                ORDER BY DESCRIPCION_DP ASC">
                                                             </asp:SqlDataSource>
                                                         </div>
 
@@ -513,33 +512,42 @@
                                                             <div class="col-md-6">
                                                                 <label for="DropDownListRegistrarGarnatia_pliego" class="form-label">Pliego registrado:</label>
                                                                 <asp:DropDownList ID="DropDownListRegistrarGarnatia_pliego" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownRegistrarGarnatia_pliego"
-                                                                    DataValueField="CLAVE_ZP"
-                                                                    DataTextField="DESCRIPCION_DP" 
+                                                                    DataValueField="ID_PLIEGO"
+                                                                    DataTextField="FOLIO_PLIEGO" 
                                                                     CssClass="form-select" data-control="select2"
                                                                     OnDataBound="DropDownListRegistrarGarnatia_pliego_DataBound"
                                                                     OnSelectedIndexChanged="DropDownListRegistrarGarnatia_pliego_SelectedIndexChanged">
                                                                 </asp:DropDownList>
                                                                 <asp:SqlDataSource ID="SqlDataSourceDropDownRegistrarGarnatia_pliego" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
-                                                                    SelectCommand="SELECT CLAVE_ZP, DESCRIPCION_DP FROM  CAT_DEPENDENCIAS_POLITECNICAS
-                                                                                    WHERE CLAVE_UA IS NOT NULL
-                                                                                    AND ID_NIVEL_EST = 2
-                                                                                    ORDER BY CLAVE_UA">
+                                                                    SelectCommand="select ID_PLIEGO, IIF(FOLIO_PLIEGO is null, CONCAT('PLG-',CLAVE_ZP,'-',ID_PLIEGO), FOLIO_PLIEGO) FOLIO_PLIEGO 
+                                                                                    from PLIEGO 
+                                                                                    where CLAVE_ZP = @ZP
+                                                                                    ORDER BY ID_PLIEGO ASC">
+                                                                    <SelectParameters>
+                                                                        <asp:ControlParameter ControlID="DropDownListRegistrarGarnatia_ua" Name="ZP" PropertyName="SelectedValue" />
+                                                                    </SelectParameters>
+                                                                    
                                                                 </asp:SqlDataSource>
                                                             </div>
                                                             <div class="col-md-6">
                                                                 <label for="DropDownListRegistrarGarnatia_categoria" class="form-label">Categoria registrada:</label>
                                                                 <asp:DropDownList ID="DropDownListRegistrarGarnatia_categoria" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownRegistrarGarnatia_categoria"
-                                                                    DataValueField="CLAVE_ZP"
-                                                                    DataTextField="DESCRIPCION_DP" 
+                                                                    DataValueField="ID_CAT_PETICION"
+                                                                    DataTextField="DESCRIPCION_CAT_PETICION" 
                                                                     CssClass="form-select" data-control="select2"
                                                                     OnDataBound="DropDownListRegistrarGarnatia_categoria_DataBound"
                                                                     OnSelectedIndexChanged="DropDownListRegistrarGarnatia_categoria_SelectedIndexChanged">
                                                                 </asp:DropDownList>
                                                                 <asp:SqlDataSource ID="SqlDataSourceDropDownRegistrarGarnatia_categoria" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
-                                                                    SelectCommand="SELECT CLAVE_ZP, DESCRIPCION_DP FROM  CAT_DEPENDENCIAS_POLITECNICAS
-                                                                                    WHERE CLAVE_UA IS NOT NULL
-                                                                                    AND ID_NIVEL_EST = 2
-                                                                                    ORDER BY CLAVE_UA">
+                                                                    SelectCommand="select pet.ID_CAT_PETICION, cat.DESCRIPCION_CAT_PETICION 
+                                                                                    from PETICIONES_POR_UA pet
+                                                                                    inner join CAT_CATEGORIA_PETICION cat on cat.ID_CAT_PETICION = pet.ID_CAT_PETICION
+                                                                                    where pet.ID_PLIEGO = @ID_PL
+																					group by pet.ID_CAT_PETICION, cat.DESCRIPCION_CAT_PETICION 
+																					order by cat.DESCRIPCION_CAT_PETICION ASC">
+                                                                    <SelectParameters>
+                                                                        <asp:ControlParameter ControlID="DropDownListRegistrarGarnatia_pliego" Name="ID_PL" PropertyName="SelectedValue" />
+                                                                    </SelectParameters>
                                                                 </asp:SqlDataSource>
                                                             </div>
                                                         </div>
@@ -547,18 +555,25 @@
                                                         <div class="mb-3">
                                                             <label for="DropDownListRegistrarGarnatia_peticion" class="form-label">Petición a atender:</label>
                                                             <asp:DropDownList ID="DropDownListRegistrarGarnatia_peticion" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownRegistrarGarnatia_peticion"
-                                                                DataValueField="CLAVE_ZP"
-                                                                DataTextField="DESCRIPCION_DP" 
+                                                                DataValueField="ID_PETICION"
+                                                                DataTextField="DESC_PETICION" 
                                                                 CssClass="form-select" data-control="select2"
                                                                 OnDataBound="DropDownListRegistrarGarnatia_peticion_DataBound"
                                                                 OnSelectedIndexChanged="DropDownListRegistrarGarnatia_peticion_SelectedIndexChanged">
                                                             </asp:DropDownList>
                                                             <asp:SqlDataSource ID="SqlDataSourceDropDownRegistrarGarnatia_peticion" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
-                                                                SelectCommand="SELECT CLAVE_ZP, DESCRIPCION_DP FROM  CAT_DEPENDENCIAS_POLITECNICAS
-                                                                                WHERE CLAVE_UA IS NOT NULL
-                                                                                AND ID_NIVEL_EST = 2
-                                                                                ORDER BY CLAVE_UA">
+                                                                SelectCommand="select pet.ID_PETICION, pet.DESC_PETICION
+                                                                                from PETICIONES_POR_UA pet
+                                                                                where pet.ID_CAT_PETICION = @ID_C and ID_PLIEGO = @ID_PL">
+                                                                <SelectParameters>
+                                                                    <asp:ControlParameter ControlID="DropDownListRegistrarGarnatia_categoria" Name="ID_C" PropertyName="SelectedValue" />
+                                                                    <asp:ControlParameter ControlID="DropDownListRegistrarGarnatia_pliego" Name="ID_PL" PropertyName="SelectedValue" />
+                                                                </SelectParameters>
                                                             </asp:SqlDataSource>
+                                                        </div>
+                                                        
+                                                        <div class="row" runat="server" id="DivContenidoPeticiones_seleccionadas">
+
                                                         </div>
 
                                                         <div class="mb-3">
@@ -569,8 +584,13 @@
                                                         <div class="mb-3">
                                                             <label for="exampleFormControlTextarea1" class="form-label">Cargar evidencia de la acción</label>
                                                             <div>
-                                                                <input class="form-control" type="file" id="formFile">
+                                                                <asp:FileUpload runat="server" ID="FileUploadRegistrarGarnatia_evidencia" CssClass="form-control"/>
                                                             </div>
+                                                        </div>
+
+                                                        <div class="d-grid gap-2">
+                                                            <asp:LinkButton runat="server" ID="LinkButtonRegistrarGarnatia_guardar" OnClientClick="validarCampos()"
+                                                                CssClass="btn btn-success">Guardar garantía</asp:LinkButton>
                                                         </div>
 
                                                     </div>
@@ -584,7 +604,7 @@
                                             <!-- Right side columns -->
                                             <div class="col-lg-4">
 
-                                              <!-- Website Traffic -->
+                                              <!-- GarantiasPieCategorias -->
                                               <div class="card">
                                                 <div class="filter">
                                                   <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
@@ -700,6 +720,14 @@
         
         }
 
+        function validarCampos() {
+            let zp = document.getElementById("<%= LabelZP.ClientID %>").innerHTML;
+            alert("click");
+            if (zp.length == 0) {
+                exit;
+            }
+        }
+
         function chartPieCategorias() {
             echarts.init(document.querySelector("#trafficChart")).setOption({
                 tooltip: {
@@ -789,14 +817,9 @@
                 theme: 'bootstrap-5'
             });
 
-            $("[id*=DropDownListUnidadAcademica_resumen]").select2({
+            $("[id*=DropDownLis_]").select2({
                 theme: 'bootstrap-5',
-                dropdownParent: $('#ModalDetalleUnidadAdministrativa .modal-body')
-            });
-
-            $("[id*=DropDownListUnidadAdministrativa_resumen]").select2({
-                theme: 'bootstrap-5',
-                dropdownParent: $('#ModalDetalleUnidadAdministrativa .modal-body')
+                dropdownParent: $('#Modal .modal-body')
             });
 
         }
