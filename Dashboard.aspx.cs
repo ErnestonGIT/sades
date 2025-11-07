@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -2301,8 +2302,15 @@ public partial class Dashboard : System.Web.UI.Page
         TextBox inicio = GridViewResumenNombramientos.Rows[e.RowIndex].FindControl("TextBoxResumenNombramientos_inicio") as TextBox;
         TextBox termino = GridViewResumenNombramientos.Rows[e.RowIndex].FindControl("TextBoxResumenNombramientos_termino") as TextBox;
 
+        string format = "dd/MM/yyyy";
+        DateTime dateI = DateTime.ParseExact(inicio.Text, format, CultureInfo.InvariantCulture);
+        DateTime dateF = DateTime.ParseExact(termino.Text, format, CultureInfo.InvariantCulture);
+
+        string feI = dateI.ToString("yyyy-MM-dd");
+        string feF = dateF.ToString("yyyy-MM-dd");
+
         Consultas.miUpdate("update users set APELLIDO_PAT = '"+ apat.Text +"', APELLIDO_MAT = '"+ amat.Text +"', NOMBRE = '"+ nombre.Text +"' where ID_USER = '"+ idUser +"'");
-        Consultas.miUpdate("update AUTORIDADES_ZP set FECHA_INICIO = '"+ inicio.Text +"', FECHA_FIN = '"+ termino.Text +"' where CLAVE_ZP = '"+ zp +"' and ID_PERFIL = '"+ idPerfil +"' and ID_USER= '"+ idUser +"'");
+        Consultas.miUpdate("update AUTORIDADES_ZP set FECHA_INICIO = '"+ feI +"', FECHA_FIN = '"+ feF +"' where CLAVE_ZP = '"+ zp +"' and ID_PERFIL = '"+ idPerfil +"' and ID_USER= '"+ idUser +"'");
           
         GridViewResumenNombramientos.EditIndex = -1;
         HiddenFieldNombramientosEstatus_edicion.Value = String.Empty;

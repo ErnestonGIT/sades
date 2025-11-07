@@ -356,7 +356,7 @@
         <ContentTemplate>
             <main id="main1" class="main">
                 <div class="pagetitle">
-                    <h1>Tablero </h1>
+                    <h1>Garantías </h1>
                     <nav>
                         <ol class="breadcrumb">
                             <!-- <li class="breadcrumb-item"><a href="index">Inicio</a></li> -->
@@ -374,7 +374,7 @@
 
                 <asp:HiddenField runat="server" ID="HiddenFieldPerfil_nivel"/>
 
-                <asp:HiddenField runat="server" ID="HiddenFieldCollapsePlan_selected" Value="0"/>
+                <asp:HiddenField runat="server" ID="HiddenFieldCollapseGarantias_selected" Value="0"/>
 
 
                 <section class="section dashboard">
@@ -386,7 +386,7 @@
                           <div class="accordion-item">
                             <h2 class="accordion-header">
                               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseContenido_filtroGarantias" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                                Resúmen de las unidades académicas
+                                Garantias para las unidades académiacas
                               </button>
                             </h2>
                             <div id="collapseContenido_filtroGarantias" class="accordion-collapse collapse">
@@ -395,7 +395,221 @@
                                 <asp:UpdatePanel runat="server">
                                     <ContentTemplate>
                                         
+                                        <div class="row">
 
+                                            <!-- Left side columns -->
+                                            <div class="col-lg-8">
+                                              <div class="row">
+
+                                                <!-- GarantiasProceso -->
+                                                <div class="col-md-6">
+                                                  <div class="card info-card sales-card">
+
+                                                    <div class="filter" style="display:none">
+                                                      <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                                                      <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                                        <li class="dropdown-header text-start">
+                                                          <h6>Filter</h6>
+                                                        </li>
+
+                                                        <li><a class="dropdown-item" href="#">Today</a></li>
+                                                        <li><a class="dropdown-item" href="#">This Month</a></li>
+                                                        <li><a class="dropdown-item" href="#">This Year</a></li>
+                                                      </ul>
+                                                    </div>
+
+                                                    <div class="card-body">
+                                                      <h5 class="card-title">En proceso <span>| garantías</span></h5>
+
+                                                      <div class="d-flex align-items-center">
+                                                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center" style="background:#ffE599">
+                                                          <i class="bi bi-graph-up-arrow text-yellow"></i>
+                                                        </div>
+                                                        <div class="ps-3">
+                                                          <h6>145</h6>
+                                                          <span class="text-success small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">increase</span>
+
+                                                        </div>
+                                                      </div>
+                                                    </div>
+
+                                                  </div>
+                                                </div><!-- End Sales Card -->
+
+                                                <!-- GarantiasConcluidas -->
+                                                <div class="col-md-6">
+                                                  <div class="card info-card revenue-card">
+
+                                                    <div class="filter" style="display:none">
+                                                      <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                                                      <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                                        <li class="dropdown-header text-start">
+                                                          <h6>Filter</h6>
+                                                        </li>
+
+                                                        <li><a class="dropdown-item" href="#">Today</a></li>
+                                                        <li><a class="dropdown-item" href="#">This Month</a></li>
+                                                        <li><a class="dropdown-item" href="#">This Year</a></li>
+                                                      </ul>
+                                                    </div>
+
+                                                    <div class="card-body">
+                                                      <h5 class="card-title">Concluidas <span>| garantías</span></h5>
+
+                                                      <div class="d-flex align-items-center">
+                                                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                          <i class="bi bi-check2-circle"></i>
+                                                        </div>
+                                                        <div class="ps-3">
+                                                          <h6>3</h6>
+                                                          <span class="text-success small pt-1 fw-bold">8</span> <span class="text-muted small pt-2 ps-1">increase</span>
+
+                                                        </div>
+                                                      </div>
+                                                    </div>
+
+                                                  </div>
+                                                </div><!-- End Revenue Card -->
+
+                                                <!-- RegistrarGarnatia -->
+                                                <div class="col-xl-12">
+
+                                                  <div class="card info-card customers-card">
+
+                                                    <div class="filter" style="display:none">
+                                                      <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                                                      <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                                        <li class="dropdown-header text-start">
+                                                          <h6>Filter</h6>
+                                                        </li>
+
+                                                        <li><a class="dropdown-item" href="#">Today</a></li>
+                                                        <li><a class="dropdown-item" href="#">This Month</a></li>
+                                                        <li><a class="dropdown-item" href="#">This Year</a></li>
+                                                      </ul>
+                                                    </div>
+
+                                                    <div class="card-body">
+                                                      <h5 class="card-title">Registrar nueva <span>| garantía</span></h5>
+
+                                                        <div class="mb-3">
+                                                            <label for="DropDownListRegistrarGarnatia_ua" class="form-label">Unidad académica:</label>
+                                                            <asp:DropDownList ID="DropDownListRegistrarGarnatia_ua" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownRegistrarGarnatia_ua"
+                                                                DataValueField="CLAVE_ZP"
+                                                                DataTextField="DESCRIPCION_DP" 
+                                                                CssClass="form-select" data-control="select2"
+                                                                OnDataBound="DropDownListRegistrarGarnatia_ua_DataBound"
+                                                                OnSelectedIndexChanged="DropDownListRegistrarGarnatia_ua_SelectedIndexChanged">
+                                                            </asp:DropDownList>
+                                                            <asp:SqlDataSource ID="SqlDataSourceDropDownRegistrarGarnatia_ua" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
+                                                                SelectCommand="SELECT CLAVE_ZP, DESCRIPCION_DP FROM  CAT_DEPENDENCIAS_POLITECNICAS
+                                                                                WHERE CLAVE_UA IS NOT NULL
+                                                                                AND ID_NIVEL_EST = 2
+                                                                                ORDER BY CLAVE_UA">
+                                                            </asp:SqlDataSource>
+                                                        </div>
+
+                                                        <div class="row mb-3">
+                                                            <div class="col-md-6">
+                                                                <label for="DropDownListRegistrarGarnatia_pliego" class="form-label">Pliego registrado:</label>
+                                                                <asp:DropDownList ID="DropDownListRegistrarGarnatia_pliego" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownRegistrarGarnatia_pliego"
+                                                                    DataValueField="CLAVE_ZP"
+                                                                    DataTextField="DESCRIPCION_DP" 
+                                                                    CssClass="form-select" data-control="select2"
+                                                                    OnDataBound="DropDownListRegistrarGarnatia_pliego_DataBound"
+                                                                    OnSelectedIndexChanged="DropDownListRegistrarGarnatia_pliego_SelectedIndexChanged">
+                                                                </asp:DropDownList>
+                                                                <asp:SqlDataSource ID="SqlDataSourceDropDownRegistrarGarnatia_pliego" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
+                                                                    SelectCommand="SELECT CLAVE_ZP, DESCRIPCION_DP FROM  CAT_DEPENDENCIAS_POLITECNICAS
+                                                                                    WHERE CLAVE_UA IS NOT NULL
+                                                                                    AND ID_NIVEL_EST = 2
+                                                                                    ORDER BY CLAVE_UA">
+                                                                </asp:SqlDataSource>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label for="DropDownListRegistrarGarnatia_categoria" class="form-label">Categoria registrada:</label>
+                                                                <asp:DropDownList ID="DropDownListRegistrarGarnatia_categoria" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownRegistrarGarnatia_categoria"
+                                                                    DataValueField="CLAVE_ZP"
+                                                                    DataTextField="DESCRIPCION_DP" 
+                                                                    CssClass="form-select" data-control="select2"
+                                                                    OnDataBound="DropDownListRegistrarGarnatia_categoria_DataBound"
+                                                                    OnSelectedIndexChanged="DropDownListRegistrarGarnatia_categoria_SelectedIndexChanged">
+                                                                </asp:DropDownList>
+                                                                <asp:SqlDataSource ID="SqlDataSourceDropDownRegistrarGarnatia_categoria" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
+                                                                    SelectCommand="SELECT CLAVE_ZP, DESCRIPCION_DP FROM  CAT_DEPENDENCIAS_POLITECNICAS
+                                                                                    WHERE CLAVE_UA IS NOT NULL
+                                                                                    AND ID_NIVEL_EST = 2
+                                                                                    ORDER BY CLAVE_UA">
+                                                                </asp:SqlDataSource>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label for="DropDownListRegistrarGarnatia_peticion" class="form-label">Petición a atender:</label>
+                                                            <asp:DropDownList ID="DropDownListRegistrarGarnatia_peticion" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownRegistrarGarnatia_peticion"
+                                                                DataValueField="CLAVE_ZP"
+                                                                DataTextField="DESCRIPCION_DP" 
+                                                                CssClass="form-select" data-control="select2"
+                                                                OnDataBound="DropDownListRegistrarGarnatia_peticion_DataBound"
+                                                                OnSelectedIndexChanged="DropDownListRegistrarGarnatia_peticion_SelectedIndexChanged">
+                                                            </asp:DropDownList>
+                                                            <asp:SqlDataSource ID="SqlDataSourceDropDownRegistrarGarnatia_peticion" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
+                                                                SelectCommand="SELECT CLAVE_ZP, DESCRIPCION_DP FROM  CAT_DEPENDENCIAS_POLITECNICAS
+                                                                                WHERE CLAVE_UA IS NOT NULL
+                                                                                AND ID_NIVEL_EST = 2
+                                                                                ORDER BY CLAVE_UA">
+                                                            </asp:SqlDataSource>
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label for="exampleFormControlTextarea1" class="form-label">Descripción de la acción</label>
+                                                            <asp:TextBox runat="server" ID="TextBoxRegistrarGarnatia_descripcion" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
+                                                        </div>
+
+                                                        <div class="mb-3">
+                                                            <label for="exampleFormControlTextarea1" class="form-label">Cargar evidencia de la acción</label>
+                                                            <div>
+                                                                <input class="form-control" type="file" id="formFile">
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                  </div>
+
+                                                </div><!-- End Customers Card -->
+
+                                              </div>
+                                            </div><!-- End Left side columns -->
+
+                                            <!-- Right side columns -->
+                                            <div class="col-lg-4">
+
+                                              <!-- Website Traffic -->
+                                              <div class="card">
+                                                <div class="filter">
+                                                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                                                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                                    <li class="dropdown-header text-start">
+                                                      <h6>Filter</h6>
+                                                    </li>
+
+                                                    <li><a class="dropdown-item" href="#">Today</a></li>
+                                                    <li><a class="dropdown-item" href="#">This Month</a></li>
+                                                    <li><a class="dropdown-item" href="#">This Year</a></li>
+                                                  </ul>
+                                                </div>
+
+                                                <div class="card-body pb-0">
+                                                  <h5 class="card-title">Website Traffic <span>| Today</span></h5>
+
+                                                  <div id="trafficChart" style="min-height: 400px; user-select: none; position: relative;" class="echart" _echarts_instance_="ec_1762475541695"><div style="position: relative; width: 257px; height: 400px; padding: 0px; margin: 0px; border-width: 0px;"><canvas style="position: absolute; left: 0px; top: 0px; width: 257px; height: 400px; user-select: none; padding: 0px; margin: 0px; border-width: 0px;" data-zr-dom-id="zr_0" width="257" height="400"></canvas></div><div class=""></div></div>
+
+                                                </div>
+                                              </div><!-- End Website Traffic -->
+
+                                            </div><!-- End Right side columns -->
+
+                                        </div>
 
                                     </ContentTemplate>
                                 </asp:UpdatePanel>                                      
@@ -481,7 +695,62 @@
             enableLoadingOverlay();
             hideLoadingOverlay();   
             habilitarSelect2();
+
+            chartPieCategorias();
         
+        }
+
+        function chartPieCategorias() {
+            echarts.init(document.querySelector("#trafficChart")).setOption({
+                tooltip: {
+                    trigger: 'item'
+                },
+                legend: {
+                    top: '5%',
+                    left: 'center'
+                },
+                series: [{
+                    name: 'Access From',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    label: {
+                        show: false,
+                        position: 'center'
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: '18',
+                            fontWeight: 'bold'
+                        }
+                    },
+                    labelLine: {
+                        show: false
+                    },
+                    data: [{
+                        value: 1048,
+                        name: 'Search Engine'
+                    },
+                    {
+                        value: 735,
+                        name: 'Direct'
+                    },
+                    {
+                        value: 580,
+                        name: 'Email'
+                    },
+                    {
+                        value: 484,
+                        name: 'Union Ads'
+                    },
+                    {
+                        value: 300,
+                        name: 'Video Ads'
+                    }
+                    ]
+                }]
+            });
         }
 
         function verificarDatos() {
@@ -683,12 +952,6 @@
                 let idCollapse = $(e.target).attr("ID");
 
                 switch (idCollapse) {
-                    case 'collapseContenido_filtroPlan':
-                        $("[id*=HiddenFieldCollapsePlan_selected]").val("0");
-                        break;
-                    case 'collapseContenido_filtroEventos':
-                        $("[id*=HiddenFieldCollapseEventos_selected]").val("0");
-                        break;
                     case 'collapseContenido_filtroGarantias':
                         $("[id*=HiddenFieldCollapseGarantias_selected]").val("0");
                         break;
@@ -701,25 +964,16 @@
                 let idCollapse = $(e.target).attr("ID");
 
                 switch (idCollapse) {
-                    case 'collapseContenido_filtroPlan':
-                        $("[id*=HiddenFieldCollapsePlan_selected]").val("1");
-                        break;
-                    case 'collapseContenido_filtroEventos':
-                        $("[id*=HiddenFieldCollapseEventos_selected]").val("1");
-                        break;
                     case 'collapseContenido_filtroGarantias':
                         $("[id*=HiddenFieldCollapseGarantias_selected]").val("1");
                         break;
                 }
             });
 
-            let collPlaSt = $("[id*=HiddenFieldCollapsePlan_selected]").val();
-            let collEveSt = $("[id*=HiddenFieldCollapseEventos_selected]").val();
-            let collDepSt = $("[id*=HiddenFieldCollapseGarantias_selected]").val();
+            let collPlaSt = $("[id*=HiddenFieldCollapseGarantias_selected]").val();
 
-            if (collPlaSt == "1") { ActivarCollapse("collapseContenido_filtroPlan"); }
-            if (collEveSt == "1") { ActivarCollapse("collapseContenido_filtroEventos"); }
-            if (collDepSt == "1") { ActivarCollapse("collapseContenido_filtroGarantias"); }
+            if (collPlaSt == "1") { ActivarCollapse("collapseContenido_filtroGarantias"); }
+
 
         }
 
