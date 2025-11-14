@@ -90,11 +90,11 @@ public partial class Garantias : System.Web.UI.Page
 
         if (!String.IsNullOrEmpty(zp))
         {
-            DropDownListRegistrarGarantia_ua_SelectCommand();
+            DropDownListRegistrarGarnatia_ua_SelectCommand();
 
-            DropDownListRegistrarGarantia_ua.SelectedValue = zp;
+            DropDownListRegistrarGarnatia_ua.SelectedValue = zp;
             LabelBreadCrumbZP_name.Text = LabelZPDesc.Text;
-            DropDownListRegistrarGarantia_ua.Enabled = false;
+            DropDownListRegistrarGarnatia_ua.Enabled = false;
         }
 
         ActualizarEstadisticas();
@@ -113,7 +113,7 @@ public partial class Garantias : System.Web.UI.Page
         LabelBreadCrumbZP_name.Text = String.IsNullOrEmpty(zp) == true ? emptyZP_name : GetUaDesciption(zp);
 
         string totalPendientes = Consultas.ConsultaS("select count(pet.ID_PETICION) total " +
-                                                    "from PETICIONES pet " +
+                                                    "from PETICIONES_POR_UA pet " +
                                                     "inner join PLIEGO pli on pli.ID_PLIEGO = pet.ID_PLIEGO " +
                                                     "where pet.ID_PETICION not in (select distinct ID_PETICION from GARANTIA_PETICION) and pli.CLAVE_ZP like '"+ zp +"%'");
 
@@ -133,67 +133,61 @@ public partial class Garantias : System.Web.UI.Page
         LabelGarantiasConcluidas_total.Text = totalConcluidas == "0" ? "0": totalConcluidas;
     }
 
-
-    protected void DropDownListRegistrarGarantia_ua_DataBound(object sender, EventArgs e)
+    protected void DropDownListRegistrarGarnatia_ua_DataBound(object sender, EventArgs e)
     {
-        DropDownListRegistrarGarantia_ua.Items.Insert(0, new System.Web.UI.WebControls.ListItem("Seleccionar", ""));
+        DropDownListRegistrarGarnatia_ua.Items.Insert(0, new System.Web.UI.WebControls.ListItem("Seleccionar", ""));
     }
-    protected void DropDownListRegistrarGarantia_ua_SelectedIndexChanged(object sender, EventArgs e)
+
+    protected void DropDownListRegistrarGarnatia_ua_SelectedIndexChanged(object sender, EventArgs e)
     {
-        LabelZP.Text = DropDownListRegistrarGarantia_ua.SelectedValue.ToString();
+        LabelZP.Text = DropDownListRegistrarGarnatia_ua.SelectedValue.ToString();
 
         RestaurarDropDownListGarantias(1);
         ActualizarEstadisticas();
     }
-    protected void DropDownListRegistrarGarantia_ua_SelectCommand()
+    protected void DropDownListRegistrarGarnatia_ua_SelectCommand()
     {
-        SqlDataSourceDropDownRegistrarGarantia_ua.SelectCommand = "SELECT CLAVE_ZP, DESCRIPCION_DP FROM  CAT_DEPENDENCIAS_POLITECNICAS WHERE ID_NIVEL_EST = 2 ORDER BY DESCRIPCION_DP ASC";
-        DropDownListRegistrarGarantia_ua.DataBind();
+        SqlDataSourceDropDownRegistrarGarnatia_ua.SelectCommand = "SELECT CLAVE_ZP, DESCRIPCION_DP FROM  CAT_DEPENDENCIAS_POLITECNICAS WHERE ID_NIVEL_EST = 2 ORDER BY DESCRIPCION_DP ASC";
+        DropDownListRegistrarGarnatia_ua.DataBind();
     }
 
-
-
-    protected void DropDownListRegistrarGarantia_pliego_DataBound(object sender, EventArgs e)
+    protected void DropDownListRegistrarGarnatia_pliego_DataBound(object sender, EventArgs e)
     {
-        DropDownListRegistrarGarantia_pliego.Items.Insert(0, new System.Web.UI.WebControls.ListItem("Seleccionar", ""));
+        DropDownListRegistrarGarnatia_pliego.Items.Insert(0, new System.Web.UI.WebControls.ListItem("Seleccionar", ""));
     }
-    protected void DropDownListRegistrarGarantia_pliego_SelectedIndexChanged(object sender, EventArgs e)
+
+    protected void DropDownListRegistrarGarnatia_pliego_SelectedIndexChanged(object sender, EventArgs e)
     {
         RestaurarDropDownListGarantias(2);
     }
 
-
-
-    protected void DropDownListRegistrarGarantia_categoria_DataBound(object sender, EventArgs e)
+    protected void DropDownListRegistrarGarnatia_categoria_DataBound(object sender, EventArgs e)
     {
-        DropDownListRegistrarGarantia_categoria.Items.Insert(0, new System.Web.UI.WebControls.ListItem("Seleccionar", ""));
+        DropDownListRegistrarGarnatia_categoria.Items.Insert(0, new System.Web.UI.WebControls.ListItem("Seleccionar", ""));
     }
-    protected void DropDownListRegistrarGarantia_categoria_SelectedIndexChanged(object sender, EventArgs e)
+
+    protected void DropDownListRegistrarGarnatia_categoria_SelectedIndexChanged(object sender, EventArgs e)
     {
         RestaurarDropDownListGarantias(3);
         DataBindDropDownListRegistrarGarantia_peticion();
     }
 
-
-
-    protected void DropDownListRegistrarGarantia_peticion_DataBound(object sender, EventArgs e)
+    protected void DropDownListRegistrarGarnatia_peticion_DataBound(object sender, EventArgs e)
     {
-        DropDownListRegistrarGarantia_peticion.Items.Insert(0, new System.Web.UI.WebControls.ListItem("Seleccionar", ""));
+        DropDownListRegistrarGarnatia_peticion.Items.Insert(0, new System.Web.UI.WebControls.ListItem("Seleccionar", ""));
     }
-    protected void DropDownListRegistrarGarantia_peticion_SelectedIndexChanged(object sender, EventArgs e)
+    protected void DropDownListRegistrarGarnatia_peticion_SelectedIndexChanged(object sender, EventArgs e)
     {
         MostrarAlertPeticion();
         DataBindDropDownListRegistrarGarantia_peticion();
 
     }
-    
-    
     public void DataBindDropDownListRegistrarGarantia_peticion()
     {
         string andListId = "";
         string stringListId = HiddenFieldDivPeticiones_selected.Value;
-        string categoriaId = DropDownListRegistrarGarantia_categoria.SelectedValue.ToString();
-        string pliegoId = DropDownListRegistrarGarantia_pliego.SelectedValue.ToString();
+        string categoriaId = DropDownListRegistrarGarnatia_categoria.SelectedValue.ToString();
+        string pliegoId = DropDownListRegistrarGarnatia_pliego.SelectedValue.ToString();
 
         if (!String.IsNullOrEmpty(stringListId))
         {
@@ -201,7 +195,7 @@ public partial class Garantias : System.Web.UI.Page
         }
         
         string query = "select pet.ID_PETICION, pet.DESC_PETICION " +
-                                "from PETICIONES pet " +
+                                "from PETICIONES_POR_UA pet " +
                                 "where pet.ID_CAT_PETICION = '"+ categoriaId +"' and ID_PLIEGO = '"+ pliegoId +"' "+ andListId +"";
 
         using (SqlConnection con = new SqlConnection(constr))
@@ -213,10 +207,10 @@ public partial class Garantias : System.Web.UI.Page
                 {
                     DataSet ds = new DataSet();
                     da.Fill(ds);
-                    this.DropDownListRegistrarGarantia_peticion.DataSource = ds;
-                    this.DropDownListRegistrarGarantia_peticion.DataValueField = "ID_PETICION";
-                    this.DropDownListRegistrarGarantia_peticion.DataTextField = "DESC_PETICION";
-                    this.DropDownListRegistrarGarantia_peticion.DataBind();
+                    this.DropDownListRegistrarGarnatia_peticion.DataSource = ds;
+                    this.DropDownListRegistrarGarnatia_peticion.DataValueField = "ID_PETICION";
+                    this.DropDownListRegistrarGarnatia_peticion.DataTextField = "DESC_PETICION";
+                    this.DropDownListRegistrarGarnatia_peticion.DataBind();
 
                 }
                 catch (Exception ex)
@@ -302,14 +296,14 @@ public partial class Garantias : System.Web.UI.Page
     }
     private List<int> AgregarListaPeticionesId()
     {
-        string peticionId = DropDownListRegistrarGarantia_peticion.SelectedValue.ToString();
+        string peticionId = DropDownListRegistrarGarnatia_peticion.SelectedValue.ToString();
         string peticionAct = HiddenFieldDivPeticiones_selected.Value;
 
         List<int> intListId = new List<int>();
 
         if (!String.IsNullOrEmpty(peticionId))
         {
-            int peticionIdInt = Convert.ToInt32(DropDownListRegistrarGarantia_peticion.SelectedValue);
+            int peticionIdInt = Convert.ToInt32(DropDownListRegistrarGarnatia_peticion.SelectedValue);
 
             intListId.Add(peticionIdInt);
 
@@ -340,7 +334,7 @@ public partial class Garantias : System.Web.UI.Page
     }
     private string ObtenerIdPeticion_descripcion(int idPeticion)
     {
-        return Consultas.ConsultaS("select CONCAT(SUBSTRING(DESC_PETICION, 0,10),'...') DESCRIPCION from PETICIONES where ID_PETICION = '"+ idPeticion +"'");
+        return Consultas.ConsultaS("select CONCAT(SUBSTRING(DESC_PETICION, 0,10),'...') DESCRIPCION from PETICIONES_POR_UA where ID_PETICION = '"+ idPeticion +"'");
     }
 
 
@@ -349,33 +343,30 @@ public partial class Garantias : System.Web.UI.Page
         switch (nivel)
         {
             case 0:
-                DropDownListRegistrarGarantia_ua.DataBind();
-                ClearAndInsertItem(DropDownListRegistrarGarantia_pliego);
-                ClearAndInsertItem(DropDownListRegistrarGarantia_categoria);
-                ClearAndInsertItem(DropDownListRegistrarGarantia_peticion);
-                LabelZP.Text = string.Empty;
+                DropDownListRegistrarGarnatia_ua.DataBind();
+                ClearAndInsertItem(DropDownListRegistrarGarnatia_pliego);
+                ClearAndInsertItem(DropDownListRegistrarGarnatia_categoria);
+                ClearAndInsertItem(DropDownListRegistrarGarnatia_peticion);
                 break;
             case 1:
-                ClearAndInsertItem(DropDownListRegistrarGarantia_pliego);
-                ClearAndInsertItem(DropDownListRegistrarGarantia_categoria);
-                ClearAndInsertItem(DropDownListRegistrarGarantia_peticion);
+                ClearAndInsertItem(DropDownListRegistrarGarnatia_pliego);
+                ClearAndInsertItem(DropDownListRegistrarGarnatia_categoria);
+                ClearAndInsertItem(DropDownListRegistrarGarnatia_peticion);
                 break;
             case 2:
-                ClearAndInsertItem(DropDownListRegistrarGarantia_categoria);
-                ClearAndInsertItem(DropDownListRegistrarGarantia_peticion);
+                ClearAndInsertItem(DropDownListRegistrarGarnatia_categoria);
+                ClearAndInsertItem(DropDownListRegistrarGarnatia_peticion);
                 break;
             case 3:
-                ClearAndInsertItem(DropDownListRegistrarGarantia_peticion);
+                ClearAndInsertItem(DropDownListRegistrarGarnatia_peticion);
                 break;
         }
-        
+
         HiddenFieldDivPeticiones_selected.Value = string.Empty;
         DivContenidoPeticiones_seleccionadas.InnerHtml = string.Empty;
-
         LabelFileUpload_estatus.Text = string.Empty;
-        TextBoxRegistrarGarantia_descripcion.Text = string.Empty;
+        TextBoxRegistrarGarnatia_descripcion.Text = string.Empty;
         HiddenFieldMensajeRegistroExitoso_estatus.Value = string.Empty;
-
         HiddenFieldPeticionEliminar_id.Value = string.Empty;
     }
     private void ClearAndInsertItem(DropDownList dropDownList)
@@ -387,16 +378,16 @@ public partial class Garantias : System.Web.UI.Page
             dropDownList.Items.Insert(0, new ListItem("Seleccionar", ""));
         }
     }
-    protected void ButtonRegistrarGarantia_guardar_Click(object sender, EventArgs e)
+    protected void ButtonRegistrarGarnatia_guardar_Click(object sender, EventArgs e)
     {
 
-        if (!FileUploadRegistrarGarantia_evidencia.HasFile)
+        if (!FileUploadRegistrarGarnatia_evidencia.HasFile)
         {
             LabelFileUpload_estatus.Text = "Debe subir un documento de evidencia.";
             return;
         }
 
-        if (FileUploadRegistrarGarantia_evidencia.HasFile)
+        if (FileUploadRegistrarGarnatia_evidencia.HasFile)
         {
             GuardarDocumentoGarantias();
         }
@@ -427,7 +418,7 @@ public partial class Garantias : System.Web.UI.Page
         try
         {
             string zp = LabelZP.Text;
-            string tipoDoc = Path.GetExtension(FileUploadRegistrarGarantia_evidencia.PostedFile.FileName);
+            string tipoDoc = Path.GetExtension(FileUploadRegistrarGarnatia_evidencia.PostedFile.FileName);
             string nombreDoc = folio + tipoDoc;
 
             rutaDoc = Path.Combine(rutaDoc, nombreDoc);
@@ -438,7 +429,7 @@ public partial class Garantias : System.Web.UI.Page
                 rutaDoc = Path.Combine(rutaDoc, nuevoNombreDoc);
             }
 
-            FileUploadRegistrarGarantia_evidencia.SaveAs(rutaDoc);
+            FileUploadRegistrarGarnatia_evidencia.SaveAs(rutaDoc);
             LabelFileUpload_estatus.Text = "El archivo se cargo correctramente: " + nombreDoc;
 
             rutaDoc = "/public/src/garantias/"+ zp +"/"+ nombreDoc +"";
@@ -454,10 +445,10 @@ public partial class Garantias : System.Web.UI.Page
     private void InsertarGarantia(string rutaDocumento, string tipoDoc)
     {
         string zp = LabelZP.Text;
-        string pliegoId = DropDownListRegistrarGarantia_pliego.SelectedValue.ToString();
-        string categoriaId = DropDownListRegistrarGarantia_categoria.SelectedValue.ToString();
+        string pliegoId = DropDownListRegistrarGarnatia_pliego.SelectedValue.ToString();
+        string categoriaId = DropDownListRegistrarGarnatia_categoria.SelectedValue.ToString();
         string peticionId = HiddenFieldDivPeticiones_selected.Value;
-        string peticionDesc = TextBoxRegistrarGarantia_descripcion.Text;
+        string peticionDesc = TextBoxRegistrarGarnatia_descripcion.Text;
         int idGarantia = ObtenerIdPeticion_siguiente();
 
         int documentoId = InsertarEvidenciaGarantia(rutaDocumento, tipoDoc);
@@ -493,6 +484,7 @@ public partial class Garantias : System.Web.UI.Page
         string idPeticion = HiddenFieldPeticionEliminar_id.Value;
         EliminarListaPeticionesId(idPeticion);
     }
+
     protected void LinkButtonResumenGarantias_Click(object sender, EventArgs e)
     {
         string IdModal = "ModalResumenGarantias";
@@ -511,7 +503,7 @@ public partial class Garantias : System.Web.UI.Page
                             "from GARANTIA_PETICION gar " +
                             "inner join PLIEGO pli on pli.ID_PLIEGO = gar.ID_PLIEGO " +
                             "inner join CAT_CATEGORIA_PETICION  cat_pet on cat_pet.ID_CAT_PETICION = gar.ID_CAT_PETICION " +
-                            "inner join PETICIONES pet on pet.ID_PETICION = gar.ID_PETICION " +
+                            "inner join PETICIONES_POR_UA pet on pet.ID_PETICION = gar.ID_PETICION " +
                             "inner join DOCUMENTO_GARANTIA doc on doc.ID_DOCUMENTO = gar.ID_DOCUMENTO " +
                             "where gar.CLAVE_ZP like '"+ zp +"%'";
 
@@ -544,23 +536,26 @@ public partial class Garantias : System.Web.UI.Page
 
     }
 
-
     protected void GridViewResumenGarantias_PageIndexChanging(object sender, GridViewPageEventArgs e)
     {
 
     }
+
     protected void GridViewResumenGarantias_RowDataBound(object sender, GridViewRowEventArgs e)
     {
 
     }
+
     protected void GridViewResumenGarantias_RowCancelingEdit(object sender, GridViewCancelEditEventArgs e)
     {
 
     }
+
     protected void GridViewResumenGarantias_RowEditing(object sender, GridViewEditEventArgs e)
     {
 
     }
+
     protected void LinkButtonResumenGarantias_pdf_Click(object sender, EventArgs e)
     {
         LinkButton btn = (LinkButton)sender;

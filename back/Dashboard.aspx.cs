@@ -1162,9 +1162,9 @@ public partial class Dashboard : System.Web.UI.Page
         string zp = LabelZP.Text;
         string cate = DropDownListDetalleEvento_categoria.SelectedValue.ToString();
 
-        LabelDetalleEvento_pendientes.Text = Consultas.ConsultaS("select COUNT(ID_PETICION) from PETICIONES inner join PLIEGO pli on pli.ID_PLIEGO = PETICIONES.ID_PLIEGO where ID_EST_PETICION = 1 and pli.CLAVE_ZP like '"+ zp +"%' and ID_CAT_PETICION like '"+ cate +"%'");
-        LabelDetalleEvento_atendiendo.Text = Consultas.ConsultaS("select COUNT(ID_PETICION) from PETICIONES inner join PLIEGO pli on pli.ID_PLIEGO = PETICIONES.ID_PLIEGO where ID_EST_PETICION = 2 and pli.CLAVE_ZP like '"+ zp +"%' and ID_CAT_PETICION like '"+ cate +"%'");
-        LabelDetalleEvento_atendidas.Text = Consultas.ConsultaS("select COUNT(ID_PETICION) from PETICIONES inner join PLIEGO pli on pli.ID_PLIEGO = PETICIONES.ID_PLIEGO where ID_EST_PETICION = 3 and pli.CLAVE_ZP like '"+ zp +"%' and ID_CAT_PETICION like '"+ cate +"%'");
+        LabelDetalleEvento_pendientes.Text = Consultas.ConsultaS("select COUNT(ID_PETICION) from PETICIONES_POR_UA where ID_EST_PETICION = 1 and CLAVE_ZP like '"+ zp +"%' and ID_CAT_PETICION like '"+ cate +"%'");
+        LabelDetalleEvento_atendiendo.Text = Consultas.ConsultaS("select COUNT(ID_PETICION) from PETICIONES_POR_UA where ID_EST_PETICION = 2 and CLAVE_ZP like '"+ zp +"%' and ID_CAT_PETICION like '"+ cate +"%'");
+        LabelDetalleEvento_atendidas.Text = Consultas.ConsultaS("select COUNT(ID_PETICION) from PETICIONES_POR_UA where ID_EST_PETICION = 3 and CLAVE_ZP like '"+ zp +"%' and ID_CAT_PETICION like '"+ cate +"%'");
     }
     public void DataBindGridViewDetalleEventos()
     {
@@ -1174,12 +1174,11 @@ public partial class Dashboard : System.Web.UI.Page
 
         string totalRows;
 
-        string qry = "select pli.CLAVE_ZP, pet.ID_PETICION, pet_e.DESCRIPCION_PETICION, pet_d.DESCRIPCION_CAT_PETICION, pet.DESC_PETICION, pet.DESC_RESP_PETICION, pet.FECHA_PETICION FECHA_INICIO, pet.FECHA_RESP_PETICION FECHA_FIN " +
-                    "from PETICIONES pet " +
-                    "inner join PLIEGO pli on pli.ID_PLIEGO = pet.ID_PLIEGO " +
+        string qry = "select pet.CLAVE_ZP, pet.ID_PETICION, pet_e.DESCRIPCION_PETICION, pet_d.DESCRIPCION_CAT_PETICION, pet.DESC_PETICION, pet.DESC_RESP_PETICION, pet.FECHA_PETICION FECHA_INICIO, pet.FECHA_RESP_PETICION FECHA_FIN " +
+                    "from PETICIONES_POR_UA pet " +
                     "inner join CAT_CATEGORIA_PETICION pet_d on pet_d.ID_CAT_PETICION = pet.ID_CAT_PETICION " +
                     "inner join ESTATUS_PETICION pet_e on pet_e.ID_EST_PETICION = pet.ID_EST_PETICION " +
-                    "where pli.CLAVE_ZP like '"+ zp +"%' and pet.ID_CAT_PETICION like '"+ cate +"%'";
+                    "where pet.CLAVE_ZP like '"+ zp +"%' and pet.ID_CAT_PETICION like '"+ cate +"%'";
 
         using (SqlConnection con = new SqlConnection(connectionString))
         {
@@ -1229,7 +1228,7 @@ public partial class Dashboard : System.Web.UI.Page
 
         string qryNS = "select * " +
                         "from( " +
-                            "select dp.CLAVE_ZP, dp.LOGO, dp.DESCRIPCION_DP, (select COUNT(ID_PETICION) from PETICIONES inner join PLIEGO pli on pli.ID_PLIEGO = PETICIONES.ID_PLIEGO where pli.CLAVE_ZP = dp.CLAVE_ZP) PETICIONES " +
+                            "select dp.CLAVE_ZP, dp.LOGO, dp.DESCRIPCION_DP, (select COUNT(ID_PETICION) from PETICIONES_POR_UA where CLAVE_ZP = dp.CLAVE_ZP) PETICIONES " +
                             "from CAT_DEPENDENCIAS_POLITECNICAS dp " +
                             "where dp.ID_NIVEL_EST = 2 " +
                         ")datos " +
@@ -1336,7 +1335,7 @@ public partial class Dashboard : System.Web.UI.Page
 
         string constr = ConfigurationManager.ConnectionStrings["ConnectionDES"].ConnectionString;
 
-        bool existEv = Consultas.ConsultaInt("select COUNT(ID_CAT_PETICION)total from PETICIONES inner join PLIEGO pli on pli.ID_PLIEGO = PETICIONES.ID_PLIEGO where pli.CLAVE_ZP like '"+ zp +"%'") == 0 ? false : true;
+        bool existEv = Consultas.ConsultaInt("select COUNT(ID_CAT_PETICION)total from PETICIONES_POR_UA where CLAVE_ZP like '"+ zp +"%'") == 0 ? false : true;
 
         string query = "select DESCRIPCION_CAT_PETICION DESCRIPCION, 0 TOTAL " +
                         "from CAT_CATEGORIA_PETICION " +
@@ -1345,10 +1344,9 @@ public partial class Dashboard : System.Web.UI.Page
         if (existEv == true)
         {
             query = "select cat_p.DESCRIPCION_CAT_PETICION DESCRIPCION, COUNT(pet.ID_CAT_PETICION) TOTAL " +
-                    "from PETICIONES pet " +
-                    "inner join PLIEGO pli on pli.ID_PLIEGO = pet.ID_PLIEGO " +
+                    "from PETICIONES_POR_UA pet " +
                     "inner join CAT_CATEGORIA_PETICION cat_p on cat_p.ID_CAT_PETICION = pet.ID_CAT_PETICION " +
-                    "where pli.CLAVE_ZP like '"+ zp +"%' " +
+                    "where pet.CLAVE_ZP like '"+ zp +"%' " +
                     "group by cat_p.DESCRIPCION_CAT_PETICION " +
                     "with rollup ";
         }
@@ -1392,7 +1390,7 @@ public partial class Dashboard : System.Web.UI.Page
 
         string constr = ConfigurationManager.ConnectionStrings["ConnectionDES"].ConnectionString;
 
-        bool existEv = Consultas.ConsultaInt("select COUNT(ID_CAT_PETICION)total from PETICIONES inner join PLIEGO pli on pli.ID_PLIEGO = PETICIONES.ID_PLIEGO where pli.CLAVE_ZP like '"+ zp +"%'") == 0 ? false : true;
+        bool existEv = Consultas.ConsultaInt("select COUNT(ID_CAT_PETICION)total from PETICIONES_POR_UA where CLAVE_ZP like '"+ zp +"%'") == 0 ? false : true;
 
         string query = "select DESCRIPCION_PETICION DESCRIPCION, 0 TOTAL, " +
                         "case " +
@@ -1411,10 +1409,9 @@ public partial class Dashboard : System.Web.UI.Page
                         "when pet_e.DESCRIPCION_PETICION = 'En Proceso' then '#F54927' " +
                         "when pet_e.DESCRIPCION_PETICION = 'Pendiente' then '#F53533' " +
                     "else 'gray' end COLOR " +
-                    "from PETICIONES pet " +
-                    "inner join PLIEGO pli on pli.ID_PLIEGO = pet.ID_PLIEGO " +
+                    "from PETICIONES_POR_UA pet " +
                     "inner join ESTATUS_PETICION pet_e on pet_e.ID_EST_PETICION = pet.ID_EST_PETICION " +
-                    "where pli.CLAVE_ZP like '"+ zp +"%' " +
+                    "where pet.CLAVE_ZP like '"+ zp +"%' " +
                     "group by pet_e.DESCRIPCION_PETICION " +
                     "with rollup";
         }
@@ -2446,4 +2443,13 @@ public partial class Dashboard : System.Web.UI.Page
     }
 
 
+    protected void LinkButtonRedireccionar_peticion_Click(object sender, EventArgs e)
+    {
+        Response.Redirect("PeticionPliego.aspx");
+    }
+
+    protected void LinkButtonRedireccionar_garantias_Click(object sender, EventArgs e)
+    {
+        Response.Redirect("Garantias.aspx");
+    }
 }

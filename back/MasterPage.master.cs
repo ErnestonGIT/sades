@@ -99,6 +99,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
                     case "7":
                     case "8":
                         MostrarPanelUsuario("directorE");
+                        // menuCaptPeticion.Visible = true;
                         break;
                     case "42":
                         MostrarPanelUsuario("coordinacion");
@@ -153,15 +154,12 @@ public partial class MasterPage : System.Web.UI.MasterPage
         switch (perfil)
         {
             case "administrador":
-                menuPeticiones.Visible = true;
-                menuCaptPeticion.Visible = true;
                 menuAsigPeticion.Visible = true;
                 menuCaptGarantia.Visible = true;
                 menuBitacora.Visible = true;
                 menuPassword.Visible = true;
                 break;
             case "enlace":
-                menuPeticiones.Visible = true;
                 menuAsigPeticion.Visible = true;
                 menuCaptPeticion.Visible = true;
                 menuCaptGarantia.Visible = true;

@@ -378,6 +378,7 @@
                 <asp:HiddenField runat="server" ID="HiddenFieldMensajeRegistroExitoso_estatus" Value=""/>
                 <asp:HiddenField runat="server" ID="HiddenFieldGraficoPiePeticiones_datos" Value=""/>
                 <asp:HiddenField runat="server" ID="HiddenFieldDivPeticiones_selected" Value=""/>
+                <asp:HiddenField runat="server" ID="HiddenFieldDivUnidad_selected" Value=""/>
                 
                 <asp:HiddenField runat="server" ID="HiddenFieldMousePosition_x" Value=""/>
                 <asp:HiddenField runat="server" ID="HiddenFieldMousePosition_y" Value=""/>  
@@ -500,140 +501,149 @@
                                                          <asp:UpdatePanel runat="server">
                                                              <ContentTemplate>
 
-                                                         <div class="mb-3">
-                                                             <label for="DropDownListAsignarPeticion_ua" class="form-label">Unidad académica:</label>
-                                                             <asp:DropDownList ID="DropDownListAsignarPeticion_ua" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownAsignarPeticion_ua"
-                                                                 DataValueField="CLAVE_ZP"
-                                                                 DataTextField="DESCRIPCION_DP" 
-                                                                 CssClass="form-select select-posicion" data-control="select2"
-                                                                 OnDataBound="DropDownListAsignarPeticion_ua_DataBound"
-                                                                 OnSelectedIndexChanged="DropDownListAsignarPeticion_ua_SelectedIndexChanged">
-                                                             </asp:DropDownList>
-                                                             <asp:SqlDataSource ID="SqlDataSourceDropDownAsignarPeticion_ua" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
-                                                                 SelectCommand="SELECT CLAVE_ZP, DESCRIPCION_DP FROM  CAT_DEPENDENCIAS_POLITECNICAS
-                                                                                 WHERE ID_NIVEL_EST = 2 and CLAVE_ZP in (select distinct CLAVE_ZP from PLIEGO)
-                                                                                 ORDER BY DESCRIPCION_DP ASC">
-                                                             </asp:SqlDataSource>
-                                                         </div>
+                                                                <div class="mb-3">
+                                                                     <label for="DropDownListAsignarPeticion_ua" class="form-label">Unidad académica:</label>
+                                                                     <asp:DropDownList ID="DropDownListAsignarPeticion_ua" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownAsignarPeticion_ua"
+                                                                         DataValueField="CLAVE_ZP"
+                                                                         DataTextField="DESCRIPCION_DP" 
+                                                                         CssClass="form-select select-posicion" data-control="select2"
+                                                                         OnDataBound="DropDownListAsignarPeticion_ua_DataBound"
+                                                                         OnSelectedIndexChanged="DropDownListAsignarPeticion_ua_SelectedIndexChanged">
+                                                                     </asp:DropDownList>
+                                                                     <asp:SqlDataSource ID="SqlDataSourceDropDownAsignarPeticion_ua" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
+                                                                         SelectCommand="SELECT CLAVE_ZP, DESCRIPCION_DP FROM  CAT_DEPENDENCIAS_POLITECNICAS
+                                                                                         WHERE ID_NIVEL_EST = 2 and CLAVE_ZP in (select distinct CLAVE_ZP from PLIEGO)
+                                                                                         ORDER BY DESCRIPCION_DP ASC">
+                                                                     </asp:SqlDataSource>
+                                                                 </div>
 
-                                                        <div class="row mb-3">
-                                                            <div class="col-md-6">
-                                                                <label for="DropDownListAsignarPeticion_pliego" class="form-label">Pliego registrado:</label>
-                                                                <asp:DropDownList ID="DropDownListAsignarPeticion_pliego" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownAsignarPeticion_pliego"
-                                                                    DataValueField="ID_PLIEGO"
-                                                                    DataTextField="FOLIO_PLIEGO" 
-                                                                    CssClass="form-select select-posicion" data-control="select2"
-                                                                    OnDataBound="DropDownListAsignarPeticion_pliego_DataBound"
-                                                                    OnSelectedIndexChanged="DropDownListAsignarPeticion_pliego_SelectedIndexChanged">
-                                                                </asp:DropDownList>
-                                                                <asp:SqlDataSource ID="SqlDataSourceDropDownAsignarPeticion_pliego" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
-                                                                    SelectCommand="select ID_PLIEGO, IIF(FOLIO_PLIEGO is null, CONCAT('PLG-',CLAVE_ZP,'-',ID_PLIEGO), FOLIO_PLIEGO) FOLIO_PLIEGO 
-                                                                                    from PLIEGO 
-                                                                                    where CLAVE_ZP = @ZP
-                                                                                    ORDER BY ID_PLIEGO ASC">
-                                                                    <SelectParameters>
-                                                                        <asp:ControlParameter ControlID="DropDownListAsignarPeticion_ua" Name="ZP" PropertyName="SelectedValue" />
-                                                                    </SelectParameters>
-                                                                    
-                                                                </asp:SqlDataSource>
-                                                            </div>
-                                                            <div class="col-md-6">
-                                                                <label for="DropDownListAsignarPeticion_categoria" class="form-label">Categoria registrada:</label>
-                                                                <asp:DropDownList ID="DropDownListAsignarPeticion_categoria" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownAsignarPeticion_categoria"
-                                                                    DataValueField="ID_CAT_PETICION"
-                                                                    DataTextField="DESCRIPCION_CAT_PETICION" 
-                                                                    CssClass="form-select select-posicion" data-control="select2"
-                                                                    OnDataBound="DropDownListAsignarPeticion_categoria_DataBound"
-                                                                    OnSelectedIndexChanged="DropDownListAsignarPeticion_categoria_SelectedIndexChanged">
-                                                                </asp:DropDownList>
-                                                                <asp:SqlDataSource ID="SqlDataSourceDropDownAsignarPeticion_categoria" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
-                                                                    SelectCommand="select pet.ID_CAT_PETICION, cat.DESCRIPCION_CAT_PETICION 
-                                                                                    from PETICIONES_POR_UA pet
-                                                                                    inner join CAT_CATEGORIA_PETICION cat on cat.ID_CAT_PETICION = pet.ID_CAT_PETICION
-                                                                                    where pet.ID_PLIEGO = @ID_PL
-																					group by pet.ID_CAT_PETICION, cat.DESCRIPCION_CAT_PETICION 
-																					order by cat.DESCRIPCION_CAT_PETICION ASC">
-                                                                    <SelectParameters>
-                                                                        <asp:ControlParameter ControlID="DropDownListAsignarPeticion_pliego" Name="ID_PL" PropertyName="SelectedValue" />
-                                                                    </SelectParameters>
-                                                                </asp:SqlDataSource>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="row mb-3">
-
-                                                            <div class="col-md-6">
-                                                                <div class="card">
-                                                                    <div class="card-body">
-                                                                        <h5 class="card-title">Petición <span>| a asignar</span></h5>
-                                                                        <asp:DropDownList ID="DropDownListAsignarPeticion_unidad" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownAsignarPeticion_unidad"
-                                                                            DataValueField="ID_PERFIL"
-                                                                            DataTextField="UNIDAD" 
+                                                                <div class="row mb-3">
+                                                                    <div class="col-md-6">
+                                                                        <label for="DropDownListAsignarPeticion_pliego" class="form-label">Pliego registrado:</label>
+                                                                        <asp:DropDownList ID="DropDownListAsignarPeticion_pliego" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownAsignarPeticion_pliego"
+                                                                            DataValueField="ID_PLIEGO"
+                                                                            DataTextField="FOLIO_PLIEGO" 
                                                                             CssClass="form-select select-posicion" data-control="select2"
-                                                                            OnDataBound="DropDownListAsignarPeticion_peticion_DataBound"
-                                                                            OnSelectedIndexChanged="DropDownListAsignarPeticion_peticion_SelectedIndexChanged">
+                                                                            OnDataBound="DropDownListAsignarPeticion_pliego_DataBound"
+                                                                            OnSelectedIndexChanged="DropDownListAsignarPeticion_pliego_SelectedIndexChanged">
                                                                         </asp:DropDownList>
-                                                                        <asp:SqlDataSource ID="SqlDataSourceDropDownAsignarPeticion_unidad" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
-                                                                            SelectCommand="select ID_PERFIL, 
-	                                                                                             case 
-		                                                                                             when DESCRIPCION like 'JEFE DEL %' then REPLACE(DESCRIPCION,'JEFE DEL ','')
-		                                                                                             when DESCRIPCION like 'JEFE DE LA %' then REPLACE(DESCRIPCION,'JEFE DE LA ','')
-		                                                                                             else DESCRIPCION
-	                                                                                             end UNIDAD
-                                                                                            from CAT_PERFILES where CLAVE_ZP = @UA">
+                                                                        <asp:SqlDataSource ID="SqlDataSourceDropDownAsignarPeticion_pliego" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
+                                                                            SelectCommand="select ID_PLIEGO, IIF(FOLIO_PLIEGO is null, CONCAT('PLG-',CLAVE_ZP,'-',ID_PLIEGO), FOLIO_PLIEGO) FOLIO_PLIEGO 
+                                                                                            from PLIEGO 
+                                                                                            where CLAVE_ZP = @ZP
+                                                                                            ORDER BY ID_PLIEGO ASC">
                                                                             <SelectParameters>
-                                                                                <asp:ControlParameter ControlID="DropDownListAsignarPeticion_ua" Name="UA" PropertyName="SelectedValue" />
+                                                                                <asp:ControlParameter ControlID="DropDownListAsignarPeticion_ua" Name="ZP" PropertyName="SelectedValue" />
+                                                                            </SelectParameters>
+                                                                    
+                                                                        </asp:SqlDataSource>
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        <label for="DropDownListAsignarPeticion_categoria" class="form-label">Categoria registrada:</label>
+                                                                        <asp:DropDownList ID="DropDownListAsignarPeticion_categoria" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownAsignarPeticion_categoria"
+                                                                            DataValueField="ID_CAT_PETICION"
+                                                                            DataTextField="DESCRIPCION_CAT_PETICION" 
+                                                                            CssClass="form-select select-posicion" data-control="select2"
+                                                                            OnDataBound="DropDownListAsignarPeticion_categoria_DataBound"
+                                                                            OnSelectedIndexChanged="DropDownListAsignarPeticion_categoria_SelectedIndexChanged">
+                                                                        </asp:DropDownList>
+                                                                        <asp:SqlDataSource ID="SqlDataSourceDropDownAsignarPeticion_categoria" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
+                                                                            SelectCommand="select pet.ID_CAT_PETICION, cat.DESCRIPCION_CAT_PETICION 
+                                                                                            from PETICIONES pet
+                                                                                            inner join CAT_CATEGORIA_PETICION cat on cat.ID_CAT_PETICION = pet.ID_CAT_PETICION
+                                                                                            where pet.ID_PLIEGO = @ID_PL
+																					        group by pet.ID_CAT_PETICION, cat.DESCRIPCION_CAT_PETICION 
+																					        order by cat.DESCRIPCION_CAT_PETICION ASC">
+                                                                            <SelectParameters>
+                                                                                <asp:ControlParameter ControlID="DropDownListAsignarPeticion_pliego" Name="ID_PL" PropertyName="SelectedValue" />
                                                                             </SelectParameters>
                                                                         </asp:SqlDataSource>
-
-                                                                        <div class="col-12 mt-3 mb-3">
-                                                                            <div class="row" runat="server" id="DivContenidoPeticiones_seleccionadas">
-                                                                            </div>
-                                                                            <asp:HiddenField runat="server" ID="HiddenFieldPeticionEliminar_id"/>
-                                                                            <asp:LinkButton runat="server" ID="LinkButtonPeticionId_eliminar" OnClick="LinkButtonPeticionId_eliminar_Click" style="display:none"></asp:LinkButton>
-                                                                        </div>
-
                                                                     </div>
                                                                 </div>
-                                                            </div>
 
-                                                            <div class="col-md-6">
-                                                                <div class="card">
-                                                                    <div class="card-body">
-                                                                        <div class="row">
-                                                                            <div class="col-12">
-                                                                                <h5 class="card-title">Unidad <span>| administrativa</span></h5>
-                                                                                <asp:DropDownList ID="DropDownListAsignarPeticion_peticion" runat="server" AutoPostBack="true"
-                                                                                    DataValueField="ID_PETICION"
-                                                                                    DataTextField="DESC_PETICION" 
-                                                                                    CssClass="form-select select-posicion" data-control="select2"
-                                                                                    OnDataBound="DropDownListAsignarPeticion_peticion_DataBound"
-                                                                                    OnSelectedIndexChanged="DropDownListAsignarPeticion_peticion_SelectedIndexChanged">
-                                                                                </asp:DropDownList>
-                                                                            </div>
-
-                                                                        </div>
-
-                                                                    </div>
+                                                                <div class="mb-3">
+                                                                    <label for="DropDownListRegistrarGarantia_peticion" class="form-label">Petición a asignar:</label>
+                                                                    <asp:DropDownList ID="DropDownListAsignarPeticion_peticion" runat="server" AutoPostBack="true"
+                                                                        DataValueField="ID_PETICION"
+                                                                        DataTextField="DESC_PETICION" 
+                                                                        CssClass="form-select select-posicion" data-control="select2"
+                                                                        OnDataBound="DropDownListAsignarPeticion_peticion_DataBound"
+                                                                        OnSelectedIndexChanged="DropDownListAsignarPeticion_peticion_SelectedIndexChanged">
+                                                                    </asp:DropDownList>
                                                                 </div>
-                                                            </div>
 
-                                                        </div>
+                                                                <div class="row mb-3">
+
+                                                                    <div class="col-md-12" runat="server" id="DivAsignarPeticion_asignaciones" visible="false">
+                                                                        <div class="card">
+                                                                            <div class="card-body">
+                                                                                <h5 class="card-title">Asignadas <span>| peticiones</span></h5>
+                                                                                <div class="col-12 mt-3 mb-3">
+                                                                                    <div class="row" runat="server" id="DivContenidoPeticiones_seleccionadas">
+                                                                                    </div>
+                                                                                    <asp:HiddenField runat="server" ID="HiddenFieldPeticionEliminar_id"/>
+                                                                                    <asp:LinkButton runat="server" ID="LinkButtonPeticionId_eliminar" OnClick="LinkButtonPeticionId_eliminar_Click" style="display:none"></asp:LinkButton>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="col-md-12" runat="server" id="DivAsignarPeticion_unidades" visible="false">
+                                                                        <div class="card">
+                                                                            <div class="card-body">
+                                                                                <div class="mt-3" style="overflow-y: scroll; max-height: 300px; width: 100%;">
+
+                                                                                    <asp:GridView ID="GridViewUnidadesAdministrativas" runat="server"
+                                                                                        AutoGenerateColumns="False" ShowHeader="true"
+                                                                                            CssClass="table table-sm table-bordered table-striped table-responsive" HeaderStyle-CssClass=" bg-gradient bg-primary-light text-gray-100 text-center"
+                                                                                                PagerStyle-CssClass="pagination-ys"
+                                                                                                    PageSize="1000" AllowPaging="false" >
+                                            
+                                                                                        <Columns>
+                                                                                            <asp:TemplateField HeaderText="NÚM." ItemStyle-Font-Bold="true" ItemStyle-HorizontalAlign="Center">
+                                                                                                <ItemTemplate>
+                                                                                                    <%# Container.DataItemIndex + 1 %>
+                                                                                                </ItemTemplate>
+                                                                                            </asp:TemplateField>
+                                            
+                                                                                            <asp:BoundField DataField="UNIDAD" HeaderText="UNIDAD ADMINISTRATIVA" ReadOnly="true"/>
+
+                                                                                            <asp:TemplateField HeaderText="ACCIÓN" ItemStyle-HorizontalAlign="Center">
+                                                                                                <ItemTemplate>
+                                                                                                    <asp:LinkButton runat="server" ID="LinkButtonUnidadesAdministrativas_selecionar" 
+                                                                                                        CommandArgument = '<%# Eval("ID_PERFIL") %>' 
+                                                                                                        CssClass="btn btn-sm btn-outline-danger LoadingOverlay" 
+                                                                                                        OnClick="LinkButtonUnidadesAdministrativas_selecionar_Click">Seleccionar</asp:LinkButton>
+                                                                                                </ItemTemplate>
+                                                                                            </asp:TemplateField>                                          
+                                              
+                                                                                        </Columns>
+
+                                                                                        <EmptyDataTemplate>
+                                                                                            <div class="text-center">
+                                                                                                <asp:Label runat="server" ID="Label4" Text="<br><br><br> No se han asignado unidades académicas de nivel superior a su perfil de analista <br><br><br>" CssClass="alert alert-light" Width="90%"></asp:Label>
+                                                                                            </div>
+                                                                                        </EmptyDataTemplate>
+
+                                                                                    </asp:GridView>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                </div>
                                                         
-                                                        <div class="d-grid gap-2">
-                                                            <button class="btn btn-success" onclick="validarCampos()">Guardar garantía</button>
-                                                            <asp:Button runat="server" ID="ButtonRegistrarAsignarPeticion_guardar" OnClick="ButtonRegistrarAsignarPeticion_guardar_Click" Text="Actualizar" style="display:none"/>
-                                                        </div>
+                                                                <div class="d-grid gap-2">
+                                                                    <button class="btn btn-success" onclick="validarCampos()">Guardar garantía</button>
+                                                                    <asp:LinkButton runat="server" ID="LinkButtonAsignarPeticion_guardar" OnClick="LinkButtonAsignarPeticion_guardar_Click" style="display:none"></asp:LinkButton>
+                                                                </div>
 
-                                                        </ContentTemplate>
-                                                             <Triggers>
-                                                                 <asp:PostBackTrigger ControlID="ButtonRegistrarAsignarPeticion_guardar" />
-                                                             </Triggers>
+                                                            </ContentTemplate>
                                                          </asp:UpdatePanel>
                                                      </div>
                                                    </div>
 
-                                                 </div><!-- End RegistrarGarantia Card -->
+                                                 </div><!-- End AsignarPeticion Card -->
 
                                                </div>
                                              </div><!-- End Left side columns -->
@@ -732,6 +742,12 @@
                 prm.add_endRequest(function (sender, e) {
                     $(function () {
                         LoadInitialFunctions();
+
+                        var x = $("[id*=HiddenFieldMousePosition_x]").val();
+                        var y = $("[id*=HiddenFieldMousePosition_y]").val();
+
+                        $(window).scrollTop(y);
+
                     });
                 });
             }
@@ -754,6 +770,7 @@
 
             chartPieCategorias();
             validarPosicion();
+            mensajeRegistroExitoso()
 
         }
 
@@ -763,8 +780,10 @@
             var pe = document.getElementById('<%= LabelPE.ClientID %>').innerHTML;
             var ZPname = document.getElementById('<%= LabelZPDesc.ClientID %>').innerHTML;
             var perfil = document.getElementById('<% = LabelPerfil.ClientID%>').innerHTML.toString();
+            var unidad = $("[id*=HiddenFieldDivUnidad_selected]").val();
+            let pet = $("[id*=HiddenFieldDivPeticiones_selected]").val();
 
-            console.log("\nzp: "+zp+"\npe: "+pe);
+            console.log("\nzp: "+zp+"\npe: "+pe+"\nname: "+ZPname+"\nper: "+perfil+"\nunid: "+unidad+"\npeti: "+pet);
         }
 
         function hideLoadingOverlay() {
@@ -820,8 +839,6 @@
 
             var LabelZP = document.getElementById('<%= LabelZP.ClientID %>').innerHTML;
             var LabelPE = document.getElementById('<%= LabelPE.ClientID %>').innerHTML;
-
-            console.log("hiddenUA: " + LabelUA);
 
             var myModal = document.getElementById(idModal);
             var modal = bootstrap.Modal.getOrCreateInstance(myModal);
@@ -1012,7 +1029,7 @@
 
                 let id = $(this).attr('id');
                 y = parseInt($('#' + id).offset().top);
-                $("[id*=HiddenFieldMousePosition_y]").val(y - 70);
+                $("[id*=HiddenFieldMousePosition_y]").val(y - 150);
             });
 
         }
@@ -1056,8 +1073,78 @@
                 }]
             });
         }
-        function validarCampos() {
 
+        function eliminarIdPeticion(idPeticion) {
+
+            $("[id*=HiddenFieldPeticionEliminar_id]").val(idPeticion);
+
+            $("#DivAlert_" + idPeticion).alert("close");
+
+            let btn = document.getElementById('<%=LinkButtonPeticionId_eliminar.ClientID%>');
+                    btn.click();
+        }
+
+        function validarCampos() {
+            let zp = $("[id*=DropDownListAsignarPeticion_ua]").val();
+            let pliego = $("[id*=DropDownListAsignarPeticion_pliego]").val();
+            let categoria = $("[id*=DropDownListAsignarPeticion_categoria]").val();
+            let peticion = $("[id*=HiddenFieldDivPeticiones_selected]").val();
+            let unidad = $("[id*=HiddenFieldDivUnidad_selected]").val();
+
+            let mensaje = "";
+            let totMensaje = 0;
+
+            if (zp.length == 0) {
+                mensaje += "Unidad académica<br/>";
+                totMensaje++;
+            }
+            if (pliego.length == 0) {
+                mensaje += "Pliego<br/>";
+                totMensaje++;
+            }
+            if (categoria.length == 0) {
+                mensaje += "Categoria<br/>";
+                totMensaje++;
+            }
+            if (peticion.length == 0) {
+                mensaje += "Petición<br/>";
+                totMensaje++;
+            }
+            if (unidad.length == 0) {
+                mensaje += "Unidad administrativa<br/>";
+                totMensaje++;
+            }
+
+            if (totMensaje >= 1) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Faltan datos",
+                    html: "<p style='text-align:left' class='ps-5'>"+mensaje+"</p>",
+                    confirmButtonColor: "gray",
+                    confirmButtonText: "Entendido"
+                });
+            }
+            else {
+<%--                let btn = document.getElementById('<%=ButtonAsignarPeticion_guardar.ClientID%>');
+                btn.click()--%>
+                let btn = document.getElementById('<%=LinkButtonAsignarPeticion_guardar.ClientID%>');
+                btn.click()
+            }
+
+        }
+        function mensajeRegistroExitoso() {
+
+            var estatusMensaje = $("[id*=HiddenFieldMensajeRegistroExitoso_estatus]").val();
+
+            if (estatusMensaje == "1") {
+                Swal.fire({
+                    position: "center",
+                    icon: "success",
+                    title: "La información se registro correctamente",
+                    showConfirmButton: false,
+                    timer: 2500
+                });
+            }
         }
 
     </script>

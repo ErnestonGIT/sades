@@ -1085,7 +1085,23 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    <div class="col-12">
+                                                        <div class="card">
+                                                            <div class="row">
+                                                                <div class="col-lg-6 col-xl-6">
+                                                                    <div class="d-grid gap-2" style="margin-block: 10px;margin-right: 10px;margin-left: 10px;">
+                                                                        <asp:LinkButton runat="server" ID="LinkButtonRedireccionar_peticion" OnClick="LinkButtonRedireccionar_peticion_Click" CssClass="btn btn-primary">Registrar petición</asp:LinkButton>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-lg-6 col-xl-6">
+                                                                    <div class="d-grid gap-2" style="margin-block: 10px;margin-right: 10px;margin-left: 10px;">
+                                                                        <asp:LinkButton runat="server" ID="LinkButtonRedireccionar_garantias" OnClick="LinkButtonRedireccionar_garantias_Click" CssClass="btn btn-primary">Registrar garantía</asp:LinkButton>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
 
+                                                    </div>
                                                 </div>
 
                                                 <div class="col-12" style="display:block">

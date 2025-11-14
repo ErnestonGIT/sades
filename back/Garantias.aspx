@@ -476,7 +476,7 @@
                                                   </div>
                                                 </div><!-- End Revenue Card -->
 
-                                                <!-- RegistrarGarantia -->
+                                                <!-- RegistrarGarnatia -->
                                                 <div class="col-xl-12">
 
                                                   <div class="card info-card customers-card">
@@ -500,15 +500,15 @@
                                                             <ContentTemplate>
 
                                                         <div class="mb-3">
-                                                            <label for="DropDownListRegistrarGarantia_ua" class="form-label">Unidad académica:</label>
-                                                            <asp:DropDownList ID="DropDownListRegistrarGarantia_ua" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownRegistrarGarantia_ua"
+                                                            <label for="DropDownListRegistrarGarnatia_ua" class="form-label">Unidad académica:</label>
+                                                            <asp:DropDownList ID="DropDownListRegistrarGarnatia_ua" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownRegistrarGarnatia_ua"
                                                                 DataValueField="CLAVE_ZP"
                                                                 DataTextField="DESCRIPCION_DP" 
                                                                 CssClass="form-select select-posicion" data-control="select2"
-                                                                OnDataBound="DropDownListRegistrarGarantia_ua_DataBound"
-                                                                OnSelectedIndexChanged="DropDownListRegistrarGarantia_ua_SelectedIndexChanged">
+                                                                OnDataBound="DropDownListRegistrarGarnatia_ua_DataBound"
+                                                                OnSelectedIndexChanged="DropDownListRegistrarGarnatia_ua_SelectedIndexChanged">
                                                             </asp:DropDownList>
-                                                            <asp:SqlDataSource ID="SqlDataSourceDropDownRegistrarGarantia_ua" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
+                                                            <asp:SqlDataSource ID="SqlDataSourceDropDownRegistrarGarnatia_ua" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
                                                                 SelectCommand="SELECT CLAVE_ZP, DESCRIPCION_DP FROM  CAT_DEPENDENCIAS_POLITECNICAS
                                                                                 WHERE ID_NIVEL_EST = 2 and CLAVE_ZP in (select distinct CLAVE_ZP from PLIEGO)
                                                                                 ORDER BY DESCRIPCION_DP ASC">
@@ -517,56 +517,56 @@
 
                                                         <div class="row mb-3">
                                                             <div class="col-md-6">
-                                                                <label for="DropDownListRegistrarGarantia_pliego" class="form-label">Pliego registrado:</label>
-                                                                <asp:DropDownList ID="DropDownListRegistrarGarantia_pliego" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownRegistrarGarantia_pliego"
+                                                                <label for="DropDownListRegistrarGarnatia_pliego" class="form-label">Pliego registrado:</label>
+                                                                <asp:DropDownList ID="DropDownListRegistrarGarnatia_pliego" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownRegistrarGarnatia_pliego"
                                                                     DataValueField="ID_PLIEGO"
                                                                     DataTextField="FOLIO_PLIEGO" 
                                                                     CssClass="form-select select-posicion" data-control="select2"
-                                                                    OnDataBound="DropDownListRegistrarGarantia_pliego_DataBound"
-                                                                    OnSelectedIndexChanged="DropDownListRegistrarGarantia_pliego_SelectedIndexChanged">
+                                                                    OnDataBound="DropDownListRegistrarGarnatia_pliego_DataBound"
+                                                                    OnSelectedIndexChanged="DropDownListRegistrarGarnatia_pliego_SelectedIndexChanged">
                                                                 </asp:DropDownList>
-                                                                <asp:SqlDataSource ID="SqlDataSourceDropDownRegistrarGarantia_pliego" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
+                                                                <asp:SqlDataSource ID="SqlDataSourceDropDownRegistrarGarnatia_pliego" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
                                                                     SelectCommand="select ID_PLIEGO, IIF(FOLIO_PLIEGO is null, CONCAT('PLG-',CLAVE_ZP,'-',ID_PLIEGO), FOLIO_PLIEGO) FOLIO_PLIEGO 
                                                                                     from PLIEGO 
                                                                                     where CLAVE_ZP = @ZP
                                                                                     ORDER BY ID_PLIEGO ASC">
                                                                     <SelectParameters>
-                                                                        <asp:ControlParameter ControlID="DropDownListRegistrarGarantia_ua" Name="ZP" PropertyName="SelectedValue" />
+                                                                        <asp:ControlParameter ControlID="DropDownListRegistrarGarnatia_ua" Name="ZP" PropertyName="SelectedValue" />
                                                                     </SelectParameters>
                                                                     
                                                                 </asp:SqlDataSource>
                                                             </div>
                                                             <div class="col-md-6">
-                                                                <label for="DropDownListRegistrarGarantia_categoria" class="form-label">Categoria registrada:</label>
-                                                                <asp:DropDownList ID="DropDownListRegistrarGarantia_categoria" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownRegistrarGarantia_categoria"
+                                                                <label for="DropDownListRegistrarGarnatia_categoria" class="form-label">Categoria registrada:</label>
+                                                                <asp:DropDownList ID="DropDownListRegistrarGarnatia_categoria" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownRegistrarGarnatia_categoria"
                                                                     DataValueField="ID_CAT_PETICION"
                                                                     DataTextField="DESCRIPCION_CAT_PETICION" 
                                                                     CssClass="form-select select-posicion" data-control="select2"
-                                                                    OnDataBound="DropDownListRegistrarGarantia_categoria_DataBound"
-                                                                    OnSelectedIndexChanged="DropDownListRegistrarGarantia_categoria_SelectedIndexChanged">
+                                                                    OnDataBound="DropDownListRegistrarGarnatia_categoria_DataBound"
+                                                                    OnSelectedIndexChanged="DropDownListRegistrarGarnatia_categoria_SelectedIndexChanged">
                                                                 </asp:DropDownList>
-                                                                <asp:SqlDataSource ID="SqlDataSourceDropDownRegistrarGarantia_categoria" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
+                                                                <asp:SqlDataSource ID="SqlDataSourceDropDownRegistrarGarnatia_categoria" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
                                                                     SelectCommand="select pet.ID_CAT_PETICION, cat.DESCRIPCION_CAT_PETICION 
-                                                                                    from PETICIONES pet
+                                                                                    from PETICIONES_POR_UA pet
                                                                                     inner join CAT_CATEGORIA_PETICION cat on cat.ID_CAT_PETICION = pet.ID_CAT_PETICION
                                                                                     where pet.ID_PLIEGO = @ID_PL
 																					group by pet.ID_CAT_PETICION, cat.DESCRIPCION_CAT_PETICION 
 																					order by cat.DESCRIPCION_CAT_PETICION ASC">
                                                                     <SelectParameters>
-                                                                        <asp:ControlParameter ControlID="DropDownListRegistrarGarantia_pliego" Name="ID_PL" PropertyName="SelectedValue" />
+                                                                        <asp:ControlParameter ControlID="DropDownListRegistrarGarnatia_pliego" Name="ID_PL" PropertyName="SelectedValue" />
                                                                     </SelectParameters>
                                                                 </asp:SqlDataSource>
                                                             </div>
                                                         </div>
 
                                                         <div class="mb-3">
-                                                            <label for="DropDownListRegistrarGarantia_peticion" class="form-label">Petición a atender:</label>
-                                                            <asp:DropDownList ID="DropDownListRegistrarGarantia_peticion" runat="server" AutoPostBack="true"
+                                                            <label for="DropDownListRegistrarGarnatia_peticion" class="form-label">Petición a atender:</label>
+                                                            <asp:DropDownList ID="DropDownListRegistrarGarnatia_peticion" runat="server" AutoPostBack="true"
                                                                 DataValueField="ID_PETICION"
                                                                 DataTextField="DESC_PETICION" 
                                                                 CssClass="form-select select-posicion" data-control="select2"
-                                                                OnDataBound="DropDownListRegistrarGarantia_peticion_DataBound"
-                                                                OnSelectedIndexChanged="DropDownListRegistrarGarantia_peticion_SelectedIndexChanged">
+                                                                OnDataBound="DropDownListRegistrarGarnatia_peticion_DataBound"
+                                                                OnSelectedIndexChanged="DropDownListRegistrarGarnatia_peticion_SelectedIndexChanged">
                                                             </asp:DropDownList>
                                                         </div>
                                                         
@@ -578,24 +578,24 @@
 
                                                         <div class="mb-3">
                                                             <label for="exampleFormControlTextarea1" class="form-label">Descripción de la acción</label>
-                                                            <asp:TextBox runat="server" ID="TextBoxRegistrarGarantia_descripcion" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
+                                                            <asp:TextBox runat="server" ID="TextBoxRegistrarGarnatia_descripcion" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                                         </div>
 
                                                         <div class="mb-3">
                                                             <label for="exampleFormControlTextarea1" class="form-label">Cargar evidencia de la acción</label>
                                                             <div>
-                                                                <asp:FileUpload runat="server" ID="FileUploadRegistrarGarantia_evidencia" CssClass="form-control"/>
+                                                                <asp:FileUpload runat="server" ID="FileUploadRegistrarGarnatia_evidencia" CssClass="form-control"/>
                                                                 <asp:Label runat="server" ID="LabelFileUpload_estatus"></asp:Label>
                                                             </div>
                                                         </div>
                                                         
                                                         <div class="d-grid gap-2">
                                                             <button class="btn btn-success" onclick="validarCampos()">Guardar garantía</button>
-                                                            <asp:Button runat="server" ID="ButtonRegistrarGarantia_guardar" OnClick="ButtonRegistrarGarantia_guardar_Click" Text="Actualizar" style="display:none"/>
+                                                            <asp:Button runat="server" ID="ButtonRegistrarGarnatia_guardar" OnClick="ButtonRegistrarGarnatia_guardar_Click" Text="Actualizar" style="display:none"/>
                                                         </div>
                                                             </ContentTemplate>
                                                             <Triggers>
-                                                                <asp:PostBackTrigger ControlID="ButtonRegistrarGarantia_guardar" />
+                                                                <asp:PostBackTrigger ControlID="ButtonRegistrarGarnatia_guardar" />
                                                             </Triggers>
                                                         </asp:UpdatePanel>
                                                     </div>
@@ -907,12 +907,12 @@
 
         function validarCampos() {
 
-            let zp = $("[id*=DropDownListRegistrarGarantia_ua]").val();
-            let pliego = $("[id*=DropDownListRegistrarGarantia_pliego]").val(); 
-            let categoria = $("[id*=DropDownListRegistrarGarantia_categoria]").val();
+            let zp = $("[id*=DropDownListRegistrarGarnatia_ua]").val();
+            let pliego = $("[id*=DropDownListRegistrarGarnatia_pliego]").val(); 
+            let categoria = $("[id*=DropDownListRegistrarGarnatia_categoria]").val();
             let peticion = $("[id*=HiddenFieldDivPeticiones_selected]").val();
-            let descripcion = $("[id*=TextBoxRegistrarGarantia_descripcion]").val();
-            let evidencia = $("[id*=FileUploadRegistrarGarantia_evidencia]").val();
+            let descripcion = $("[id*=TextBoxRegistrarGarnatia_descripcion]").val();
+            let evidencia = $("[id*=FileUploadRegistrarGarnatia_evidencia]").val();
             let mensaje = "";
             let totMensaje = 0;
 
@@ -951,7 +951,7 @@
                 });
             }
             else {
-                let btn = document.getElementById('<%=ButtonRegistrarGarantia_guardar.ClientID%>');
+                let btn = document.getElementById('<%=ButtonRegistrarGarnatia_guardar.ClientID%>');
                 btn.click()
             }
 
@@ -1004,12 +1004,11 @@
             var ZPname = document.getElementById('<%= LabelZPDesc.ClientID %>').innerHTML;
             var perfil = document.getElementById('<% = LabelPerfil.ClientID%>').innerHTML.toString();
             var data = $("[id*=HiddenFieldGraficoPieCategorias_datos]").val();
-            let peticion = $("[id*=HiddenFieldDivPeticiones_selected]").val();
 
             var x = $("[id*=HiddenFieldMousePosition_x]").val();
             var y = $("[id*=HiddenFieldMousePosition_y]").val();
 
-            console.log("\nzp: " + zp + "\npe: " + pe + "\ndata: " + data+"\nx: "+x+"\ny: "+y+"\npet: "+peticion);
+            console.log("\nzp: " + zp + "\npe: " + pe + "\ndata: " + data+"\nx: "+x+"\ny: "+y);
         }
 
         function hideLoadingOverlay() {
@@ -1039,7 +1038,7 @@
 
                 let id = $(this).attr('id');
                 y = parseInt($('#' + id).offset().top);
-                $("[id*=HiddenFieldMousePosition_y]").val(y - 150);
+                $("[id*=HiddenFieldMousePosition_y]").val(y-70);
             });
             
         }
