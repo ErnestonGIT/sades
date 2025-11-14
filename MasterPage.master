@@ -262,6 +262,31 @@
 					<span>Mi Tablero</span>
 				</a>
 			</li>
+
+            <!-- Capturar peticion -->
+			<li class="nav-item" runat="server" visible="false" id="menuCaptPeticion">
+				<a class="nav-link collapsed" href="PeticionPliego.aspx">
+					<i class="bi bi-file-text-fill"></i>
+					<span>Capturar petición</span>
+				</a>
+			</li>
+            <!-- Asignar petición -->
+			<li class="nav-item" runat="server" visible="false" id="menuAsigPeticion">
+				<a class="nav-link collapsed" href="PeticionAsignar.aspx">
+					<i class="bi bi-ui-checks"></i>
+					<span>Asignar petición</span>
+				</a>
+			</li>
+            <!-- Capturar comision -->
+			<li class="nav-item" runat="server" visible="false" id="menuCaptGarantia">
+				<a class="nav-link collapsed" href="Garantias.aspx">
+					<i class="bi bi-journal-check"></i>
+					<span>Capturar garantia</span>
+				</a>
+			</li>
+
+            <li class="nav-heading">Sistema</li>
+
             <!-- Bitácora -->
 			<li class="nav-item" runat="server" visible="false" id="menuBitacora">
 				<a class="nav-link collapsed" href="Bitacora.aspx">
@@ -274,13 +299,6 @@
 				<a class="nav-link collapsed" href="#" onclick="MostrarModal('ModalCambioP');">
 					<i class="bi bi-key"></i>
 					<span>Cambio de contraseña</span>
-				</a>
-			</li>
-            <!-- Capturar peticion -->
-			<li class="nav-item" runat="server" visible="false" id="menuCaptPeticion">
-				<a class="nav-link collapsed" href="PeticionesEst.aspx">
-					<i class="bi bi-file-text-fill"></i>
-					<span>Capturar petición</span>
 				</a>
 			</li>
 

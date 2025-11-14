@@ -183,7 +183,7 @@ public partial class Default : System.Web.UI.Page
         string tip = GridViewPerfiles.SelectedDataKey["ID_Perfil"].ToString();
                 
         if (tip == "7") {
-            Response.Cookies.Set(new HttpCookie("claveZP", ""));
+           Response.Cookies.Set(new HttpCookie("claveZP", ""));
         }
         Response.Cookies.Set(new HttpCookie("Tipo", tip));
 

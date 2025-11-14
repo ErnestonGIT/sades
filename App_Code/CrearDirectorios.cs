@@ -84,4 +84,34 @@ public class CrearDirectorios
         }
     }
 
+    // crea directorio para pliegos con sus subcarpetas
+    public static string Crear_carpeta(string claveZP, params string[] carpetas)
+    {
+        // Directorio principal de documentos
+        string directorio = System.AppDomain.CurrentDomain.BaseDirectory.ToString() + "Archivos/UnidadAcademica/" + claveZP + "/";
+
+        // Ruta base
+        string pathString = System.IO.Path.Combine(directorio);
+
+        // Crear el directorio base si no existe
+        if (!Directory.Exists(pathString))
+        {
+            System.IO.Directory.CreateDirectory(pathString);
+        }
+
+        // Recorrer la lista de carpetas para crearlas
+        foreach (string carpeta in carpetas)
+        {
+            pathString = System.IO.Path.Combine(pathString, carpeta);
+
+            // Crear la carpeta si no existe
+            if (!Directory.Exists(pathString))
+            {
+                System.IO.Directory.CreateDirectory(pathString);
+            }
+        }
+
+        return pathString + "\\";
+    }
+
 }

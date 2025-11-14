@@ -57,7 +57,6 @@ public partial class Dashboard : System.Web.UI.Page
             else
             {
 
-
             }
         }
 
@@ -1603,8 +1602,10 @@ public partial class Dashboard : System.Web.UI.Page
             }
 
         }
-
-        fin = observacion.Substring(0, 3) == "pró" ? "prórroga" : fin;
+        if (!String.IsNullOrEmpty(observacion))
+        {
+            fin = observacion.Substring(0, 3) == "pró" ? "prórroga" : fin;
+        }
 
         string datos = "<div class='card-body profile-card pt-4 d-flex flex-column align-items-center'> " +
                         "<img src='public/img/Foto_perfil/autoridades/"+ foto +"' alt='Profile' class='rounded-circle'> " +
@@ -2259,7 +2260,7 @@ public partial class Dashboard : System.Web.UI.Page
         string nombre = commandArgs[2];
         string pdf = commandArgs[3];
 
-        DataBingGridViewResumenNombramientos();
+        //DataBingGridViewResumenNombramientos();
         pdf = verificarNombramiento(pdf) == true ? pdf : "sin_documento.pdf";
 
         LabelModalVisualizarNombramiento_titulo.Text = ua + " | " + dp;
@@ -2297,7 +2298,7 @@ public partial class Dashboard : System.Web.UI.Page
         string zp = GridViewResumenNombramientos.Rows[e.RowIndex].Cells[1].Text;
         string idUser = GridViewResumenNombramientos.Rows[e.RowIndex].Cells[2].Text;
         string idPerfil = GridViewResumenNombramientos.Rows[e.RowIndex].Cells[3].Text;
-        
+
         TextBox apat = GridViewResumenNombramientos.Rows[e.RowIndex].FindControl("TextBoxResumenNombramientos_apat") as TextBox;
         TextBox amat = GridViewResumenNombramientos.Rows[e.RowIndex].FindControl("TextBoxResumenNombramientos_amat") as TextBox;
         TextBox nombre = GridViewResumenNombramientos.Rows[e.RowIndex].FindControl("TextBoxResumenNombramientos_nombre") as TextBox;
@@ -2441,4 +2442,14 @@ public partial class Dashboard : System.Web.UI.Page
 
     }
 
+
+    protected void LinkButtonRedireccionar_peticion_Click(object sender, EventArgs e)
+    {
+        Response.Redirect("PeticionPliego.aspx");
+    }
+
+    protected void LinkButtonRedireccionar_garantias_Click(object sender, EventArgs e)
+    {
+        Response.Redirect("Garantias.aspx");
+    }
 }

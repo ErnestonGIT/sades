@@ -182,6 +182,19 @@ public static class Consultas
         }
     }
 
+    public static int ConsultaIntDes(string consulta)
+    {
+        using (SqlConnection conn = ConnectionManager.GetConnection())
+        {
+            using (SqlCommand cmd = new SqlCommand(consulta, conn))
+            {
+
+                return Convert.ToInt32(cmd.ExecuteScalar());
+
+            }
+        }
+    }
+
     public static void miInsert(string sql)
     {
         using (SqlConnection connection = ConnectionManager.GetConnection())
@@ -216,6 +229,22 @@ public static class Consultas
         }
     }
 
+     // con parametros
+    public static void miInsertPDes(string sql, params SqlParameter[] parametros)
+    {
+        using (SqlConnection conn = ConnectionManager.GetConnection())
+        {
+            using (SqlCommand cmd = new SqlCommand(sql, conn))
+            {
+                foreach (SqlParameter parametro in parametros)
+                {
+                    cmd.Parameters.Add(parametro);
+                }
+                cmd.ExecuteNonQuery();
+            }
+        }
+    }
+
     public static void miUpdate(string sql)
     {
         using (SqlConnection connection = ConnectionManager.GetConnection())
@@ -231,6 +260,22 @@ public static class Consultas
         {
             SqlCommand comando = new SqlCommand(sql, connection);
             comando.ExecuteNonQuery();
+        }
+    }
+
+    // con parametros
+    public static void miUpdatePPDes(string sql, params SqlParameter[] parametros)
+    {
+        using (SqlConnection conn = ConnectionManager.GetConnection())
+        {
+            using (SqlCommand cmd = new SqlCommand(sql, conn))
+            {
+                foreach (SqlParameter parametro in parametros)
+                {
+                    cmd.Parameters.Add(parametro);
+                }
+                cmd.ExecuteNonQuery();
+            }
         }
     }
 
