@@ -361,8 +361,9 @@
                         <ol class="breadcrumb">
                             <!-- <li class="breadcrumb-item"><a href="index">Inicio</a></li> -->
                             <li class="breadcrumb-item"><a href="Dashboard.aspx">Inicio</a></li>
-                            <li class="breadcrumb-item active">Garantias</li>
-                            <li class="breadcrumb-item active"><asp:Label ID="LabelBreadCrumbZP_name" runat="server" CssClass="breadcrumb"></asp:Label></li>
+                            <li class="breadcrumb-item">Garantias</li>
+                            <li class="breadcrumb-item active">Registrar</li>
+                            <li class="breadcrumb-item"><asp:Label ID="LabelBreadCrumbZP_name" runat="server" CssClass="breadcrumb"></asp:Label></li>
                         </ol>
                     </nav>
                 </div><!-- End Page Title -->
@@ -713,7 +714,7 @@
 
                                             <asp:TemplateField HeaderText="EVIDENCIA" ItemStyle-HorizontalAlign="Center">
                                                 <ItemTemplate>
-                                                    <asp:LinkButton runat="server" ID="LinkButtonResumenGarantias_pdf" CommandArgument = '<%# Eval("RUTA_DOCUMENTO") %>' CssClass="btn btn-sm btn-outline-secondary LoadingOverlay" OnClick="LinkButtonResumenGarantias_pdf_Click"><i class="bi bi-eye icon-green"> </i>Ver</asp:LinkButton>
+                                                    <asp:LinkButton runat="server" ID="LinkButtonResumenGarantias_pdf" CommandArgument = '<%# Eval("CLAVE_ZP") +","+ Eval("FOLIO_PLIEGO") +","+ Eval("DESCRIPCION_CAT_PETICION") +","+ Eval("DESC_PETICION") +","+ Eval("DESC_GARANTIA") +","+ Eval("RUTA_DOCUMENTO") %>' CssClass="btn btn-sm btn-outline-secondary LoadingOverlay" OnClick="LinkButtonResumenGarantias_pdf_Click"><i class="bi bi-eye icon-green"> </i>Ver</asp:LinkButton>
                                                 </ItemTemplate>
                                             </asp:TemplateField>                                          
                                               
@@ -721,7 +722,7 @@
 
                                         <EmptyDataTemplate>
                                             <div class="text-center">
-                                                <asp:Label runat="server" ID="Label4" Text="<br><br><br> No se han asignado unidades académicas de nivel superior a su perfil de analista <br><br><br>" CssClass="alert alert-light" Width="90%"></asp:Label>
+                                                <asp:Label runat="server" ID="Label4" Text="<br><br><br> No se encontraron registros. <br><br><br>" CssClass="alert alert-light" Width="90%"></asp:Label>
                                             </div>
                                         </EmptyDataTemplate>
 
@@ -774,6 +775,22 @@
                                 <br />
                                 <h5><asp:Label runat="server" ID="LabelModalVisualizarEvidenciaGarantia_titulo" Text="" CssClass="card-title"></asp:Label><span class="card-title"> | <asp:Label ID="LabelModalVisualizarEvidenciaGarantia_subtitulo" runat="server" Text=""></asp:Label></span></h5>
                                 <br />
+
+                                <div class="d-flex align-items-center">
+                                    <div class="ps-3">
+                                        <span class="text-success small pt-1 fw-bold">Pliego: </span>
+                                            <asp:Label runat="server" ID="LabelModalVisualizarEvidenciaGarantia_text0" CssClass="text-muted small pt-2 ps-1"></asp:Label><br />
+                                        <span class="text-success small pt-1 fw-bold">Categoria: </span>
+                                            <asp:Label runat="server" ID="LabelModalVisualizarEvidenciaGarantia_text1" CssClass="text-muted small pt-2 ps-1"></asp:Label><br />
+                                        <span class="text-success small pt-1 fw-bold">Petición: </span>
+                                            <asp:Label runat="server" ID="LabelModalVisualizarEvidenciaGarantia_text2" CssClass="text-muted small pt-2 ps-1"></asp:Label><br />
+                                        <span class="text-success small pt-1 fw-bold">Garantía: </span>
+                                            <asp:Label runat="server" ID="LabelModalVisualizarEvidenciaGarantia_text3" CssClass="text-muted small pt-2 ps-1"></asp:Label>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    &nbsp;
+                                </div>
 
                                 <div class="card">
 

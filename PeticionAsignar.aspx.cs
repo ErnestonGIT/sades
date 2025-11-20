@@ -95,7 +95,6 @@ public partial class PeticionAsignar : System.Web.UI.Page
         divPanelAsignarPeticion.Visible = data;
         ActualizarEstadisticas();
     }
-
     public void ActualizarEstadisticas()
     {
         string zp = LabelZP.Text;
@@ -120,6 +119,7 @@ public partial class PeticionAsignar : System.Web.UI.Page
         LabelPeticionesPorAsignar_total.Text = totalPorAsignar == "0" ? "0" : totalPorAsignar;
         LabelPeticionesAsignadas_total.Text = totalAsignadas == "0" ? "0" : totalAsignadas;
     }
+
 
     private void RestaurarDropDownListAsignar(int nivel)
     {
@@ -165,6 +165,7 @@ public partial class PeticionAsignar : System.Web.UI.Page
             dropDownList.Items.Insert(0, new ListItem("Seleccionar", ""));
         }
     }
+
 
     protected void DropDownListAsignarPeticion_ua_DataBound(object sender, EventArgs e)
     {
@@ -467,10 +468,58 @@ public partial class PeticionAsignar : System.Web.UI.Page
         ActualizarEstadisticas();
         HiddenFieldMensajeRegistroExitoso_estatus.Value = "1";
     }
-    /*
-        CLAVE_ZP int NULL,
-        ID_PETICION int NULL,
-        ID_PERFIL int NULL,
-        DESC_UNIDAD nvarchar(500), 
-     */
+
+
+
+    protected void LinkButtonResumenAsignaciones_Click(object sender, EventArgs e)
+    {
+        string IdModal = "ModalResumenAsignaciones";
+        string zp = LabelZP.Text;
+
+        LabelModalResumenAsignaciones_titulo.Text = "Resúmen de asignaciónes";
+        LabelModalResumenAsignaciones_subtitulo.Text = String.IsNullOrEmpty(zp) == true ? emptyZP_name : GetUaDesciption(zp); ;
+
+        ShowModal(IdModal);
+        DataBingGridViewResumenAsignaciones();
+    }
+    private void DataBingGridViewResumenAsignaciones()
+    {
+        string zp = LabelZP.Text;
+
+        string qryNS = "select pli.FOLIO_PLIEGO, dep.DESCRIPCION_DP, asig.DESC_UNIDAD, pet.DESC_PETICION " +
+                        "from ASIGNACION_PETICION asig " +
+                        "inner join CAT_DEPENDENCIAS_POLITECNICAS dep on dep.CLAVE_ZP = asig.CLAVE_ZP " +
+                        "inner join PETICIONES pet on pet.ID_PETICION = asig.ID_PETICION " +
+                        "inner join PLIEGO pli on pli.ID_PLIEGO = pet.ID_PLIEGO " +
+                        "where asig.CLAVE_ZP like '"+ zp +"%'";
+
+        using (SqlConnection con = new SqlConnection(constr))
+        {
+
+            using (SqlDataAdapter da = new SqlDataAdapter(qryNS, con))
+            {
+                try
+                {
+                    DataTable dt = new DataTable();
+                    da.Fill(dt);
+
+                    this.GridViewResumenAsignaciones.DataSource = dt;
+                    GridViewResumenAsignaciones.DataBind();
+                    GridViewResumenAsignaciones.PageIndex = 0;
+
+                }
+                catch (Exception ex)
+                {
+
+                    throw ex;
+                }
+            }
+            con.Close();
+        }
+    }
+    protected void LinkButtonModalResumenAsignaciones_Excel_Click(object sender, EventArgs e)
+    {
+
+    }
+
 }

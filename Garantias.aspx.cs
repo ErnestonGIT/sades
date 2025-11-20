@@ -496,6 +496,10 @@ public partial class Garantias : System.Web.UI.Page
     protected void LinkButtonResumenGarantias_Click(object sender, EventArgs e)
     {
         string IdModal = "ModalResumenGarantias";
+        string zp = LabelZP.Text;
+        
+        LabelModalResumenGarantias_titulo.Text = "Resúmen de las garantias registradas";
+        LabelModalResumenGarantias_subtitulo.Text = String.IsNullOrEmpty(zp) == true ? emptyZP_name : GetUaDesciption(zp);
 
         ShowModal(IdModal);
         DataBingGridViewResumenGarantias();
@@ -504,7 +508,7 @@ public partial class Garantias : System.Web.UI.Page
     {
         string zp = LabelZP.Text;
 
-        string qryNS = "select IIF(pli.FOLIO_PLIEGO is null, CONCAT('PLG-',pli.CLAVE_ZP,'-',pli.ID_PLIEGO), pli.FOLIO_PLIEGO) FOLIO_PLIEGO, " +
+        string qryNS = "select pli.CLAVE_ZP, IIF(pli.FOLIO_PLIEGO is null, CONCAT('PLG-',pli.CLAVE_ZP,'-',pli.ID_PLIEGO), pli.FOLIO_PLIEGO) FOLIO_PLIEGO, " +
 		                        "cat_pet.DESCRIPCION_CAT_PETICION, pet.DESC_PETICION, " +
                                 "gar.DESC_GARANTIA, " +
 		                        "doc.RUTA_DOCUMENTO " +
@@ -565,10 +569,21 @@ public partial class Garantias : System.Web.UI.Page
     {
         LinkButton btn = (LinkButton)sender;
         string[] commandArgs = btn.CommandArgument.ToString().Split(new char[] { ',' });
-        string pdf = commandArgs[0];
 
-        LabelModalVisualizarEvidenciaGarantia_titulo.Text = "";
-        LabelModalVisualizarEvidenciaGarantia_subtitulo.Text = "";
+        string zp = commandArgs[0];
+        string pliego = commandArgs[1];
+        string categoria = commandArgs[2];
+        string peticion = commandArgs[3];
+        string garantia = commandArgs[4];
+        string pdf = commandArgs[5];
+        
+        LabelModalVisualizarEvidenciaGarantia_titulo.Text = "Evidencia de garantía";
+        LabelModalVisualizarEvidenciaGarantia_subtitulo.Text = GetUaDesciption(zp);
+
+        LabelModalVisualizarEvidenciaGarantia_text0.Text = pliego;
+        LabelModalVisualizarEvidenciaGarantia_text1.Text = categoria;
+        LabelModalVisualizarEvidenciaGarantia_text2.Text = peticion;
+        LabelModalVisualizarEvidenciaGarantia_text3.Text = garantia;
 
         string IdModal = "ModalVisualizarEvidenciaGarantia";
 

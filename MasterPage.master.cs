@@ -154,17 +154,21 @@ public partial class MasterPage : System.Web.UI.MasterPage
         {
             case "administrador":
                 menuPeticiones.Visible = true;
-                menuCaptPeticion.Visible = true;
-                menuAsigPeticion.Visible = true;
-                menuCaptGarantia.Visible = true;
+                    menuEstaPeticion.Visible = true;
+                    menuCaptPeticion.Visible = true;
+                    menuAsigPeticion.Visible = true;
+                menuGarantias.Visible = true;
+                    menuCaptGarantia.Visible = true;
                 menuBitacora.Visible = true;
                 menuPassword.Visible = true;
                 break;
             case "enlace":
                 menuPeticiones.Visible = true;
-                menuAsigPeticion.Visible = true;
-                menuCaptPeticion.Visible = true;
-                menuCaptGarantia.Visible = true;
+                    menuEstaPeticion.Visible = true;
+                    menuCaptPeticion.Visible = true;
+                    menuAsigPeticion.Visible = true;
+                menuGarantias.Visible = true;
+                    menuCaptGarantia.Visible = true;
                 menuPassword.Visible = true;
                 break;
             case "cambioP":;

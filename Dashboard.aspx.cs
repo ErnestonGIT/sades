@@ -1174,7 +1174,9 @@ public partial class Dashboard : System.Web.UI.Page
 
         string totalRows;
 
-        string qry = "select pli.CLAVE_ZP, pet.ID_PETICION, pet_e.DESCRIPCION_PETICION, pet_d.DESCRIPCION_CAT_PETICION, pet.DESC_PETICION, pet.DESC_RESP_PETICION, pet.FECHA_PETICION FECHA_INICIO, pet.FECHA_RESP_PETICION FECHA_FIN " +
+        string qry = "select pli.CLAVE_ZP, pet.ID_PETICION, pet_e.DESCRIPCION_PETICION, pet_d.DESCRIPCION_CAT_PETICION, pet.DESC_PETICION, pet.DESC_RESP_PETICION, " +
+                    "FORMAT(pet.FECHA_PETICION,'d-MM-yyyy') FECHA_INICIO, " +
+                    "FORMAT(pet.FECHA_RESP_PETICION,'d-MM-yyyy') FECHA_FIN " +
                     "from PETICIONES pet " +
                     "inner join PLIEGO pli on pli.ID_PLIEGO = pet.ID_PLIEGO " +
                     "inner join CAT_CATEGORIA_PETICION pet_d on pet_d.ID_CAT_PETICION = pet.ID_CAT_PETICION " +

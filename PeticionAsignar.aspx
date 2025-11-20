@@ -361,8 +361,9 @@
                         <ol class="breadcrumb">
                             <!-- <li class="breadcrumb-item"><a href="index">Inicio</a></li> -->
                             <li class="breadcrumb-item"><a href="Dashboard.aspx">Inicio</a></li>
-                            <li class="breadcrumb-item active">Asignar petición</li>
-                            <li class="breadcrumb-item active"><asp:Label ID="LabelBreadCrumbZP_name" runat="server" CssClass="breadcrumb"></asp:Label></li>
+                            <li class="breadcrumb-item">Peticiones</li>
+                            <li class="breadcrumb-item active">Asignar</li>
+                            <li class="breadcrumb-item"><asp:Label ID="LabelBreadCrumbZP_name" runat="server" CssClass="breadcrumb"></asp:Label></li>
                         </ol>
                     </nav>
                 </div><!-- End Page Title -->
@@ -491,7 +492,7 @@
                                                          </li>
 
                                                          <li>
-                                                             <asp:LinkButton runat="server" ID="LinkButtonResumenPeticiones" CssClass="dropdown-item LoadingOverlay">Garantías registradas</asp:LinkButton>
+                                                             <asp:LinkButton runat="server" ID="LinkButtonResumenAsignaciones" OnClick="LinkButtonResumenAsignaciones_Click" CssClass="dropdown-item LoadingOverlay">Asignaciones registradas</asp:LinkButton>
                                                          </li>
                                                        </ul>
                                                      </div>
@@ -621,7 +622,7 @@
 
                                                                                         <EmptyDataTemplate>
                                                                                             <div class="text-center">
-                                                                                                <asp:Label runat="server" ID="Label4" Text="<br><br><br> No se han asignado unidades académicas de nivel superior a su perfil de analista <br><br><br>" CssClass="alert alert-light" Width="90%"></asp:Label>
+                                                                                                <asp:Label runat="server" ID="Label4" Text="<br><br><br> No se enconraron registros <br><br><br>" CssClass="alert alert-light" Width="90%"></asp:Label>
                                                                                             </div>
                                                                                         </EmptyDataTemplate>
 
@@ -695,6 +696,84 @@
             </main>
         </ContentTemplate>
     </asp:UpdatePanel>
+
+    <!-- Modal  ResumenAsignaciones-->
+    <div class="modal fade" id="ModalResumenAsignaciones" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title titleModal" id="tittleModalResumenAsignaciones">Motor de búsqueda</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Modal -->
+                <div id="DivModalResumenAsignaciones_body" runat="server" class="col-md-12 dashboard">
+                    
+                    <div class="card info-card customers-card">
+                        <div class="filter" style="display:block">
+
+                            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                <li class="dropdown-header text-start">
+                                    <h6>Exportar</h6>
+                                </li>
+                                <li class="dropdown-item" runat="server" id="ModalResumenAsignaciones_dropdownItem">
+                                    <i class="bi bi-filetype-xlsx iconExcel"></i><asp:Button ID="LinkButtonModalResumenAsignaciones_Excel" runat="server" Text="Excel" CssClass="btn btn-outline-default" Visible="true" OnClick="LinkButtonModalResumenAsignaciones_Excel_Click" />
+                                </li>
+                            </ul>
+
+                        </div>
+                        <div class="card-body">
+
+                            <asp:UpdatePanel runat="server"><ContentTemplate>
+                                <br />
+                                <h5><asp:Label runat="server" ID="LabelModalResumenAsignaciones_titulo" Text="" CssClass="card-title"></asp:Label><span class="card-title"> | <asp:Label ID="LabelModalResumenAsignaciones_subtitulo" runat="server" Text=""></asp:Label></span></h5>
+                                <br />
+
+                                <div class="card" style="overflow-y: scroll; max-height: 360px; width: 100%;">
+
+                                    <asp:GridView ID="GridViewResumenAsignaciones" runat="server"
+                                        AutoGenerateColumns="False" ShowHeader="true"
+                                            CssClass="table table-sm table-bordered table-striped table-responsive" HeaderStyle-CssClass=" bg-gradient bg-primary-light text-gray-100 text-center"
+                                                PagerStyle-CssClass="pagination-ys"
+                                                    PageSize="1000" AllowPaging="false">
+                                            
+                                        <Columns>
+                                            <asp:TemplateField HeaderText="NÚM." ItemStyle-Font-Bold="true" ItemStyle-HorizontalAlign="Center">
+                                                <ItemTemplate>
+                                                    <%# Container.DataItemIndex + 1 %>
+                                                </ItemTemplate>
+                                            </asp:TemplateField>
+
+                                            <asp:BoundField DataField="FOLIO_PLIEGO" HeaderText="PLIEGO" ReadOnly="true"/>
+                                            <asp:BoundField DataField="DESCRIPCION_DP" HeaderText="UNIDAD ACADÉMICA" ReadOnly="true"/>
+                                            <asp:BoundField DataField="DESC_UNIDAD" HeaderText="UNIDAD ASIGNADA" ReadOnly="true"/>
+                                            <asp:BoundField DataField="DESC_PETICION" HeaderText="PETICION" ReadOnly="true"/>
+                                              
+                                        </Columns>
+
+                                        <EmptyDataTemplate>
+                                            <div class="text-center">
+                                                <asp:Label runat="server" ID="Label4" Text="<br><br><br> No se encontraron registros. <br><br><br>" CssClass="alert alert-light" Width="90%"></asp:Label>
+                                            </div>
+                                        </EmptyDataTemplate>
+
+                                    </asp:GridView>
+                                </div>
+
+                            </ContentTemplate></asp:UpdatePanel>
+                        </div>
+                    </div>
+                    
+                </div><!-- End Modal ResumenAsignaciones Card -->
+      
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+        </div>
+    </div>
     
     <script src="public/js/jquery/jquery-3.2.1.js"></script>
     <script src="public/js/jquery/select2.min.js"></script>

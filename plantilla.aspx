@@ -373,8 +373,10 @@
                 <asp:Label ID="LabelZPDesc" runat="server" Text="" style="display:none;"></asp:Label>
 
                 <asp:HiddenField runat="server" ID="HiddenFieldPerfil_nivel"/>
-
                 <asp:HiddenField runat="server" ID="HiddenFieldCollapsePlan_selected" Value="0"/>
+
+                <asp:HiddenField runat="server" ID="HiddenFieldMousePosition_x" Value=""/>
+                <asp:HiddenField runat="server" ID="HiddenFieldMousePosition_y" Value=""/>  
 
 
                 <section class="section dashboard">
@@ -462,6 +464,12 @@
                 prm.add_endRequest(function (sender, e) {
                     $(function () {
                         LoadInitialFunctions();
+
+                        var x = $("[id*=HiddenFieldMousePosition_x]").val();
+                        var y = $("[id*=HiddenFieldMousePosition_y]").val();
+
+                        $(window).scrollTop(y);
+
                     });
                 });
             }
@@ -481,6 +489,21 @@
             enableLoadingOverlay();
             hideLoadingOverlay();
             habilitarSelect2();
+
+            validarPosicion();
+
+        }
+
+        function validarPosicion() {
+
+            var y = 0;
+
+            $('[class*=select-posicion]').change(function () {
+
+                let id = $(this).attr('id');
+                y = parseInt($('#' + id).offset().top);
+                $("[id*=HiddenFieldMousePosition_y]").val(y - 150);
+            });
 
         }
 
@@ -520,16 +543,6 @@
                 theme: 'bootstrap-5'
             });
 
-            $("[id*=DropDownListUnidadAcademica_resumen]").select2({
-                theme: 'bootstrap-5',
-                dropdownParent: $('#ModalDetalleUnidadAdministrativa .modal-body')
-            });
-
-            $("[id*=DropDownListUnidadAdministrativa_resumen]").select2({
-                theme: 'bootstrap-5',
-                dropdownParent: $('#ModalDetalleUnidadAdministrativa .modal-body')
-            });
-
         }
 
         function ShowOffCanvas(idOffCanvas) {
@@ -555,11 +568,7 @@
             modal.show();
 
             switch (idModal) {
-                case "ModalMapaCalorDetalle":
-                    chartMapaCalor(LabelZP, LabelPE, 'container-mapa-calor');
-                    break;
-                case "ModalMapaCalorDetalleUA":
-                    chartMapaCalorUA(LabelZP, LabelPE, LabelUA, 'container-mapa-calor-ua');
+                default:
                     break;
             }
         }
@@ -686,12 +695,6 @@
                     case 'collapseContenido_filtroPlan':
                         $("[id*=HiddenFieldCollapsePlan_selected]").val("0");
                         break;
-                    case 'collapseContenido_filtroEventos':
-                        $("[id*=HiddenFieldCollapseEventos_selected]").val("0");
-                        break;
-                    case 'collapseContenido_filtroGarantias':
-                        $("[id*=HiddenFieldCollapseGarantias_selected]").val("0");
-                        break;
                 }
 
             });
@@ -704,22 +707,12 @@
                     case 'collapseContenido_filtroPlan':
                         $("[id*=HiddenFieldCollapsePlan_selected]").val("1");
                         break;
-                    case 'collapseContenido_filtroEventos':
-                        $("[id*=HiddenFieldCollapseEventos_selected]").val("1");
-                        break;
-                    case 'collapseContenido_filtroGarantias':
-                        $("[id*=HiddenFieldCollapseGarantias_selected]").val("1");
-                        break;
                 }
             });
 
             let collPlaSt = $("[id*=HiddenFieldCollapsePlan_selected]").val();
-            let collEveSt = $("[id*=HiddenFieldCollapseEventos_selected]").val();
-            let collDepSt = $("[id*=HiddenFieldCollapseGarantias_selected]").val();
 
             if (collPlaSt == "1") { ActivarCollapse("collapseContenido_filtroPlan"); }
-            if (collEveSt == "1") { ActivarCollapse("collapseContenido_filtroEventos"); }
-            if (collDepSt == "1") { ActivarCollapse("collapseContenido_filtroGarantias"); }
 
         }
 
