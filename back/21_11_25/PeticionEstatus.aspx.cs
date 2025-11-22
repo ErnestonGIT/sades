@@ -4,9 +4,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Security.Policy;
 using System.Web;
-using System.Web.Services;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -81,18 +79,10 @@ public partial class PeticionEstatus : System.Web.UI.Page
     }
     public void mostrarPanelEnlace(bool data)
     {
-        
+        string nivel = HiddenFieldPerfil_nivel.Value;
+
         HiddenFieldCollapseEstatusPeticion_selected.Value  = "1";
         divPanelEstatusPeticion.Visible = data;
-
-        if (!String.IsNullOrEmpty(zp))
-        {
-            DropDownListEstatusPeticion_ua_SelectCommand();
-
-            DropDownListEstatusPeticion_ua.SelectedValue = zp;
-            LabelBreadCrumbZP_name.Text = LabelZPDesc.Text;
-            DropDownListEstatusPeticion_ua.Enabled = false;
-        }
 
         ActualizarEstadisticas();
     }
@@ -113,17 +103,9 @@ public partial class PeticionEstatus : System.Web.UI.Page
         LabelTotalPeticiones_pendientes.Text = Consultas.ConsultaS("select COUNT(ID_PETICION) from PETICIONES inner join PLIEGO pli on pli.ID_PLIEGO = PETICIONES.ID_PLIEGO where ID_EST_PETICION = 1 and pli.CLAVE_ZP like '"+ zp +"%' and ID_CAT_PETICION like '"+ cate +"%'");
         LabelTotalPeticiones_proceso.Text = Consultas.ConsultaS("select COUNT(ID_PETICION) from PETICIONES inner join PLIEGO pli on pli.ID_PLIEGO = PETICIONES.ID_PLIEGO where ID_EST_PETICION = 2 and pli.CLAVE_ZP like '"+ zp +"%' and ID_CAT_PETICION like '"+ cate +"%'");
         LabelTotalPeticiones_atendidas.Text = Consultas.ConsultaS("select COUNT(ID_PETICION) from PETICIONES inner join PLIEGO pli on pli.ID_PLIEGO = PETICIONES.ID_PLIEGO where ID_EST_PETICION = 3 and pli.CLAVE_ZP like '"+ zp +"%' and ID_CAT_PETICION like '"+ cate +"%'");
-        HiddenFieldGraficoGanttPeticiones_datos.Value = Consultas.ConsultaS("select FORMAT(FECHA_PETICION,'yyyy-MM-dd') 'start', FORMAT(FECHA_RESP_PETICION,'yyyy-MM-dd') 'end', completed.amount 'completed.amount', " +
-                                                                                    "SUBSTRING(PETICIONES.DESC_PETICION, 0, 15) 'name' " +
-                                                                            "from PETICIONES  " +
-                                                                            "inner join (select SUBSTRING(CAST(RAND() as nvarchar), 0, 5) amount) completed on completed.amount is not null  " +
-                                                                            "inner join PLIEGO pli on pli.ID_PLIEGO = PETICIONES.ID_PLIEGO  " +
-                                                                            "where FECHA_PETICION is not null and FECHA_RESP_PETICION is not null and pli.CLAVE_ZP like '"+ zp +"%' " +
-                                                                            "for json path");
 
         DataBindGridViewDetallePeticiones();
     }
-
 
     public void DataBindGridViewDetallePeticiones()
     {
@@ -174,10 +156,12 @@ public partial class PeticionEstatus : System.Web.UI.Page
         }
 
     }
+
     protected void DropDownListEstatusPeticion_ua_DataBound(object sender, EventArgs e)
     {
         DropDownListEstatusPeticion_ua.Items.Insert(0, new System.Web.UI.WebControls.ListItem("Unidad académica", ""));
     }
+
     protected void DropDownListEstatusPeticion_ua_SelectedIndexChanged(object sender, EventArgs e)
     {
         LabelZP.Text = DropDownListEstatusPeticion_ua.SelectedValue.ToString();
@@ -185,24 +169,16 @@ public partial class PeticionEstatus : System.Web.UI.Page
         DropDownListEstatusPeticion_categoria.DataBind();
         ActualizarEstadisticas();
     }
-    protected void DropDownListEstatusPeticion_ua_SelectCommand()
-    {
-        SqlDataSourceDropDownEstatusPeticion_ua.SelectCommand = "SELECT CLAVE_ZP, DESCRIPCION_DP FROM  CAT_DEPENDENCIAS_POLITECNICAS WHERE ID_NIVEL_EST = 2 ORDER BY DESCRIPCION_DP ASC";
-        DropDownListEstatusPeticion_ua.DataBind();
-    }
-
-
 
     protected void DropDownListEstatusPeticion_categoria_DataBound(object sender, EventArgs e)
     {
         DropDownListEstatusPeticion_categoria.Items.Insert(0, new System.Web.UI.WebControls.ListItem("Categoría", ""));
     }
+
     protected void DropDownListEstatusPeticion_categoria_SelectedIndexChanged(object sender, EventArgs e)
     {
         ActualizarEstadisticas();
     }
-
-
     private void RestaurarDropDownListEstatus(int nivel)
     {
         switch (nivel)
@@ -227,82 +203,10 @@ public partial class PeticionEstatus : System.Web.UI.Page
             dropDownList.Items.Insert(0, new ListItem("Seleccionar", ""));
         }
     }
+
     protected void LinkButtonFiltroEstatusPeticion_limpiar_Click(object sender, EventArgs e)
     {
-        if (!String.IsNullOrEmpty(zp))
-        {
-            RestaurarDropDownListEstatus(1);
-            DropDownListEstatusPeticion_categoria.DataBind();
-            ActualizarEstadisticas();
-        }
-        else
-        {
-            RestaurarDropDownListEstatus(0);
-        }
-
-            ActualizarEstadisticas();
-    }
-
-
-
-    [WebMethod]
-    public static List<object> chartGanttPeticiones_datos(string zp)
-    {
-        List<object> chartData = new List<object>();
-
-        chartData.Add(new object[]
-            {
-                "VIGENTES", "VENCIDOS", "VACANTES"
-            });
-
-        string constr = ConfigurationManager.ConnectionStrings["ConnectionDES"].ConnectionString;
-
-        bool exist = Consultas.ConsultaInt("select COUNT(ID_USER) total from AUTORIDADES_ZP where CLAVE_ZP like '"+ zp +"%'") == 0 ? false : true;
-
-        string query = "select SUM(VIGENTES) VIGENTES, SUM(VENCIDOS) VENCIDOS, SUM(VACANTES) VACANTES " +
-                        "FROM( " +
-                            "select 0 VIGENTES, 0 VENCIDOS, 0 VACANTES " +
-                            "from AUTORIDADES_ZP " +
-                        ")DATOS";
-        if (exist == true)
-        {
-            query = "select SUM(VIGENTES) VIGENTES, SUM(VENCIDOS) VENCIDOS, SUM(VACANTES) VACANTES " +
-                    "from( " +
-                        "select dp.CLAVE_ZP, " +
-                            "(select COUNT(CLAVE_ZP) total from AUTORIDADES_ZP where CLAVE_ZP = dp.CLAVE_ZP and FECHA_FIN > (select FORMAT(GETDATE(), 'yyyy-M-dd')) and ESTATUS = 1) VIGENTES ,  " +
-                            "(select COUNT(CLAVE_ZP) total from AUTORIDADES_ZP where CLAVE_ZP = dp.CLAVE_ZP and FECHA_FIN< (select FORMAT(GETDATE(),'yyyy-M-dd')) and ESTATUS = 1) VENCIDOS ,  " +
-                            "(select((select COUNT(distinct ID_PERFIL) total from AUTORIDADES_ZP) - COUNT(ID_PERFIL)) TOTAL from AUTORIDADES_ZP where CLAVE_ZP = dp.CLAVE_ZP and ESTATUS = 1) VACANTES " +
-                        "from CAT_DEPENDENCIAS_POLITECNICAS dp " +
-                        "where dp.ID_NIVEL_EST = 2 " +
-                    ")datos " +
-                    "where CLAVE_ZP like '"+ zp +"%'";
-        }
-
-        using (SqlConnection con = new SqlConnection(constr))
-        {
-            using (SqlCommand cmd = new SqlCommand(query))
-            {
-                cmd.CommandType = CommandType.Text;
-                cmd.Connection = con;
-                con.Open();
-                using (SqlDataReader sdr = cmd.ExecuteReader())
-                {
-
-                    while (sdr.Read())
-                    {
-
-                        chartData.Add(new object[]
-                        {
-                            sdr["VIGENTES"],sdr["VENCIDOS"],sdr["VACANTES"]
-                        });
-
-                    }
-
-                }
-                con.Close();
-                return chartData;
-            }
-        }
-
+        RestaurarDropDownListEstatus(0);
+        ActualizarEstadisticas();
     }
 }

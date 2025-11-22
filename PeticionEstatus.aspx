@@ -970,150 +970,121 @@
 
             var zp = document.getElementById('<%= LabelZP.ClientID %>').innerHTML;
             var datos = $("[id*=HiddenFieldGraficoGanttPeticiones_datos]").val();
+            var datos = $("[id*=HiddenFieldGraficoGanttPeticiones_datos]").val();
 
             if (datos.length == 0) {
-                datos = '[{"start":"2025-11-11","end":"2025-11-12","completed":{"amount":0.23},"name":"Prueba de peti"}]';//'[{"start": "2017-12-01","end": "2018-02-02","completed": {"amount": 0.95}, "name": "Prototyping"}]';
+                datos = '[{"start":"2025-11-11","end":"2025-11-12","completed":{"amount":"0.23"},"name":"Prueba de peti"}]';
             }
 
-            $.ajax({
-                cache: false,
-                type: "POST",
-                url: "PeticionEstatus.aspx/chartGanttPeticiones_datos",
-                data: JSON.stringify({ zp: zp }),
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: function (chartData) {
+            const data = JSON.parse(datos, intReviver);
 
-                    //destroyHighChart(container);
-                    highChartOptionsGantt();
+            destroyHighChart(container);
+            highChartOptionsGantt();
 
-                    var data = [];
+            // Substring template helper for the responsive labels
+            Highcharts.Templating.helpers.substr = (s, from, length) =>
+                s.substr(from, length);
 
-                    var rawData = chartData.d.slice(1);
+            // Create the chart
+            Highcharts.ganttChart(container, {
 
-                    $.each(rawData, function (index, value) {
-
-                        data.push(parseInt(value[0]));
-                        data.push(parseInt(value[1]));
-                        data.push(parseInt(value[2]));
-
-                    });
-
-                    // Substring template helper for the responsive labels
-                    Highcharts.Templating.helpers.substr = (s, from, length) =>
-                        s.substr(from, length);
-
-                    // Create the chart
-                    Highcharts.ganttChart(container, {
-
-                        title: {
-                            text: ''
-                        },
-
-                        yAxis: {
-                            uniqueNames: true
-                        },
-
-                        xAxis: [{
-                            dateTimeLabelFormats: {
-                                week: {
-                                    list: ['Semana %W', 'S%W'] // 'Semana %W' for long, 'S%W' for short
-                                }
-                            }
-                        }, {
-                            dateTimeLabelFormats: {
-                                week: {
-                                    list: ['Semana %W', 'S%W']
-                                },
-                            }
-                        }],
-
-                        tooltip: {
-                            shared: true,
-                            headerFormat: '<b>{yCategory}</b>' +
-                                '<br><br>Inicio: <b>{x:%d-%m-%Y}</b>' +
-                                '<br>Fin:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>{x2:%d-%m-%Y}</b>' +
-                                '{#if completed}' +
-                                '<br><br>Completado: <b>{(multiply completed.amount 100):.1f}%</b>' +
-                                '{/if}'
-                        },
-
-                        navigator: {
-                            enabled: true,
-                            liveRedraw: true,
-                            series: {
-                                type: 'gantt',
-                                pointPlacement: 0.5,
-                                pointPadding: 0.25,
-                                accessibility: {
-                                    enabled: false
-                                }
-                            },
-                            yAxis: {
-                                min: 0,
-                                max: 3,
-                                reversed: true,
-                                categories: []
-                            }
-                        },
-
-                        scrollbar: {
-                            enabled: true
-                        },
-
-                        rangeSelector: {
-                            enabled: true,
-                            selected: 0
-                        },
-
-                        accessibility: {
-                            point: {
-                                descriptionFormat: '{yCategory}. ' +
-                                    '{#if completed}Task {(multiply completed.amount 100):.1f}% ' +
-                                    'completed. {/if}' +
-                                    'Start {x:%Y-%m-%d}, end {x2:%Y-%m-%d}.'
-                            },
-                            series: {
-                                descriptionFormat: '{name}'
-                            }
-                        },
-
-                        lang: {
-                            accessibility: {
-                                axis: {
-                                    xAxisDescriptionPlural: 'The chart has a two-part X axis ' +
-                                        'showing time in both week numbers and days.',
-                                    yAxisDescriptionPlural: 'The chart has one Y axis showing ' +
-                                        'task categories.'
-                                }
-                            }
-                        },
-
-                        series: [{
-                            name: 'Project 1',
-                            //data: [{
-                            //    start: '2017-12-01',
-                            //    end: '2018-02-02',
-                            //    completed: {
-                            //        amount: 0.95
-                            //    },
-                            //    name: 'Prototyping'
-                            //}]
-                            data: JSON.parse(datos)
-
-                        }]
-                    });
-
-
-
-
-
+                title: {
+                    text: ''
                 },
-                error: function (chartData) {
-                    //console.log(chartData);
-                }
+
+                yAxis: {
+                    uniqueNames: true
+                },
+
+                xAxis: [{
+                    dateTimeLabelFormats: {
+                        week: {
+                            list: ['Semana %W', 'S%W'] // 'Semana %W' for long, 'S%W' for short
+                        }
+                    }
+                }, {
+                    dateTimeLabelFormats: {
+                        week: {
+                            list: ['Semana %W', 'S%W']
+                        },
+                    }
+                }],
+
+                tooltip: {
+                    shared: true,
+                    headerFormat: '<b>{yCategory}</b>' +
+                        '<br><br>Inicio: <b>{x:%d-%m-%Y}</b>' +
+                        '<br>Fin:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>{x2:%d-%m-%Y}</b>' +
+                        '{#if completed}' +
+                        '<br><br>Completado: <b>{(multiply completed.amount 100):.1f}%</b>' +
+                        '{/if}'
+                },
+
+                navigator: {
+                    enabled: true,
+                    liveRedraw: true,
+                    series: {
+                        type: 'gantt',
+                        pointPlacement: 0.5,
+                        pointPadding: 0.25,
+                        accessibility: {
+                            enabled: false
+                        }
+                    },
+                    yAxis: {
+                        min: 0,
+                        max: 3,
+                        reversed: true,
+                        categories: []
+                    }
+                },
+
+                scrollbar: {
+                    enabled: true
+                },
+
+                rangeSelector: {
+                    enabled: true,
+                    selected: 0
+                },
+
+                accessibility: {
+                    point: {
+                        descriptionFormat: '{yCategory}. ' +
+                            '{#if completed}Task {(multiply completed.amount 100):.1f}% ' +
+                            'completed. {/if}' +
+                            'Start {x:%Y-%m-%d}, end {x2:%Y-%m-%d}.'
+                    },
+                    series: {
+                        descriptionFormat: '{name}'
+                    }
+                },
+
+                lang: {
+                    accessibility: {
+                        axis: {
+                            xAxisDescriptionPlural: 'The chart has a two-part X axis ' +
+                                'showing time in both week numbers and days.',
+                            yAxisDescriptionPlural: 'The chart has one Y axis showing ' +
+                                'task categories.'
+                        }
+                    }
+                },
+
+                series: [{
+                    name: 'accion',
+                    data: data
+
+                }]
             });
 
+        }        
+
+        function intReviver(key, value) {
+            if (key === 'amount') {
+                return parseFloat(value);
+            }
+            return value;
         }
 
         function validarCollapse() {

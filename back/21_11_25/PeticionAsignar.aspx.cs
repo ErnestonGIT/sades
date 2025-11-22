@@ -81,18 +81,10 @@ public partial class PeticionAsignar : System.Web.UI.Page
     }
     public void mostrarPanelEnlace(bool data)
     {
+        string nivel = HiddenFieldPerfil_nivel.Value;
 
         HiddenFieldCollapseAsignarPeticion_selected.Value  = "1";
         divPanelAsignarPeticion.Visible = data;
-
-        if (!String.IsNullOrEmpty(zp))
-        {
-            DropDownListAsignarPeticion_ua_SelectCommand();
-
-            DropDownListAsignarPeticion_ua.SelectedValue = zp;
-            LabelBreadCrumbZP_name.Text = LabelZPDesc.Text;
-            DropDownListAsignarPeticion_ua.Enabled = false;
-        }
 
         ActualizarEstadisticas();
     }
@@ -185,13 +177,6 @@ public partial class PeticionAsignar : System.Web.UI.Page
         RestaurarDropDownListAsignar(1);
         ActualizarEstadisticas();
     }
-    protected void DropDownListAsignarPeticion_ua_SelectCommand()
-    {
-        SqlDataSourceDropDownAsignarPeticion_ua.SelectCommand = "SELECT CLAVE_ZP, DESCRIPCION_DP FROM  CAT_DEPENDENCIAS_POLITECNICAS WHERE ID_NIVEL_EST = 2 ORDER BY DESCRIPCION_DP ASC";
-        DropDownListAsignarPeticion_ua.DataBind();
-    }
-
-
     protected void DropDownListAsignarPeticion_pliego_DataBound(object sender, EventArgs e)
     {
         DropDownListAsignarPeticion_pliego.Items.Insert(0, new System.Web.UI.WebControls.ListItem("Seleccionar", ""));
