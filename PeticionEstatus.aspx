@@ -379,6 +379,8 @@
                 <asp:HiddenField runat="server" ID="HiddenFieldMousePosition_x" Value=""/>
                 <asp:HiddenField runat="server" ID="HiddenFieldMousePosition_y" Value=""/>
 
+                <asp:HiddenField runat="server" ID="HiddenFieldGraficoGanttPeticiones_datos" Value="" />
+
                 <section class="section dashboard">
 
                     <!-- PanelEstatusPeticion -->
@@ -566,7 +568,14 @@
                                                     </div>
                                                     </div>
                                                 </div>
-
+                                               
+                                               <!-- DetallePeticiones -->
+                                                 <div class="col-md-12">
+                                                    <div class="card">
+                                                        <div id="container-gantt-peticiones"></div>
+                                                    </div>
+                                                 </div>
+                                                 
                                                <!-- DetallePeticiones -->
                                                <div class="col-md-12">
                                                  <div class="card info-card sales-card">
@@ -651,15 +660,10 @@
     <script src="public/js/jquery/select2.min.js"></script>
     <script src="public/js/jquery/select2es.js"></script>
 
-    <script src="public/js/highcharts/highcharts.js"></script>
-    <script src="public/js/highcharts/heatmap.js"></script>
-    <script src="public/js/highcharts/drilldown.js"></script>
-    <script src="public/js/highcharts/highcharts-more.js"></script>
-    <script src="public/js/highcharts/solid-gauge.js"></script>
-    <script src="public/js/highcharts/data.js"></script>
-    <script src="public/js/highcharts/exporting.js"></script>
-    <script src="public/js/highcharts/export-data.js"></script>
-    <script src="public/js/highcharts/accessibility.js"></script>
+    <script src="https://code.highcharts.com/gantt/highcharts-gantt.js"></script>
+    <script src="https://code.highcharts.com/gantt/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/gantt/modules/accessibility.js"></script>
+
 
     <script src="public/js/loadingOverlay/loadingoverlay.min.js"></script>
     <script src="public/js/sweetalert/sweetalert2.11.js"></script>
@@ -720,6 +724,8 @@
             habilitarSelect2();
 
             validarPosicion();
+
+            chartGanttPeticiones("container-gantt-peticiones");
 
         }
 
@@ -787,17 +793,6 @@
                 default:
                 break;
             }
-        }
-
-        function onShowModal() {
-            $(myModal).on('shown.bs.modal', function () {
-            });
-        }
-
-        function onHideModal() {
-            $(myModal).on('hidden.bs.modal', function () {
-
-            });
         }
 
         function highChartOptions() {
@@ -895,9 +890,229 @@
 
         }
 
+        function highChartOptionsGantt() {
+            // 1. Set the language options globally before chart initialization
+            Highcharts.setOptions({
+                lang: {
+                    // Months (full and short names)
+                    months: [
+                        'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio',
+                        'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+                    ],
+                    shortMonths: [
+                        'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul',
+                        'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
+                    ],
+                    // Weekdays (full names)
+                    weekdays: [
+                        'Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes',
+                        'Sábado'
+                    ],
+                    // Other general UI strings
+                    loading: 'Cargando...',
+                    resetZoom: 'Restablecer zoom',
+                    resetZoomTitle: 'Restablecer nivel de zoom 1:1',
+                    downloadCSV: 'Descargar CSV',
+                    downloadJPEG: 'Descargar imagen JPEG',
+                    downloadPDF: 'Descargar documento PDF',
+                    downloadPNG: 'Descargar imagen PNG',
+                    downloadSVG: 'Descargar imagen SVG',
+                    downloadXLS: 'Descargar XLS',
+                    viewData: 'Ver tabla de datos',
+                    viewFullscreen: 'Ver en pantalla completa',
+                    exitFullscreen: 'Salir de pantalla completa',
+                    printChart: 'Imprimir gráfico',
+                    // Formatting options
+                    decimalPoint: ',',
+                    thousandsSep: '.',
+                    weekFrom: 'Semana ', // Specific to Gantt/Stock charts timeline
+                    locale: 'es'
+                },
+                rangeSelector: {
+                    enabled: true,
+                    buttons: [{
+                        type: 'month',
+                        count: 1,
+                        text: '1m',
+                        title: 'Ver 1 mes'
+                    }, {
+                        type: 'month',
+                        count: 3,
+                        text: '3m',
+                        title: 'Ver 3 meses'
+                    }, {
+                        type: 'month',
+                        count: 6,
+                        text: '6m',
+                        title: 'Ver 3 meses'
+                    }, {
+                        type: 'year',
+                        count: 1,
+                        text: '1a',
+                        title: 'Ver 1 año'
+                    }, {
+                        type: 'all',
+                        text: 'Todo',
+                        title: 'Ver todo el rango'
+                    }]
+                    // ... other range selector options
+                },
+            });
+        }
+
         function destroyHighChart(idContainer) {
 
             $("#" + idContainer).empty();
+
+        }
+
+        function chartGanttPeticiones(container) {
+
+            var zp = document.getElementById('<%= LabelZP.ClientID %>').innerHTML;
+            var datos = $("[id*=HiddenFieldGraficoGanttPeticiones_datos]").val();
+
+            if (datos.length == 0) {
+                datos = '[{"start":"2025-11-11","end":"2025-11-12","completed":{"amount":0.23},"name":"Prueba de peti"}]';//'[{"start": "2017-12-01","end": "2018-02-02","completed": {"amount": 0.95}, "name": "Prototyping"}]';
+            }
+
+            $.ajax({
+                cache: false,
+                type: "POST",
+                url: "PeticionEstatus.aspx/chartGanttPeticiones_datos",
+                data: JSON.stringify({ zp: zp }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (chartData) {
+
+                    //destroyHighChart(container);
+                    highChartOptionsGantt();
+
+                    var data = [];
+
+                    var rawData = chartData.d.slice(1);
+
+                    $.each(rawData, function (index, value) {
+
+                        data.push(parseInt(value[0]));
+                        data.push(parseInt(value[1]));
+                        data.push(parseInt(value[2]));
+
+                    });
+
+                    // Substring template helper for the responsive labels
+                    Highcharts.Templating.helpers.substr = (s, from, length) =>
+                        s.substr(from, length);
+
+                    // Create the chart
+                    Highcharts.ganttChart(container, {
+
+                        title: {
+                            text: ''
+                        },
+
+                        yAxis: {
+                            uniqueNames: true
+                        },
+
+                        xAxis: [{
+                            dateTimeLabelFormats: {
+                                week: {
+                                    list: ['Semana %W', 'S%W'] // 'Semana %W' for long, 'S%W' for short
+                                }
+                            }
+                        }, {
+                            dateTimeLabelFormats: {
+                                week: {
+                                    list: ['Semana %W', 'S%W']
+                                },
+                            }
+                        }],
+
+                        tooltip: {
+                            shared: true,
+                            headerFormat: '<b>{yCategory}</b>' +
+                                '<br><br>Inicio: <b>{x:%d-%m-%Y}</b>' +
+                                '<br>Fin:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>{x2:%d-%m-%Y}</b>' +
+                                '{#if completed}' +
+                                '<br><br>Completado: <b>{(multiply completed.amount 100):.1f}%</b>' +
+                                '{/if}'
+                        },
+
+                        navigator: {
+                            enabled: true,
+                            liveRedraw: true,
+                            series: {
+                                type: 'gantt',
+                                pointPlacement: 0.5,
+                                pointPadding: 0.25,
+                                accessibility: {
+                                    enabled: false
+                                }
+                            },
+                            yAxis: {
+                                min: 0,
+                                max: 3,
+                                reversed: true,
+                                categories: []
+                            }
+                        },
+
+                        scrollbar: {
+                            enabled: true
+                        },
+
+                        rangeSelector: {
+                            enabled: true,
+                            selected: 0
+                        },
+
+                        accessibility: {
+                            point: {
+                                descriptionFormat: '{yCategory}. ' +
+                                    '{#if completed}Task {(multiply completed.amount 100):.1f}% ' +
+                                    'completed. {/if}' +
+                                    'Start {x:%Y-%m-%d}, end {x2:%Y-%m-%d}.'
+                            },
+                            series: {
+                                descriptionFormat: '{name}'
+                            }
+                        },
+
+                        lang: {
+                            accessibility: {
+                                axis: {
+                                    xAxisDescriptionPlural: 'The chart has a two-part X axis ' +
+                                        'showing time in both week numbers and days.',
+                                    yAxisDescriptionPlural: 'The chart has one Y axis showing ' +
+                                        'task categories.'
+                                }
+                            }
+                        },
+
+                        series: [{
+                            name: 'Project 1',
+                            //data: [{
+                            //    start: '2017-12-01',
+                            //    end: '2018-02-02',
+                            //    completed: {
+                            //        amount: 0.95
+                            //    },
+                            //    name: 'Prototyping'
+                            //}]
+                            data: JSON.parse(datos)
+
+                        }]
+                    });
+
+
+
+
+
+                },
+                error: function (chartData) {
+                    //console.log(chartData);
+                }
+            });
 
         }
 

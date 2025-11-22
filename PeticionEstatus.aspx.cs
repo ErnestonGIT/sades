@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Security.Policy;
 using System.Web;
+using System.Web.Services;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -208,5 +209,68 @@ public partial class PeticionEstatus : System.Web.UI.Page
     {
         RestaurarDropDownListEstatus(0);
         ActualizarEstadisticas();
+    }
+
+
+
+    [WebMethod]
+    public static List<object> chartGanttPeticiones_datos(string zp)
+    {
+        List<object> chartData = new List<object>();
+
+        chartData.Add(new object[]
+            {
+                "VIGENTES", "VENCIDOS", "VACANTES"
+            });
+
+        string constr = ConfigurationManager.ConnectionStrings["ConnectionDES"].ConnectionString;
+
+        bool exist = Consultas.ConsultaInt("select COUNT(ID_USER) total from AUTORIDADES_ZP where CLAVE_ZP like '"+ zp +"%'") == 0 ? false : true;
+
+        string query = "select SUM(VIGENTES) VIGENTES, SUM(VENCIDOS) VENCIDOS, SUM(VACANTES) VACANTES " +
+                        "FROM( " +
+                            "select 0 VIGENTES, 0 VENCIDOS, 0 VACANTES " +
+                            "from AUTORIDADES_ZP " +
+                        ")DATOS";
+        if (exist == true)
+        {
+            query = "select SUM(VIGENTES) VIGENTES, SUM(VENCIDOS) VENCIDOS, SUM(VACANTES) VACANTES " +
+                    "from( " +
+                        "select dp.CLAVE_ZP, " +
+                            "(select COUNT(CLAVE_ZP) total from AUTORIDADES_ZP where CLAVE_ZP = dp.CLAVE_ZP and FECHA_FIN > (select FORMAT(GETDATE(), 'yyyy-M-dd')) and ESTATUS = 1) VIGENTES ,  " +
+                            "(select COUNT(CLAVE_ZP) total from AUTORIDADES_ZP where CLAVE_ZP = dp.CLAVE_ZP and FECHA_FIN< (select FORMAT(GETDATE(),'yyyy-M-dd')) and ESTATUS = 1) VENCIDOS ,  " +
+                            "(select((select COUNT(distinct ID_PERFIL) total from AUTORIDADES_ZP) - COUNT(ID_PERFIL)) TOTAL from AUTORIDADES_ZP where CLAVE_ZP = dp.CLAVE_ZP and ESTATUS = 1) VACANTES " +
+                        "from CAT_DEPENDENCIAS_POLITECNICAS dp " +
+                        "where dp.ID_NIVEL_EST = 2 " +
+                    ")datos " +
+                    "where CLAVE_ZP like '"+ zp +"%'";
+        }
+
+        using (SqlConnection con = new SqlConnection(constr))
+        {
+            using (SqlCommand cmd = new SqlCommand(query))
+            {
+                cmd.CommandType = CommandType.Text;
+                cmd.Connection = con;
+                con.Open();
+                using (SqlDataReader sdr = cmd.ExecuteReader())
+                {
+
+                    while (sdr.Read())
+                    {
+
+                        chartData.Add(new object[]
+                        {
+                            sdr["VIGENTES"],sdr["VENCIDOS"],sdr["VACANTES"]
+                        });
+
+                    }
+
+                }
+                con.Close();
+                return chartData;
+            }
+        }
+
     }
 }

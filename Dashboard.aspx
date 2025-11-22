@@ -2189,17 +2189,6 @@
             }
         }
 
-        function onShowModal() {
-            $(myModal).on('shown.bs.modal', function () {
-            });
-        }
-
-        function onHideModal() {
-            $(myModal).on('hidden.bs.modal', function () {
-
-            });
-        }
-
         function highChartOptions() {
 
             var lang_es = {
