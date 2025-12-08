@@ -390,7 +390,7 @@
                           <div class="accordion-item">
                             <h2 class="accordion-header">
                               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseContenido_filtroEstatusPeticion" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                                Resúmen de estatus de las peticiones registradas
+                                Resumen de estatus de las peticiones registradas
                               </button>
                             </h2>
                             <div id="collapseContenido_filtroEstatusPeticion" class="accordion-collapse collapse">
@@ -556,6 +556,24 @@
                                                                         </SelectParameters>
                                                                     </asp:SqlDataSource>
                                                                 </div>
+                                                                <div class="col-12 mb-1">
+                                                                    <asp:DropDownList ID="DropDownListEstatusPeticion_subcategoria" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownEstatusPeticion_subcategoria"
+                                                                        DataValueField="ID_SUBCAT_PETICION"
+                                                                        DataTextField="DESCRIPCION_SUBCAT_PETICION" 
+                                                                        CssClass="form-select form-select-sm select-posicion" data-control="select2"
+                                                                        OnDataBound="DropDownListEstatusPeticion_subcategoria_DataBound"
+                                                                        OnSelectedIndexChanged="DropDownListEstatusPeticion_subcategoria_SelectedIndexChanged">
+                                                                    </asp:DropDownList>
+                                                                    <asp:SqlDataSource ID="SqlDataSourceDropDownEstatusPeticion_subcategoria" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
+                                                                        SelectCommand="select ID_SUBCAT_PETICION, DESCRIPCION_SUBCAT_PETICION 
+                                                                                        from CAT_SUBCATEGORIA_PETICION 
+                                                                                        where ID_CAT_PETICION = @ID_C
+					                                                                    order by DESCRIPCION_SUBCAT_PETICION ASC">
+                                                                        <SelectParameters>
+                                                                            <asp:ControlParameter ControlID="DropDownListEstatusPeticion_categoria" Name="ID_C" PropertyName="SelectedValue" />
+                                                                        </SelectParameters>
+                                                                    </asp:SqlDataSource>
+                                                                </div>
 
                                                                 <div class="d-grid gap-2">
                                                                     <asp:LinkButton runat="server" ID="LinkButtonFiltroEstatusPeticion_limpiar" OnClick="LinkButtonFiltroEstatusPeticion_limpiar_Click" CssClass="btn LoadingOverlay btn-secondary btn-sm">
@@ -569,8 +587,8 @@
                                                     </div>
                                                 </div>
                                                
-                                               <!-- DetallePeticiones -->
-                                                 <div class="col-md-12">
+                                               <!-- DetallePeticionesGanttChart -->
+                                                 <div class="col-md-12" style="overflow-y: scroll; max-height: 500px; width: 100%;">
                                                     <div class="card">
                                                         <div id="container-gantt-peticiones"></div>
                                                     </div>
@@ -973,7 +991,7 @@
             var datos = $("[id*=HiddenFieldGraficoGanttPeticiones_datos]").val();
 
             if (datos.length == 0) {
-                datos = '[{"start":"2025-11-11","end":"2025-11-12","completed":{"amount":"0.23"},"name":"Prueba de peti"}]';
+                datos = '[{"start":"2025-11-11","end":"2025-11-12","name":"Sin datos"}]';
             }
 
             const data = JSON.parse(datos, intReviver);

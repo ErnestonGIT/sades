@@ -286,8 +286,15 @@
                     <!-- Asignar peticion -->
 			        <li class="nav-item" runat="server" visible="false" id="menuAsigPeticion">
 				        <a class="nav-link collapsed" href="PeticionAsignar.aspx">
-					        <i class="bi bi-journal-check" style="font-size: initial;"></i>
+					        <i class="bi bi-journal-medical" style="font-size: initial;"></i>
 					        <span>Asignar</span>
+				        </a>
+			        </li>
+                    <!-- Validar peticion -->
+			        <li class="nav-item" runat="server" visible="false" id="menuValidPeticion">
+				        <a class="nav-link collapsed" href="Validacion.aspx">
+					        <i class="bi bi-journal-check" style="font-size: initial;"></i>
+					        <span>Validar</span>
 				        </a>
 			        </li>
 

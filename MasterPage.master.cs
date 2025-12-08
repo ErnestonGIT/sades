@@ -157,6 +157,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
                     menuEstaPeticion.Visible = true;
                     menuCaptPeticion.Visible = true;
                     menuAsigPeticion.Visible = true;
+                    menuValidPeticion.Visible = true;
                 menuGarantias.Visible = true;
                     menuCaptGarantia.Visible = true;
                 menuBitacora.Visible = true;
@@ -167,6 +168,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
                     menuEstaPeticion.Visible = true;
                     menuCaptPeticion.Visible = true;
                     menuAsigPeticion.Visible = true;
+                    menuValidPeticion.Visible = true;
                 menuGarantias.Visible = true;
                     menuCaptGarantia.Visible = true;
                 menuPassword.Visible = true;

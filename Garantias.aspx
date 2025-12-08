@@ -379,6 +379,7 @@
                 <asp:HiddenField runat="server" ID="HiddenFieldDivPeticiones_andSelected" Value=""/>
                 <asp:HiddenField runat="server" ID="HiddenFieldMensajeRegistroExitoso_estatus" Value=""/>
                 <asp:HiddenField runat="server" ID="HiddenFieldGraficoPieCategorias_datos" Value=""/>
+                <asp:HiddenField runat="server" ID="HiddenFieldGraficoPieSubCategorias_datos" Value=""/>
                 
                 <asp:HiddenField runat="server" ID="HiddenFieldMousePosition_x" Value=""/>
                 <asp:HiddenField runat="server" ID="HiddenFieldMousePosition_y" Value=""/>                
@@ -392,7 +393,7 @@
                           <div class="accordion-item">
                             <h2 class="accordion-header">
                               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseContenido_filtroGarantias" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                                Garantias para las unidades académicas
+                                Garantías por petición para la Unidad Académica
                               </button>
                             </h2>
                             <div id="collapseContenido_filtroGarantias" class="accordion-collapse collapse">
@@ -460,7 +461,7 @@
                                                     </div>
 
                                                     <div class="card-body">
-                                                      <h5 class="card-title">Concluidas <span>| garantías</span></h5>
+                                                      <h5 class="card-title">Atendidas <span>| garantías</span></h5>
 
                                                       <div class="d-flex align-items-center">
                                                         <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -486,7 +487,7 @@
                                                       <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
                                                       <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                                                         <li class="dropdown-header text-start">
-                                                          <h6>Resúmen</h6>
+                                                          <h6>Resumen</h6>
                                                         </li>
 
                                                         <li>
@@ -500,24 +501,23 @@
                                                         <asp:UpdatePanel runat="server">
                                                             <ContentTemplate>
 
-                                                        <div class="mb-3">
-                                                            <label for="DropDownListRegistrarGarantia_ua" class="form-label">Unidad académica:</label>
-                                                            <asp:DropDownList ID="DropDownListRegistrarGarantia_ua" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownRegistrarGarantia_ua"
-                                                                DataValueField="CLAVE_ZP"
-                                                                DataTextField="DESCRIPCION_DP" 
-                                                                CssClass="form-select select-posicion" data-control="select2"
-                                                                OnDataBound="DropDownListRegistrarGarantia_ua_DataBound"
-                                                                OnSelectedIndexChanged="DropDownListRegistrarGarantia_ua_SelectedIndexChanged">
-                                                            </asp:DropDownList>
-                                                            <asp:SqlDataSource ID="SqlDataSourceDropDownRegistrarGarantia_ua" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
-                                                                SelectCommand="SELECT CLAVE_ZP, DESCRIPCION_DP FROM  CAT_DEPENDENCIAS_POLITECNICAS
-                                                                                WHERE ID_NIVEL_EST = 2 and CLAVE_ZP in (select distinct CLAVE_ZP from PLIEGO)
-                                                                                ORDER BY DESCRIPCION_DP ASC">
-                                                            </asp:SqlDataSource>
-                                                        </div>
-
-                                                        <div class="row mb-3">
-                                                            <div class="col-md-6">
+                                                        <div class="row">
+                                                            <div class="col-md-6 mb-3">
+                                                                <label for="DropDownListRegistrarGarantia_ua" class="form-label">Unidad Académica:</label>
+                                                                <asp:DropDownList ID="DropDownListRegistrarGarantia_ua" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownRegistrarGarantia_ua"
+                                                                    DataValueField="CLAVE_ZP"
+                                                                    DataTextField="DESCRIPCION_DP" 
+                                                                    CssClass="form-select select-posicion" data-control="select2"
+                                                                    OnDataBound="DropDownListRegistrarGarantia_ua_DataBound"
+                                                                    OnSelectedIndexChanged="DropDownListRegistrarGarantia_ua_SelectedIndexChanged">
+                                                                </asp:DropDownList>
+                                                                <asp:SqlDataSource ID="SqlDataSourceDropDownRegistrarGarantia_ua" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
+                                                                    SelectCommand="SELECT CLAVE_ZP, DESCRIPCION_DP FROM  CAT_DEPENDENCIAS_POLITECNICAS
+                                                                                    WHERE ID_NIVEL_EST = 2 and CLAVE_ZP in (select distinct CLAVE_ZP from PLIEGO)
+                                                                                    ORDER BY DESCRIPCION_DP ASC">
+                                                                </asp:SqlDataSource>
+                                                            </div>
+                                                            <div class="col-md-6 mb-3">
                                                                 <label for="DropDownListRegistrarGarantia_pliego" class="form-label">Pliego registrado:</label>
                                                                 <asp:DropDownList ID="DropDownListRegistrarGarantia_pliego" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownRegistrarGarantia_pliego"
                                                                     DataValueField="ID_PLIEGO"
@@ -537,7 +537,7 @@
                                                                     
                                                                 </asp:SqlDataSource>
                                                             </div>
-                                                            <div class="col-md-6">
+                                                            <div class="col-md-6 mb-3">
                                                                 <label for="DropDownListRegistrarGarantia_categoria" class="form-label">Categoria registrada:</label>
                                                                 <asp:DropDownList ID="DropDownListRegistrarGarantia_categoria" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownRegistrarGarantia_categoria"
                                                                     DataValueField="ID_CAT_PETICION"
@@ -558,10 +558,29 @@
                                                                     </SelectParameters>
                                                                 </asp:SqlDataSource>
                                                             </div>
+                                                            <div class="col-md-6 mb-3">
+                                                                <label for="DropDownListRegistrarGarantia_subcategoria" class="form-label">Sub categoría registrada:</label>
+                                                                <asp:DropDownList ID="DropDownListRegistrarGarantia_subcategoria" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownRegistrarGarantia_subcategoria"
+                                                                    DataValueField="ID_SUBCAT_PETICION"
+                                                                    DataTextField="DESCRIPCION_SUBCAT_PETICION" 
+                                                                    CssClass="form-select select-posicion" data-control="select2"
+                                                                    OnDataBound="DropDownListRegistrarGarantia_subcategoria_DataBound"
+                                                                    OnSelectedIndexChanged="DropDownListRegistrarGarantia_subcategoria_SelectedIndexChanged">
+                                                                </asp:DropDownList>
+                                                                <asp:SqlDataSource ID="SqlDataSourceDropDownRegistrarGarantia_subcategoria" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
+                                                                    SelectCommand="select ID_SUBCAT_PETICION, DESCRIPCION_SUBCAT_PETICION 
+                                                                                    from CAT_SUBCATEGORIA_PETICION 
+                                                                                    where ID_CAT_PETICION = @ID_C 
+                                                                                    order by DESCRIPCION_SUBCAT_PETICION asc">
+                                                                    <SelectParameters>
+                                                                        <asp:ControlParameter ControlID="DropDownListRegistrarGarantia_categoria" Name="ID_C" PropertyName="SelectedValue" />
+                                                                    </SelectParameters>
+                                                                </asp:SqlDataSource>
+                                                            </div>
                                                         </div>
 
                                                         <div class="mb-3">
-                                                            <label for="DropDownListRegistrarGarantia_peticion" class="form-label">Petición a atender:</label>
+                                                            <label for="DropDownListRegistrarGarantia_peticion" class="form-label">Petición atendida:</label>
                                                             <asp:DropDownList ID="DropDownListRegistrarGarantia_peticion" runat="server" AutoPostBack="true"
                                                                 DataValueField="ID_PETICION"
                                                                 DataTextField="DESC_PETICION" 
@@ -578,15 +597,21 @@
                                                         <asp:LinkButton runat="server" ID="LinkButtonPeticionId_eliminar" OnClick="LinkButtonPeticionId_eliminar_Click" style="display:none"></asp:LinkButton>
 
                                                         <div class="mb-3">
-                                                            <label for="exampleFormControlTextarea1" class="form-label">Descripción de la acción</label>
+                                                            <label for="TextBoxRegistrarGarantia_descripcion" class="form-label">Descripción de la acción</label>
                                                             <asp:TextBox runat="server" ID="TextBoxRegistrarGarantia_descripcion" CssClass="form-control" TextMode="MultiLine" Rows="3"></asp:TextBox>
                                                         </div>
 
-                                                        <div class="mb-3">
-                                                            <label for="exampleFormControlTextarea1" class="form-label">Cargar evidencia de la acción</label>
-                                                            <div>
-                                                                <asp:FileUpload runat="server" ID="FileUploadRegistrarGarantia_evidencia" CssClass="form-control"/>
-                                                                <asp:Label runat="server" ID="LabelFileUpload_estatus"></asp:Label>
+                                                        <div class="row">
+                                                            <div class="col-md-6 mb-3">
+                                                                <label for="FileUploadRegistrarGarantia_evidencia" class="form-label">Evidencia de la acción</label>
+                                                                <div>
+                                                                    <asp:FileUpload runat="server" ID="FileUploadRegistrarGarantia_evidencia" CssClass="form-control"/>
+                                                                    <asp:Label runat="server" ID="LabelFileUpload_estatus"></asp:Label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6 mb-3">
+                                                                <label for="InputRegistrarGarantia_fechaRealizacion" class="form-label">Fecha de realización</label>
+                                                                <input runat="server" type="date" name="InputRegistrarGarantia_fechaRealizacion" id="InputRegistrarGarantia_fechaRealizacion" onchange="validarTermino()" onkeydown="return false;" value="" class="form-control" />
                                                             </div>
                                                         </div>
                                                         
@@ -628,12 +653,34 @@
                                                 <div class="card-body pb-0">
                                                   <h5 class="card-title">Categorías <span>| de grantías</span></h5>
 
-                                                  <div id="categoriasChart" style="min-height: 400px; user-select: none; position: relative;" class="echart" _echarts_instance_="ec_1762475541695"><div style="position: relative; width: 257px; height: 400px; padding: 0px; margin: 0px; border-width: 0px;"><canvas style="position: absolute; left: 0px; top: 0px; width: 257px; height: 400px; user-select: none; padding: 0px; margin: 0px; border-width: 0px;" data-zr-dom-id="zr_0" width="257" height="400"></canvas></div><div class=""></div></div>
+                                                  <div id="categoriasChart" style="min-height: 280px; user-select: none; position: relative;" class="echart" _echarts_instance_="ec_1762475541695"><div style="position: relative; width: 257px; height: 280px; padding: 0px; margin: 0px; border-width: 0px;"><canvas style="position: absolute; left: 0px; top: 0px; width: 257px; height: 280px; user-select: none; padding: 0px; margin: 0px; border-width: 0px;" data-zr-dom-id="zr_0" width="257" height="280"></canvas></div><div class=""></div></div>
 
                                                 </div>
-                                              </div><!-- End Website Traffic -->
+                                              </div>
+                                              <!-- GarantiasPieSubCategorias -->
+                                              <div class="card">
+                                                <div class="filter" style="display:none">
+                                                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                                                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                                    <li class="dropdown-header text-start">
+                                                      <h6>Filter</h6>
+                                                    </li>
 
-                                            </div><!-- End Right side columns -->
+                                                    <li><a class="dropdown-item" href="#">Today</a></li>
+                                                    <li><a class="dropdown-item" href="#">This Month</a></li>
+                                                    <li><a class="dropdown-item" href="#">This Year</a></li>
+                                                  </ul>
+                                                </div>
+
+                                                <div class="card-body pb-0">
+                                                  <h5 class="card-title">Sub categorías <span>| de grantías</span></h5>
+
+                                                  <div id="subCategoriasChart" style="min-height: 280px; user-select: none; position: relative;" class="echart" _echarts_instance_="ec_1762475541695"><div style="position: relative; width: 257px; height: 280px; padding: 0px; margin: 0px; border-width: 0px;"><canvas style="position: absolute; left: 0px; top: 0px; width: 257px; height: 280px; user-select: none; padding: 0px; margin: 0px; border-width: 0px;" data-zr-dom-id="zr_0" width="257" height="280"></canvas></div><div class=""></div></div>
+
+                                                </div>
+                                              </div>
+
+                                            </div>
 
                                         </div>
 
@@ -714,7 +761,7 @@
 
                                             <asp:TemplateField HeaderText="EVIDENCIA" ItemStyle-HorizontalAlign="Center">
                                                 <ItemTemplate>
-                                                    <asp:LinkButton runat="server" ID="LinkButtonResumenGarantias_pdf" CommandArgument = '<%# Eval("CLAVE_ZP") +","+ Eval("FOLIO_PLIEGO") +","+ Eval("DESCRIPCION_CAT_PETICION") +","+ Eval("DESC_PETICION") +","+ Eval("DESC_GARANTIA") +","+ Eval("RUTA_DOCUMENTO") %>' CssClass="btn btn-sm btn-outline-secondary LoadingOverlay" OnClick="LinkButtonResumenGarantias_pdf_Click"><i class="bi bi-eye icon-green"> </i>Ver</asp:LinkButton>
+                                                    <asp:LinkButton runat="server" ID="LinkButtonResumenGarantias_pdf" CommandArgument = '<%# Eval("CLAVE_ZP") +","+ Eval("FOLIO_PLIEGO") +","+ Eval("DESCRIPCION_CAT_PETICION") +","+ Eval("DESC_PETICION") +","+ Eval("DESC_GARANTIA") +","+ Eval("RUTA_DOCUMENTO") + "," + Eval("DESCRIPCION_SUBCAT_PETICION") %>' CssClass="btn btn-sm btn-outline-secondary LoadingOverlay" OnClick="LinkButtonResumenGarantias_pdf_Click"><i class="bi bi-eye icon-green"> </i>Ver</asp:LinkButton>
                                                 </ItemTemplate>
                                             </asp:TemplateField>                                          
                                               
@@ -780,12 +827,14 @@
                                     <div class="ps-3">
                                         <span class="text-success small pt-1 fw-bold">Pliego: </span>
                                             <asp:Label runat="server" ID="LabelModalVisualizarEvidenciaGarantia_text0" CssClass="text-muted small pt-2 ps-1"></asp:Label><br />
-                                        <span class="text-success small pt-1 fw-bold">Categoria: </span>
+                                        <span class="text-success small pt-1 fw-bold">Categoría: </span>
                                             <asp:Label runat="server" ID="LabelModalVisualizarEvidenciaGarantia_text1" CssClass="text-muted small pt-2 ps-1"></asp:Label><br />
-                                        <span class="text-success small pt-1 fw-bold">Petición: </span>
+                                        <span class="text-success small pt-1 fw-bold">Sub Categoría: </span>
                                             <asp:Label runat="server" ID="LabelModalVisualizarEvidenciaGarantia_text2" CssClass="text-muted small pt-2 ps-1"></asp:Label><br />
+                                        <span class="text-success small pt-1 fw-bold">Petición: </span>
+                                            <asp:Label runat="server" ID="LabelModalVisualizarEvidenciaGarantia_text3" CssClass="text-muted small pt-2 ps-1"></asp:Label><br />
                                         <span class="text-success small pt-1 fw-bold">Garantía: </span>
-                                            <asp:Label runat="server" ID="LabelModalVisualizarEvidenciaGarantia_text3" CssClass="text-muted small pt-2 ps-1"></asp:Label>
+                                            <asp:Label runat="server" ID="LabelModalVisualizarEvidenciaGarantia_text4" CssClass="text-muted small pt-2 ps-1"></asp:Label>
                                     </div>
                                 </div>
                                 <div class="mb-3">
@@ -891,6 +940,7 @@
             mensajeRegistroExitoso();
 
             chartPieCategorias();
+            chartPieSubCategorias();
             validarPosicion();
         }
 
@@ -906,6 +956,7 @@
                     showConfirmButton: false,
                     timer: 2500
                 });
+                $("[id*=HiddenFieldMensajeRegistroExitoso_estatus]").val("0");
             }
         }
 
@@ -927,14 +978,16 @@
             let zp = $("[id*=DropDownListRegistrarGarantia_ua]").val();
             let pliego = $("[id*=DropDownListRegistrarGarantia_pliego]").val(); 
             let categoria = $("[id*=DropDownListRegistrarGarantia_categoria]").val();
+            let subcategoria = $("[id*=DropDownListRegistrarGarantia_subcategoria]").val();
             let peticion = $("[id*=HiddenFieldDivPeticiones_selected]").val();
             let descripcion = $("[id*=TextBoxRegistrarGarantia_descripcion]").val();
             let evidencia = $("[id*=FileUploadRegistrarGarantia_evidencia]").val();
+            let fecha = $("[id*=InputRegistrarGarantia_fechaRealizacion]").val();
             let mensaje = "";
             let totMensaje = 0;
 
             if (zp.length == 0) {
-                mensaje += "Unidad académica<br/>";
+                mensaje += "Unidad Académica<br/>";
                 totMensaje++;
             }
             if (pliego.length == 0) {
@@ -942,7 +995,11 @@
                 totMensaje++;
             }
             if (categoria.length == 0) {
-                mensaje += "Categoria<br/>";
+                mensaje += "Categoría<br/>";
+                totMensaje++;
+            }
+            if (subcategoria.length == 0) {
+                mensaje += "Sub categoría<br/>";
                 totMensaje++;
             }
             if (peticion.length == 0) {
@@ -955,6 +1012,10 @@
             }
             if (evidencia.length == 0) {
                 mensaje += "Archivo de evidencia<br/>";
+                totMensaje++;
+            }
+            if (fecha.length == 0) {
+                mensaje += "Fecha de realización<br/>";
                 totMensaje++;
             }
 
@@ -976,12 +1037,54 @@
 
         function chartPieCategorias() {
 
+            var catChart = echarts.init(document.getElementById('categoriasChart'));
+
             var datos = $("[id*=HiddenFieldGraficoPieCategorias_datos]").val();
 
             if (datos.length == 0) { datos = '[{"value":0,"name":"Sin datos"}]'; }
             //else { datos = JSON.parse(datos); }
 
-            echarts.init(document.querySelector("#categoriasChart")).setOption({
+            catChart.setOption({
+                tooltip: {
+                    trigger: 'item'
+                },
+                legend: {
+                    top: '5%',
+                    left: 'center',
+                    type: 'scroll'
+                },
+                series: [{
+                    name: 'Garantias por categoria',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    label: {
+                        show: false,
+                        position: 'center'
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: '18',
+                            fontWeight: 'bold'
+                        }
+                    },
+                    labelLine: {
+                        show: false
+                    },
+                    data: JSON.parse(datos)//[{ value: 0, name: 'Sin datos' }]
+                }]
+            });
+        }
+        function chartPieSubCategorias() {
+
+            var subCatChart = echarts.init(document.getElementById('subCategoriasChart'));
+            var datos = $("[id*=HiddenFieldGraficoPieSubCategorias_datos]").val();
+
+            if (datos.length == 0) { datos = '[{"value":0,"name":"Sin datos"}]'; }
+            //else { datos = JSON.parse(datos); }
+
+            subCatChart.setOption({
                 tooltip: {
                     trigger: 'item'
                 },

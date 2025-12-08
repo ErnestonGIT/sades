@@ -383,12 +383,16 @@
                 <asp:HiddenField runat="server" ID="HiddenFieldUnidadesAcademicasNS_idPerfil"/>
                 
                 <asp:HiddenField runat="server" ID="HiddenFieldNombramientosEstatus_edicion"/>
+                <asp:HiddenField runat="server" ID="HiddenFieldAccionRegistrar_success" Value="0"/>
 
                 <asp:Label id="LabeltotalLun" runat="server" style="display:none;"></asp:Label>
                 <asp:Label id="LabeltotalMar" runat="server" style="display:none;"></asp:Label>
                 <asp:Label id="LabeltotalMie" runat="server" style="display:none;"></asp:Label>
                 <asp:Label id="LabeltotalJue" runat="server" style="display:none;"></asp:Label>
                 <asp:Label id="LabeltotalVie" runat="server" style="display:none;"></asp:Label>
+
+                <asp:HiddenField runat="server" ID="HiddenFieldMousePosition_x" Value=""/>
+                <asp:HiddenField runat="server" ID="HiddenFieldMousePosition_y" Value=""/> 
 
                 <section class="section dashboard">
 
@@ -399,7 +403,7 @@
                           <div class="accordion-item">
                             <h2 class="accordion-header">
                               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseContenido_filtroDependencias" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                                Resúmen de las unidades académicas
+                                Resumen de las unidades académicas
                               </button>
                             </h2>
                             <div id="collapseContenido_filtroDependencias" class="accordion-collapse collapse">
@@ -414,7 +418,7 @@
                                                     <a class="icon show" href="#" data-bs-toggle="dropdown" aria-expanded="true"><i class="bi bi-three-dots"></i></a>
                                                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(0px, 30px);" data-popper-placement="bottom-end">
                                                     <li class="dropdown-header text-start">
-                                                        <h6>Resúmen</h6>
+                                                        <h6>Resumen</h6>
                                                     </li>
 
                                                     <li>
@@ -424,7 +428,7 @@
                                                 </div>
                                                 <div class="card-body">
                                                     <h5 class="card-title">
-                                                        Resúmen de nombramientos
+                                                        Resumen de nombramientos
                                                     </h5>
                                                     <div class="row col-xl-12 mt-3">
                                                         <div class="col-xl-4">
@@ -456,14 +460,14 @@
                                                 <div runat="server" id="divAlertUnidadAcademicaResumen_seleccionada" visible="false">
 
                                                     <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                                                      Unidad académica seleccionada: <strong><asp:Label runat="server" ID="LabelUnidadAcademicaResumenSeleccionada_nombre"></asp:Label></strong>
-                                                        <asp:LinkButton runat="server" ID="LinkButtonAlertUnidadAcademicaResumen_cerrar" CssClass="btn-close LoadingOverlay" OnClick="LinkButtonAlertUnidadAcademica_resumen_cerrar_Click"
+                                                      Unidad Académica seleccionada: <strong><asp:Label runat="server" ID="LabelUnidadAcademicaResumenSeleccionada_nombre"></asp:Label></strong>
+                                                        <asp:LinkButton runat="server" ID="LinkButtonAlertUnidadAcademicaResumen_cerrar" CssClass="btn-close LoadingOverlay click-posicion" OnClick="LinkButtonAlertUnidadAcademica_resumen_cerrar_Click"
                                                             aria-label="Close"
                                                             data-bs-toggle="popover" data-bs-placement="right"
                                                             data-bs-custom-class="custom-popover"
                                                             data-bs-trigger="hover focus"
                                                             data-bs-title="Cancelar filtro"
-                                                            data-bs-content="Elimina el filtro por unidad académica, mostrando la información general."><!-- -->
+                                                            data-bs-content="Elimina el filtro por Unidad Académica, mostrando la información general."><!-- -->
 
                                                         </asp:LinkButton>
 
@@ -478,7 +482,7 @@
                                                             <a class="icon show" href="#" data-bs-toggle="dropdown" aria-expanded="true"><i class="bi bi-three-dots"></i></a>
                                                             <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(0px, 30px);" data-popper-placement="bottom-end">
                                                             <li class="dropdown-header text-start">
-                                                                <h6>Resúmen</h6>
+                                                                <h6>Resumen</h6>
                                                             </li>
 
                                                             <li>
@@ -497,6 +501,22 @@
                                                                     data-bs-content="Muestra la relación de unidades académicas de nivel superior.">
                                                                 </i> 
                                                             </h5>
+                                                            <div class="mb-3">
+
+                                                                <asp:DropDownList ID="DropDownListResumenUnidades_ua" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownResumenUnidades_ua"
+                                                                    DataValueField="CLAVE_ZP"
+                                                                    DataTextField="DESCRIPCION_DP" 
+                                                                    CssClass="form-select select-posicion" data-control="select2"
+                                                                    OnDataBound="DropDownListResumenUnidades_ua_DataBound"
+                                                                    OnSelectedIndexChanged="DropDownListResumenUnidades_ua_SelectedIndexChanged">
+                                                                </asp:DropDownList>
+                                                                <asp:SqlDataSource ID="SqlDataSourceDropDownResumenUnidades_ua" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
+                                                                    SelectCommand="SELECT CLAVE_ZP, DESCRIPCION_DP FROM  CAT_DEPENDENCIAS_POLITECNICAS
+                                                                                    WHERE ID_NIVEL_EST = 2
+                                                                                    ORDER BY DESCRIPCION_DP ASC">
+                                                                </asp:SqlDataSource>
+
+                                                            </div>
                                                             <table>
                                                                 <thead>
                                                                     <tr>
@@ -530,7 +550,7 @@
 
                                                                         <asp:TemplateField HeaderText="Detalles" ItemStyle-HorizontalAlign="Center">
                                                                             <ItemTemplate>
-                                                                                <asp:LinkButton runat="server" ID="LinkButtonUnidadAcademicaNS_resumen_seleccionar" CommandArgument = '<%# Eval("CLAVE_ZP") + "," + Eval("DESCRIPCION_DP") %>' CssClass="btn btn-sm btn-outline-secondary LoadingOverlay" OnClick="LinkButtonUnidadAcademicaNS_resumen_seleccionar_Click">Mostrar</asp:LinkButton>
+                                                                                <asp:LinkButton runat="server" ID="LinkButtonUnidadAcademicaNS_resumen_seleccionar" CommandArgument = '<%# Eval("CLAVE_ZP") + "," + Eval("DESCRIPCION_DP") %>' CssClass="btn btn-sm btn-outline-secondary LoadingOverlay click-posicion" OnClick="LinkButtonUnidadAcademicaNS_resumen_seleccionar_Click">Mostrar</asp:LinkButton>
                                                                             </ItemTemplate>
                                                                         </asp:TemplateField>                                                
                                               
@@ -538,7 +558,7 @@
 
                                                                     <EmptyDataTemplate>
                                                                         <div class="text-center">
-                                                                            <asp:Label runat="server" ID="Label4" Text="<br><br><br> No se han asignado unidades académicas de nivel superior a su perfil de analista <br><br><br>" CssClass="alert alert-light" Width="90%"></asp:Label>
+                                                                            <asp:Label runat="server" ID="Label4" Text="<br><br><br> No se encontraron registros <br><br><br>" CssClass="alert alert-light" Width="90%"></asp:Label>
                                                                         </div>
                                                                     </EmptyDataTemplate>
 
@@ -555,6 +575,25 @@
                                             <div class="col-xl-6">
                                                 <section class="section contact">
                                                     <div class="row">
+
+                                                        <div class="col-lg-12" runat="server" visible="true">
+                                                            <div class="card info-card revenue-card">
+                                                                <div class="card-body">
+                                                                    <h5 class="card-title">Nuevo nombramiento</h5>
+                                                                    <div class="d-flex align-items-center">
+                                                                    <div runat="server" id="DivUnidadesAcademicasNS_NuevoNombramiento_icon" class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                                                        <i runat="server" id="UnidadesAcademicasNS_NuevoNombramiento_icon" class="bi bi-person-plus"></i>
+                                                                    </div>
+                                                                    <div class="ps-3 footer-card">
+                                                                        <asp:LinkButton ID="LinkButtonUnidadesAcademicasNS_NuevoNombramiento" runat="server" OnClick="LinkButtonUnidadesAcademicasNS_NuevoNombramiento_Click" CssClass="LoadingOverlay">
+                                                                            <h5 style="float:inline-end">Registrar &nbsp;&nbsp;<i class="bi bi-arrow-right-circle-fill"></i></h5>
+                                                                        </asp:LinkButton>
+                                                                        <h6><asp:Label runat="server" ID="LabelUnidadesAcademicasNS_NuevoNombramiento_total"></asp:Label></h6>
+                                                                    </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
 
                                                         <div class="col-lg-12">
                                                             <h5 class="card-title">Vigencia de nombramientos</h5>
@@ -694,7 +733,7 @@
                                                             <div class="row mb-3">
                                                                 <%--Dropdown unidad academica--%>
                                                                 <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12 mb-2">
-                                                                    <h6 class="h6 mb-2 mt-1 text-dark font-weight-bolder">Unidad académica: </h6>
+                                                                    <h6 class="h6 mb-2 mt-1 text-dark font-weight-bolder">Unidad Académica: </h6>
                                                                     <asp:DropDownList ID="DropDownListUnidadAcademica" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropUA"
                                                                         DataTextField="DESCRIPCION_DP" DataValueField="CLAVE_ZP" CssClass="form-select" data-control="select2"
                                                                         OnDataBound="DropDownListUnidadAcademica_DataBound"
@@ -961,7 +1000,7 @@
                                                                                 data-bs-custom-class="custom-popover"
                                                                                 data-bs-trigger="hover focus"
                                                                                 data-bs-title="Mapa de calor general"
-                                                                                data-bs-content="Mostrará el mapa de calor de la ocupabilidad por periodo escolar, de todos los grupos de la unidad académica.">
+                                                                                data-bs-content="Mostrará el mapa de calor de la ocupabilidad por periodo escolar, de todos los grupos de la Unidad Académica.">
                                                                                 <i class="bi bi-bar-chart-steps" style="font-style: normal;">&nbsp;&nbsp;&nbsp;Mapa de calor</i></span>
 
                                                                             <asp:DropDownList id="DropDownFiltro_periodo" OnSelectedIndexChanged="DropDownFiltro_periodo_SelectedIndexChanged"
@@ -1003,7 +1042,7 @@
                           <div class="accordion-item">
                             <h2 class="accordion-header">
                               <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseContenido_filtroEventos" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                                Resúmen de los eventos de riesgo 
+                                Resumen de los eventos de riesgo 
                               </button>
                             </h2>
                             <div id="collapseContenido_filtroEventos" class="accordion-collapse collapse">
@@ -1017,14 +1056,14 @@
                                                 <div class="col-12 col-lg-6" runat="server" id="divAlertUnidadAcademica_seleccionada" visible="false">
 
                                                     <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                                                      Unidad académica seleccionada: <strong><asp:Label runat="server" ID="LabelUnidadAcademicaSeleccionada_nombre"></asp:Label></strong>
+                                                      Unidad Académica seleccionada: <strong><asp:Label runat="server" ID="LabelUnidadAcademicaSeleccionada_nombre"></asp:Label></strong>
                                                         <asp:LinkButton runat="server" ID="LinkButtonAlertUnidadAcademica_cerrar" CssClass="btn-close LoadingOverlay" OnClick="LinkButtonAlertUnidadAcademica_cerrar_Click"
                                                             aria-label="Close"
                                                             data-bs-toggle="popover" data-bs-placement="right"
                                                             data-bs-custom-class="custom-popover"
                                                             data-bs-trigger="hover focus"
                                                             data-bs-title="Cancelar filtro"
-                                                            data-bs-content="Elimina el filtro por unidad académica, mostrando la información general."><!-- -->
+                                                            data-bs-content="Elimina el filtro por Unidad Académica, mostrando la información general."><!-- -->
 
                                                         </asp:LinkButton>
 
@@ -1145,7 +1184,7 @@
 
                                                                             <EmptyDataTemplate>
                                                                                 <div class="text-center">
-                                                                                    <asp:Label runat="server" ID="Label4" Text="<br><br><br> No se han asignado unidades académicas de nivel superior a su perfil de analista <br><br><br>" CssClass="alert alert-light" Width="90%"></asp:Label>
+                                                                                    <asp:Label runat="server" ID="Label4" Text="<br><br><br>No se encontraron registros <br><br><br>" CssClass="alert alert-light" Width="90%"></asp:Label>
                                                                                 </div>
                                                                             </EmptyDataTemplate>
 
@@ -1295,6 +1334,179 @@
     </asp:UpdatePanel>
 
 
+        <!-- Modal  NuevoNombramiento-->
+    <div class="modal fade" id="ModalNuevoNombramiento" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title titleModal" id="tittleModalNuevoNombramiento">Motor de búsqueda</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Modal -->
+                <div id="DivModalNuevoNombramiento_body" runat="server" class="col-md-12 dashboard">
+                    
+                    <div class="card info-card customers-card">
+                        <div class="filter" style="display:none">
+
+                            <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                <li class="dropdown-header text-start">
+                                    <h6>Exportar</h6>
+                                </li>
+                                <li class="dropdown-item" runat="server" id="ModalNuevoNombramiento_dropdownItem">
+                                    <i class="bi bi-filetype-xlsx iconExcel"></i><asp:Button ID="LinkButtonModalNuevoNombramiento_Excel" runat="server" Text="Excel" CssClass="btn btn-outline-default" Visible="true" />
+                                </li>
+                            </ul>
+
+                        </div>
+                        <div class="card-body">
+
+                            <asp:UpdatePanel runat="server"><ContentTemplate>
+                                <br />
+                                <h5><asp:Label runat="server" ID="LabelModalNuevoNombramiento_titulo" Text="" CssClass="card-title"></asp:Label><span class="card-title"> | <asp:Label ID="LabelModalNuevoNombramiento_subtitulo" runat="server" Text=""></asp:Label></span></h5>
+                                <br />
+
+                                <div class="d-flex align-items-center">
+                                    <div class="ps-3">
+                                        <span class="text-success small pt-1 fw-bold"></span>
+                                            <asp:Label runat="server" ID="LabelModalNuevoNombramiento_text0" CssClass="text-muted small pt-2 ps-1"></asp:Label><br />
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="mb-3" style="text-align: center;">
+                                        <asp:Image ID="imgPreview" runat="server" ImageUrl="#" style="display:none; max-width:30%;" CssClass="rounded-circle" />
+                                    </div>
+                                    <div class="mb-3 col-md-4">
+                                        <label for="DropDownListNuevoNombramiento_ua" class="form-label">Unidad Académica:</label>
+                                        <asp:DropDownList ID="DropDownListNuevoNombramiento_ua" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownNuevoNombramiento_ua"
+                                            DataValueField="CLAVE_ZP"
+                                            DataTextField="DESCRIPCION_DP" 
+                                            CssClass="form-select select-posicion" data-control="select2"
+                                            OnDataBound="DropDownListNuevoNombramiento_ua_DataBound"
+                                            OnSelectedIndexChanged="DropDownListNuevoNombramiento_ua_SelectedIndexChanged">
+                                        </asp:DropDownList>
+                                        <asp:SqlDataSource ID="SqlDataSourceDropDownNuevoNombramiento_ua" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
+                                            SelectCommand="SELECT CLAVE_ZP, DESCRIPCION_DP FROM  CAT_DEPENDENCIAS_POLITECNICAS
+                                                            WHERE ID_NIVEL_EST = 2 and CLAVE_ZP in (select distinct CLAVE_ZP from PLIEGO)
+                                                            ORDER BY DESCRIPCION_DP ASC">
+                                        </asp:SqlDataSource>
+                                    </div>
+                                    <div class="mb-3 col-md-4">
+                                        <label for="DropDownListNuevoNombramiento_uad" class="form-label">Unidad administrativa:</label>
+                                        <asp:DropDownList ID="DropDownListNuevoNombramiento_uad" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropDownNuevoNombramiento_uad"
+                                            DataValueField="ID_PERFIL"
+                                            DataTextField="UNIDAD" 
+                                            CssClass="form-select select-posicion" data-control="select2"
+                                            OnDataBound="DropDownListNuevoNombramiento_uad_DataBound"
+                                            OnSelectedIndexChanged="DropDownListNuevoNombramiento_uad_SelectedIndexChanged">
+                                        </asp:DropDownList>
+                                        <asp:SqlDataSource ID="SqlDataSourceDropDownNuevoNombramiento_uad" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
+                                            SelectCommand="select ID_PERFIL,
+                                                                    case
+                                                                        when DESCRIPCION like 'JEFE DEL %' then REPLACE(DESCRIPCION,'JEFE DEL ','')
+                                                                        when DESCRIPCION like 'JEFE DE LA %' then REPLACE(DESCRIPCION,'JEFE DE LA ','')
+                                                                        else DESCRIPCION
+                                                                    end UNIDAD
+                                                            from CAT_PERFILES
+                                                            where ID_PERFIL in(11,12,13,14)">
+                                            <SelectParameters>
+                                                <asp:ControlParameter ControlID="DropDownListNuevoNombramiento_ua" Name="ZP" PropertyName="SelectedValue" />
+                                            </SelectParameters>
+                                        </asp:SqlDataSource>
+                                    </div>
+                                    <div class="mb-3 col-md-4">
+                                        <label for="DropDownListNuevoNombramiento_tipo" class="form-label">Tipo de nombramiento</label>
+                                        <asp:DropDownList id="DropDownListNuevoNombramiento_tipo"
+                                            AutoPostBack="true"
+                                            CssClass="form-select"
+                                            runat="server">
+
+                                            <asp:ListItem Selected="True" Value="">Seleccionar</asp:ListItem>
+                                            <asp:ListItem Value="1">Interinato</asp:ListItem>
+                                            <asp:ListItem Value="2">Prórroga</asp:ListItem>
+                                            <asp:ListItem Value="3">Titularidad</asp:ListItem>
+
+                                        </asp:DropDownList>
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <label for="InputNuevoNombramiento_fechaInicio">Fecha de inicio</label>
+                                        <input runat="server" type="date" name="InputNuevoNombramiento_fechaInicio" id="InputNuevoNombramiento_fechaInicio" onchange="validarTermino()" onkeydown="return false;" value="" class="form-control" />
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <label for="InputNuevoNombramiento_fechaFin">Fecha de término</label>
+                                        <input runat="server" type="date" name="InputNuevoNombramiento_fechaFin" id="InputNuevoNombramiento_fechaFin" onkeydown="return false;" value="" class="form-control" disabled />
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="InputNuevoNombramiento_empleado" class="form-label">Número de empleado</label>
+                                        <input runat="server" class="form-control number" type="text" id="InputNuevoNombramiento_empleado" name="InputNuevoNombramiento_empleado" maxlength="8" value="" onkeyup="validarEmpleado()" autocomplete="off" required/>
+                                        
+                                        <div id="divAlertaUsuarioDgr_empleado" class="alert alert-danger mb-3 mt-3" style="display:none;">
+                                            Éste número de empleado no se encontró en la base del sistema.
+                                        </div>
+                                        <div id="divAlertaUsuarioSuc_empleado" class="alert alert-success mb-3 mt-3" style="display:none;">
+                                            Nombre de la persona a signar:
+                                            <br />
+                                            <h3 class="mt-2" style="text-align: center;">
+                                                <span id="SpanModalNuevoNombramiento_nombre"></span>
+                                            </h3>
+                                        </div>
+                                    </div>
+
+                                    <div runat="server" id="divNuevoNombramiento_contacto" style="display:none" class="row mb-3">
+                                        <label class="col-form-label-sm">Datos de contacto:</label>
+                                        <div class="col-4 mb-3">
+                                            <label for="InputNuevoNombramiento_correo" class="form-label">Correo electrónico:</label>
+                                            <input runat="server" type="email" class="form-control lowerText" name="InputNuevoNombramiento_correo" id="InputNuevoNombramiento_correo" onchange="validarCorreo(this)" maxlength="50" required>
+                                        </div>
+                                        <div class="col-4 mb-3">
+                                            <label for="InputNuevoNombramiento_celular" class="form-label">Número de celular:</label>
+                                            <input runat="server" type="text" class="form-control number" name="InputNuevoNombramiento_celular" id="InputNuevoNombramiento_celular" maxlength="10" required>
+                                        </div>
+                                        <div class="col-4 mb-3">
+                                            <label for="InputNuevoNombramiento_extension" class="form-label">Extensión telefónica:</label>
+                                            <input runat="server" type="text" class="form-control numberArr" name="InputNuevoNombramiento_extension" id="InputNuevoNombramiento_extension" maxlength="30" aria-describedby="extDec" required>
+                                            <small id="extDesc" class="form-text text-muted">En caso de ser más de 1, separar por (,) comas</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="fileUploadNombramiento" class="form-label">Cargar nombramiento de funcionario</label>
+                                        <asp:FileUpload ID="fileUploadNombramiento" runat="server" CssClass="form-control mb-3" />
+                                        <asp:Label runat="server" ID="LabelFileUploadNombramiento_estatus"></asp:Label>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="fileUploadFoto" class="form-label">Cargar foto de funcionario</label>
+                                        <asp:FileUpload ID="fileUploadFoto" runat="server" onchange="previewImage(this);" CssClass="form-control mb-3" />
+                                        <asp:Label runat="server" ID="LabelFileUploadFoto_estatus"></asp:Label>
+                                    </div>
+                                    <%--<asp:LinkButton runat="server" ID="ButtonUpdateNombramiento_nuevo" OnClick="ButtonUpdateNombramiento_nuevo_Click"></asp:LinkButton>--%>
+                                    <asp:Button runat="server" ID="ButtonUpdateNombramiento_nuevo" OnClick="ButtonUpdateNombramiento_nuevo_Click" Text="Guardar" style="display:none"/>
+                                </div>
+
+                            </ContentTemplate>
+                                <Triggers>
+                                    <asp:PostBackTrigger ControlID="ButtonUpdateNombramiento_nuevo" />
+                                </Triggers>
+                            </asp:UpdatePanel>
+                        </div>
+                    </div>
+                    
+                </div><!-- End Modal NuevoNombramiento Card -->
+      
+            </div>
+            <div class="modal-footer">
+                <input runat="server" type="hidden" id="HiddenEmpleado_estatus" value="" />
+                <input type="hidden" name="errorCorreo" id="errorCorreo" value="0" />
+                <button id="btnNew" class="btn btn-success" type="button" style="float:inline-end;" onclick="GuardarNombramiento('agregar')">Guardar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
     <!-- Modal  ResumenNombramientos-->
     <div class="modal fade" id="ModalResumenNombramientos" tabindex="-1" data-bs-backdrop="static">
         <div class="modal-dialog modal-xl">
@@ -1352,7 +1564,7 @@
                                             <asp:BoundField DataField="ID_USER" HeaderText="USUARIO" ReadOnly="true"/>
                                             <asp:BoundField DataField="ID_PERFIL" HeaderText="PERFIL" ReadOnly="true"/>
 
-                                            <asp:BoundField DataField="DESCRIPCION_DP" HeaderText="UNIDAD ACADÉMICA"  ReadOnly="true"/>
+                                            <asp:BoundField DataField="DESCRIPCION_DP" HeaderText="Unidad Académica"  ReadOnly="true"/>
                                             <asp:BoundField DataField="DESCRIPCION" HeaderText="UNIDAD ADMINISTRATIVA"  ReadOnly="true"/>
                                             <asp:BoundField DataField="NOMBRE_COMPLETO" HeaderText="NOMBRE"  ReadOnly="true"/>
                                             
@@ -1420,7 +1632,7 @@
 
                                         <EmptyDataTemplate>
                                             <div class="text-center">
-                                                <asp:Label runat="server" ID="Label4" Text="<br><br><br> No se han asignado unidades académicas de nivel superior a su perfil de analista <br><br><br>" CssClass="alert alert-light" Width="90%"></asp:Label>
+                                                <asp:Label runat="server" ID="Label4" Text="<br><br><br> No se encontraron registros <br><br><br>" CssClass="alert alert-light" Width="90%"></asp:Label>
                                             </div>
                                         </EmptyDataTemplate>
 
@@ -1599,7 +1811,7 @@
                         <div class="ps-3">
                             <asp:UpdatePanel runat="server">
                                 <ContentTemplate>
-                                    <span class="text-success small pt-1 fw-bold">Unidad académica: </span><span
+                                    <span class="text-success small pt-1 fw-bold">Unidad Académica: </span><span
                                         class="text-blak medium pt-1 fw-bold"><asp:Label ID="LabelModalDetail_claveZp" runat="server"></asp:Label></span>
                                     <br />
                                     <%--<span class="text-success small pt-1 fw-bold">Modalidad: </span><span
@@ -1655,7 +1867,7 @@
                         <div class="ps-3">
                             <asp:UpdatePanel runat="server">
                                 <ContentTemplate>
-                                    <span class="text-success small pt-1 fw-bold">Unidad académica: </span><span
+                                    <span class="text-success small pt-1 fw-bold">Unidad Académica: </span><span
                                                 class="text-blak medium pt-1 fw-bold"><asp:Label ID="LabelModalGrafico_claveZp" runat="server"></asp:Label></span>
                                     <br />
                                     <%--<span class="text-success small pt-1 fw-bold">Modalidad: </span><span
@@ -1718,7 +1930,7 @@
                             <span class="text-success small pt-1 fw-bold">Periodo escolar: </span><span
                                         class="text-blak medium pt-1 fw-bold"><asp:Label ID="LabelModalMapaCalorDetalle_pe" runat="server"></asp:Label></span>
                             <br />
-                            <span class="text-success small pt-1 fw-bold">Unidad académica: </span><span
+                            <span class="text-success small pt-1 fw-bold">Unidad Académica: </span><span
                                         class="text-blak medium pt-1 fw-bold"><asp:Label ID="LabelModalMapaCalorDetalle_zp" runat="server"></asp:Label></span>
                             <br />
                         </div>
@@ -1781,7 +1993,7 @@
                             <span class="text-success small pt-1 fw-bold">Periodo escolar: </span><span
                                         class="text-blak medium pt-1 fw-bold"><asp:Label ID="LabelModalMapaCalorDetalleUA_pe" runat="server"></asp:Label></span>
                             <br />
-                            <span class="text-success small pt-1 fw-bold">Unidad académica: </span><span
+                            <span class="text-success small pt-1 fw-bold">Unidad Académica: </span><span
                                         class="text-blak medium pt-1 fw-bold"><asp:Label ID="LabelModalMapaCalorDetalleUA_zp" runat="server"></asp:Label></span>
                             <br />
                             <span class="text-success small pt-1 fw-bold">Modalidad: </span><span
@@ -1875,7 +2087,7 @@
 
                                                     <%--Dropdown UnidadAcademica_resumen--%>
                                                     <div class="col-xl-12 mb-2">
-                                                        <h6 class="h6 mb-2 mt-1 text-dark font-weight-bolder">Unidad académica: </h6>
+                                                        <h6 class="h6 mb-2 mt-1 text-dark font-weight-bolder">Unidad Académica: </h6>
                                                         <asp:DropDownList ID="DropDownListUnidadAcademica_resumen" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceUnidadAcademica_resumen"
                                                             DataTextField="DESCRIPCION_DP" DataValueField="CLAVE_ZP" CssClass="form-select" data-control="select2"
                                                             OnDataBound="DropDownListUnidadAcademica_resumen_DataBound"
@@ -2082,6 +2294,12 @@
                 prm.add_endRequest(function (sender, e) {
                     $(function () {
                         LoadInitialFunctions();
+
+                        var x = $("[id*=HiddenFieldMousePosition_x]").val();
+                        var y = $("[id*=HiddenFieldMousePosition_y]").val();
+
+                        $(window).scrollTop(y);
+
                     });
                 });
             }
@@ -2105,7 +2323,280 @@
             enableLoadingOverlay();
             hideLoadingOverlay();   
             habilitarSelect2();
+
+            validarPosicion();
+            transformValue();
+            validarRegistroSuccess();
         
+        }
+
+        function restablecerContacto() {
+            $("[id*=InputNuevoNombramiento_correo]").val("");
+            $("[id*=InputNuevoNombramiento_celular]").val("");
+            $("[id*=InputNuevoNombramiento_extension]").val("");
+            $("[id*=InputNuevoNombramiento_correo]").removeClass("is-invalid");
+            $("[id*=InputNuevoNombramiento_correo]").removeClass("is-valid");
+            $("[id*=InputNuevoNombramiento_celular]").removeClass("is-invalid");
+            $("[id*=InputNuevoNombramiento_celular]").removeClass("is-valid");
+            $("[id*=InputNuevoNombramiento_extension]").removeClass("is-invalid");
+            $("[id*=InputNuevoNombramiento_extension]").removeClass("is-valid");
+            $("#errorCorreo").val(0);
+        }
+
+        function validarTermino() {
+
+            var i = $("[id*=InputNuevoNombramiento_fechaInicio]").val();
+            var fin = document.getElementById("<%= InputNuevoNombramiento_fechaFin.ClientID %>");
+
+            if (i.trim().length != 0) {
+
+                fin.removeAttribute("disabled");
+                fin.min = i;
+
+                let f = $("[id*=InputNuevoNombramiento_fechaFin]").val();
+
+                if (f.trim()-length != 0) {
+
+                    let fI = new Date(i).getTime();
+                    let fF = new Date(f).getTime();
+
+                    let fD = fF - fI;
+
+                    if (fD < 0) {
+                        $("[id*=InputNuevoNombramiento_fechaFin]").val("");
+                    }
+                }
+
+            } else {
+                $("[id*=InputNuevoNombramiento_fechaFin]").val("");
+                fin.setAttribute("disabled", true);
+            }
+
+
+        }
+
+        function validarEmpleado() {
+
+            let st = 0;
+
+            restablecerContacto();
+
+            setTimeout(function () {
+
+                let empleado = $("[id*=InputNuevoNombramiento_empleado]").val();
+
+                $.ajax({
+                    type: "POST",
+                    url: "Dashboard.aspx/ValidarEmpleadoUsuario",
+                    data: JSON.stringify({ empleado }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (response) {
+
+                        st = response.d;
+
+                        if (st == 0) {
+
+                            $("#divAlertaUsuarioSuc_empleado").hide();
+                            $("#SpanModalNuevoNombramiento_nombre").text("");
+                            $("[id*=InputNuevoNombramiento_empleado]").removeClass("is-valid");
+                            $("[id*=InputNuevoNombramiento_empleado]").addClass("is-invalid");
+
+                            $("#divAlertaUsuarioDgr_empleado").show();
+
+                            $("[id*=divNuevoNombramiento_contacto]").hide();
+
+                        }
+                        else {
+
+                            $("#divAlertaUsuarioDgr_empleado").hide();
+
+                            $("[id*=InputNuevoNombramiento_empleado]").removeClass("is-invalid");
+                            $("[id*=InputNuevoNombramiento_empleado]").addClass("is-valid");
+
+                            $("#divAlertaUsuarioSuc_empleado").show();
+                            $("#SpanModalNuevoNombramiento_nombre").text(st);
+
+                            $("[id*=divNuevoNombramiento_contacto]").show("slow");
+
+                        }
+                    },
+                    error: function (response) {
+                        console.log(response);
+                    }
+                });
+
+            }, 100);
+
+        }
+
+        function validarCorreo(element) {
+
+            var id = element.id;
+            var validEmail = /^\w+([.-_+]?\w+)*@\w+([.-]?\w+)*(\.\w{2,10})+$/;
+
+            $("#" + id).removeClass("is-valid");
+            $("#" + id).removeClass("is-invalid");
+
+            if (validEmail.test(jQuery('#' + id).val())) {
+                $("#" + id).addClass("is-valid");
+                $("#errorCorreo").val(0);
+                return true;
+            } else {
+                $("#errorCorreo").val(1);
+                $("#" + id).addClass("is-invalid");
+                return false;
+            }
+        }
+
+        function transformValue() {
+
+            $('.number').keyup(function (event) {
+                $(this).val(function (_, val) {
+                    return val.replace(/[^0-9]/g, '')
+                });
+            });
+
+            $('.numberArr').keyup(function (event) {
+                $(this).val(function (_, val) {
+                    return val.replace(/[^0-9,]/g, '')
+                });
+            });
+
+            $('.lowerText').keyup(function (event) {
+                $(this).val(function (_, val) {
+                    return val.toLowerCase();
+                });
+            });
+
+        }
+
+        function GuardarNombramiento(accion) {
+
+            var error = "";
+            var values = [];
+
+            var zp = $("[id*=DropDownListNuevoNombramiento_ua]").val();
+            var uad = $("[id*=DropDownListNuevoNombramiento_uad]").val();
+            var tip = $("[id*=DropDownListNuevoNombramiento_tipo]").val();
+
+
+            var ini = $("[id*=InputNuevoNombramiento_fechaInicio]").val();
+            var fin = $("[id*=InputNuevoNombramiento_fechaFin]").val();
+
+            var nemp = $("[id*=InputNuevoNombramiento_empleado]").val();
+            var email = $("[id*=InputNuevoNombramiento_correo]").val();
+            var cel = $("[id*=InputNuevoNombramiento_celular]").val();
+            var ext = $("[id*=InputNuevoNombramiento_extension]").val();
+
+            var nomb = $("[id*=fileUploadNombramiento]").val();
+            
+            var estatus = $("#HiddenEmpleado_estatus").val();
+            var errC = $("#errorCorreo").val();
+
+            var title, title2, text, text2, confirmBtnColor, confirmBtnText = "";
+
+            if ((nemp.trim().length) == 0 || (zp.trim().length) == 0 || (uad.trim().length) == 0 || (tip.trim().length) == 0 || (ini.trim().length) == 0 || (fin.trim().length) == 0 || (email.trim().length) == 0 || (cel.trim().length) == 0 || (ext.trim().length) == 0 || (nomb.trim().length) == 0 || estatus == 1 || errC == 1) {
+
+
+                if ((zp.trim().length) == 0) {
+                    error += "<br>Seleccione la Unidad Académica";
+                }
+                if ((uad.trim().length) == 0) {
+                    error += "<br>Seleccione la unidad administrativa";
+                }
+                if ((tip.trim().length) == 0) {
+                    error += "<br>Seleccione el tipo de nombramiento";
+                }
+
+                if ((nemp.trim().length) == 0) {
+                    error += "<br>Introduzca el número de empleado";
+                }
+
+                if (ini.trim() === "") {
+                    error += "<br>Seleccione la fecha de inicio";
+                }
+                if (fin.trim() === "") {
+                    error += "<br>Seleccione la fecha de término";
+                }
+
+                if (email.trim() == "") {
+                    error += "<br>Introduce el correo electrónico";
+                } 
+                if (cel.trim() == "") {
+                    error += "<br>Introduce el número celular";
+                } 
+                if (ext.trim() == "") {
+                    error += "<br>Introduce la extensión telefónica";
+                } 
+                if (nomb.trim() == "") {
+                    error += "<br>Selecciona el documento del nombramiento";
+                } 
+                if (errC == 1) {
+                    error += "<br>Verifica la estructura del correo";
+                }
+
+                error += "<hr>"
+
+                Swal.fire({
+                    icon: "warning",
+                    title: "Captura incompleta",
+                    html: error,
+                    confirmButtonColor: "#838181",
+                    confirmButtonText: "Entendido"
+                });
+
+            } else {
+
+                const dt = new Date();
+
+                let t = dt.getTime();
+                let end = t.toString();
+
+                switch (accion) {
+                    case "agregar":
+                        title = "seguro de querer agregar?";
+                        title2 = "Agregado";
+                        text = "El funcionario formará parte de la información de la unidad.";
+                        text2 = "El nombramiento ha sido registrado.";
+                        confirmBtnColor = "#54c037";
+                        confirmBtnText = "Si, registrar";
+                        bttnUpdate = "ButtonUpdateNombramiento_nuevo";
+                        break;
+                }
+
+                Swal.fire({
+                    title: title,
+                    text: text,
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: confirmBtnColor,
+                    cancelButtonColor: "#838181",
+                    confirmButtonText: confirmBtnText,
+                    cancelButtonText: "Cancelar"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $("[id*='" + bttnUpdate + "']").click();
+                    }
+                });
+            }
+
+        }
+
+        function validarRegistroSuccess() {
+
+            var success = $("[id*=HiddenFieldAccionRegistrar_success]").val();
+
+            if (success == "1") {
+                Swal.fire({
+                    position: "center",
+                    icon: "success",
+                    title: "La información se ha registrado correctamente.",
+                    showConfirmButton: false,
+                    timer: 3500
+                });
+                $("[id*=HiddenFieldAccionRegistrar_success]").val("0");
+            }
         }
 
         function verificarDatos() {
@@ -2114,8 +2605,45 @@
             var pe = document.getElementById('<%= LabelPE.ClientID %>').innerHTML;
             var ZPname = document.getElementById('<%= LabelZPDesc.ClientID %>').innerHTML;
             var perfil = document.getElementById('<% = LabelPerfil.ClientID%>').innerHTML.toString();
+            var y = $("[id*=HiddenFieldMousePosition_y]").val();
 
-            console.log("\nzp: "+zp+"\npe: "+pe);
+            console.log("\nzp: " + zp + "\npe: " + pe + "\ny: " + y);
+        }
+
+        function previewImage(input) {
+            console.log("preview: ");
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#<%= imgPreview.ClientID %>').attr('src', e.target.result);
+                    $('#<%= imgPreview.ClientID %>').show();
+                    $('#<%= imgPreview.ClientID %>').css('display', 'block');
+
+                    };
+
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+
+        function validarPosicion() {
+
+            var y = 0;
+
+            $('[class*=click-posicion]').click(function () {
+
+                let id = $(this).attr('id');
+                y = parseInt($('#' + id).offset().top);
+                $("[id*=HiddenFieldMousePosition_y]").val(y - 50);
+            });
+
+            $('[class*=select-posicion]').change(function () {
+
+                let id = $(this).attr('id');
+                y = parseInt($('#' + id).offset().top);
+                $("[id*=HiddenFieldMousePosition_y]").val(y - 50);
+            });
+
         }
 
         function hideLoadingOverlay() {
@@ -2152,6 +2680,18 @@
             $("[id*=DropDownListUnidadAdministrativa_resumen]").select2({
                 theme: 'bootstrap-5',
                 dropdownParent: $('#ModalDetalleUnidadAdministrativa .modal-body')
+            });
+            $("[id*=DropDownListNuevoNombramiento_ua]").select2({
+                theme: 'bootstrap-5',
+                dropdownParent: $('#ModalNuevoNombramiento .modal-body')
+            });
+            $("[id*=DropDownListNuevoNombramiento_uad]").select2({
+                theme: 'bootstrap-5',
+                dropdownParent: $('#ModalNuevoNombramiento .modal-body')
+            });
+            $("[id*=DropDownListNuevoNombramiento_tipo]").select2({
+                theme: 'bootstrap-5',
+                dropdownParent: $('#ModalNuevoNombramiento .modal-body')
             });
 
         }

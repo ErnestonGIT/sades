@@ -107,19 +107,27 @@ public partial class PeticionEstatus : System.Web.UI.Page
     {
         string zp = LabelZP.Text;
         string cate = DropDownListEstatusPeticion_categoria.SelectedValue.ToString();
+        string subcate = DropDownListEstatusPeticion_subcategoria.SelectedValue.ToString();
 
         LabelBreadCrumbZP_name.Text = String.IsNullOrEmpty(zp) == true ? emptyZP_name : GetUaDesciption(zp);
 
-        LabelTotalPeticiones_pendientes.Text = Consultas.ConsultaS("select COUNT(ID_PETICION) from PETICIONES inner join PLIEGO pli on pli.ID_PLIEGO = PETICIONES.ID_PLIEGO where ID_EST_PETICION = 1 and pli.CLAVE_ZP like '"+ zp +"%' and ID_CAT_PETICION like '"+ cate +"%'");
-        LabelTotalPeticiones_proceso.Text = Consultas.ConsultaS("select COUNT(ID_PETICION) from PETICIONES inner join PLIEGO pli on pli.ID_PLIEGO = PETICIONES.ID_PLIEGO where ID_EST_PETICION = 2 and pli.CLAVE_ZP like '"+ zp +"%' and ID_CAT_PETICION like '"+ cate +"%'");
-        LabelTotalPeticiones_atendidas.Text = Consultas.ConsultaS("select COUNT(ID_PETICION) from PETICIONES inner join PLIEGO pli on pli.ID_PLIEGO = PETICIONES.ID_PLIEGO where ID_EST_PETICION = 3 and pli.CLAVE_ZP like '"+ zp +"%' and ID_CAT_PETICION like '"+ cate +"%'");
-        HiddenFieldGraficoGanttPeticiones_datos.Value = Consultas.ConsultaS("select FORMAT(FECHA_PETICION,'yyyy-MM-dd') 'start', FORMAT(FECHA_RESP_PETICION,'yyyy-MM-dd') 'end', completed.amount 'completed.amount', " +
-                                                                                    "SUBSTRING(PETICIONES.DESC_PETICION, 0, 15) 'name' " +
-                                                                            "from PETICIONES  " +
-                                                                            "inner join (select SUBSTRING(CAST(RAND() as nvarchar), 0, 5) amount) completed on completed.amount is not null  " +
-                                                                            "inner join PLIEGO pli on pli.ID_PLIEGO = PETICIONES.ID_PLIEGO  " +
-                                                                            "where FECHA_PETICION is not null and FECHA_RESP_PETICION is not null and pli.CLAVE_ZP like '"+ zp +"%' " +
-                                                                            "for json path");
+        LabelTotalPeticiones_pendientes.Text = Consultas.ConsultaS("select COUNT(ID_PETICION) from PETICIONES inner join PLIEGO pli on pli.ID_PLIEGO = PETICIONES.ID_PLIEGO where ID_EST_PETICION = 1 and pli.CLAVE_ZP like '"+ zp +"%' and ID_CAT_PETICION like '"+ cate +"%' and (ID_SUBCAT_PETICION like '"+ subcate +"%' or ID_SUBCAT_PETICION is null)");
+        LabelTotalPeticiones_proceso.Text = Consultas.ConsultaS("select COUNT(ID_PETICION) from PETICIONES inner join PLIEGO pli on pli.ID_PLIEGO = PETICIONES.ID_PLIEGO where ID_EST_PETICION = 2 and pli.CLAVE_ZP like '"+ zp +"%' and ID_CAT_PETICION like '"+ cate +"%' and (ID_SUBCAT_PETICION like '"+ subcate +"%' or ID_SUBCAT_PETICION is null)");
+        LabelTotalPeticiones_atendidas.Text = Consultas.ConsultaS("select COUNT(ID_PETICION) from PETICIONES inner join PLIEGO pli on pli.ID_PLIEGO = PETICIONES.ID_PLIEGO where ID_EST_PETICION = 3 and pli.CLAVE_ZP like '"+ zp +"%' and ID_CAT_PETICION like '"+ cate +"%' and (ID_SUBCAT_PETICION like '"+ subcate +"%' or ID_SUBCAT_PETICION is null)");
+        HiddenFieldGraficoGanttPeticiones_datos.Value = Consultas.ConsultaS("DECLARE @json_output NVARCHAR(MAX); " +
+                                                                            "SET @json_output = ( " +
+                                                                                "select IIF(FECHA_PETICION is null,(SELECT DATEADD(DAY, ABS(CHECKSUM(NEWID())) % (DATEDIFF(DAY, CAST(DATEFROMPARTS(YEAR(GETDATE()), 1, 1) AS DATE), CAST(DATEFROMPARTS(YEAR(GETDATE()), 12, 15) AS DATE)) + 1), CAST(DATEFROMPARTS(YEAR(GETDATE()), 1, 1) AS DATE))), FORMAT(FECHA_PETICION,'yyyy-MM-dd')) 'start',  " +
+                                                                                    "IIF(FECHA_RESP_PETICION is null,(SELECT DATEADD(DAY, ABS(CHECKSUM(NEWID())) % (DATEDIFF(DAY, CAST(DATEFROMPARTS(YEAR(GETDATE()), 1, 1) AS DATE), CAST(DATEFROMPARTS(YEAR(GETDATE()), 12, 15) AS DATE)) + 1), CAST(DATEFROMPARTS(YEAR(GETDATE()), 1, 1) AS DATE))),FORMAT(FECHA_RESP_PETICION,'yyyy-MM-dd')) 'end', " +
+                                                                                    "completed.amount 'completed.amount',  " +
+                                                                                    "PETICIONES.DESC_PETICION 'name'  " +
+                                                                                    "from PETICIONES   " +
+                                                                                    "inner join (select SUBSTRING(CAST(RAND() as nvarchar), 0, 5) amount) completed on completed.amount is not null   " +
+                                                                                    "inner join PLIEGO pli on pli.ID_PLIEGO = PETICIONES.ID_PLIEGO   " +
+                                                                                "where pli.CLAVE_ZP like '"+ zp +"%' and ID_CAT_PETICION like '"+ cate +"%' and (ID_SUBCAT_PETICION like '"+ subcate +"%' or ID_SUBCAT_PETICION is null)" +
+                                                                                "for json path " +
+                                                                            ") ; " +
+                                                                            "SELECT @json_output as datos");
+        //"SUBSTRING(PETICIONES.DESC_PETICION, 0, 15) 'name' " +
 
         DataBindGridViewDetallePeticiones();
     }
@@ -129,6 +137,7 @@ public partial class PeticionEstatus : System.Web.UI.Page
     {
         string zp = LabelZP.Text;
         string cate = DropDownListEstatusPeticion_categoria.SelectedValue.ToString();
+        string subcate = DropDownListEstatusPeticion_subcategoria.SelectedValue.ToString();
 
         string totalRows;
 
@@ -139,7 +148,7 @@ public partial class PeticionEstatus : System.Web.UI.Page
                     "inner join PLIEGO pli on pli.ID_PLIEGO = pet.ID_PLIEGO " +
                     "inner join CAT_CATEGORIA_PETICION pet_d on pet_d.ID_CAT_PETICION = pet.ID_CAT_PETICION " +
                     "inner join ESTATUS_PETICION pet_e on pet_e.ID_EST_PETICION = pet.ID_EST_PETICION " +
-                    "where pli.CLAVE_ZP like '"+ zp +"%' and pet.ID_CAT_PETICION like '"+ cate +"%'";
+                    "where pli.CLAVE_ZP like '"+ zp +"%' and pet.ID_CAT_PETICION like '"+ cate +"%' and pet.ID_SUBCAT_PETICION like '"+ subcate +"%'";
 
         using (SqlConnection con = new SqlConnection(constr))
         {
@@ -156,9 +165,14 @@ public partial class PeticionEstatus : System.Web.UI.Page
                     GridViewDetallePeticiones.DataBind();
                     GridViewDetallePeticiones.PageIndex = 0;
 
-                    if(!String.IsNullOrEmpty(zp) || !String.IsNullOrEmpty(cate))
+                    if(!String.IsNullOrEmpty(zp) || !String.IsNullOrEmpty(cate) || !String.IsNullOrEmpty(subcate))
                     {
                         LabelEstatusPeticionFiltro_total.Text = totalRows;
+
+                        if (DropDownListEstatusPeticion_ua.Enabled == false && String.IsNullOrEmpty(cate))
+                        {
+                            LabelEstatusPeticionFiltro_total.Text = "";
+                        }
                     }
                     else
                     {
@@ -176,7 +190,7 @@ public partial class PeticionEstatus : System.Web.UI.Page
     }
     protected void DropDownListEstatusPeticion_ua_DataBound(object sender, EventArgs e)
     {
-        DropDownListEstatusPeticion_ua.Items.Insert(0, new System.Web.UI.WebControls.ListItem("Unidad académica", ""));
+        DropDownListEstatusPeticion_ua.Items.Insert(0, new System.Web.UI.WebControls.ListItem("Unidad Académica", ""));
     }
     protected void DropDownListEstatusPeticion_ua_SelectedIndexChanged(object sender, EventArgs e)
     {
@@ -203,6 +217,15 @@ public partial class PeticionEstatus : System.Web.UI.Page
     }
 
 
+    protected void DropDownListEstatusPeticion_subcategoria_DataBound(object sender, EventArgs e)
+    {
+        DropDownListEstatusPeticion_subcategoria.Items.Insert(0, new System.Web.UI.WebControls.ListItem("Sub categoría", ""));
+    }
+    protected void DropDownListEstatusPeticion_subcategoria_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        ActualizarEstadisticas();
+    }
+
     private void RestaurarDropDownListEstatus(int nivel)
     {
         switch (nivel)
@@ -210,10 +233,15 @@ public partial class PeticionEstatus : System.Web.UI.Page
             case 0:
                 DropDownListEstatusPeticion_ua.DataBind();
                 ClearAndInsertItem(DropDownListEstatusPeticion_categoria);
+                ClearAndInsertItem(DropDownListEstatusPeticion_subcategoria);
                 LabelZP.Text = string.Empty;
                 break;
             case 1:
                 ClearAndInsertItem(DropDownListEstatusPeticion_categoria);
+                ClearAndInsertItem(DropDownListEstatusPeticion_subcategoria);
+                break;
+            case 2:
+                ClearAndInsertItem(DropDownListEstatusPeticion_subcategoria);
                 break;
         }
 
@@ -222,10 +250,10 @@ public partial class PeticionEstatus : System.Web.UI.Page
     {
         dropDownList.ClearSelection();
         dropDownList.Items.Clear();
-        if (!dropDownList.Items.Contains(new ListItem("Seleccionar", "")))
-        {
-            dropDownList.Items.Insert(0, new ListItem("Seleccionar", ""));
-        }
+        //if (!dropDownList.Items.Contains(new ListItem("Seleccionar", "")))
+        //{
+        //    dropDownList.Items.Insert(0, new ListItem("Seleccionar", ""));
+        //}
     }
     protected void LinkButtonFiltroEstatusPeticion_limpiar_Click(object sender, EventArgs e)
     {
@@ -305,4 +333,6 @@ public partial class PeticionEstatus : System.Web.UI.Page
         }
 
     }
+
+
 }

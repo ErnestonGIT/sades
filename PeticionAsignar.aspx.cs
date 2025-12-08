@@ -1,13 +1,15 @@
-﻿using DocumentFormat.OpenXml.Office2010.Word;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.ServiceModel.Channels;
 using System.Web;
-using System.Web.UI;
+using System.Web.UI;//using System.Web.UI.WebControls;
 using System.Web.UI.WebControls;
 using System.Windows.Forms;
 
@@ -137,19 +139,26 @@ public partial class PeticionAsignar : System.Web.UI.Page
                 DropDownListAsignarPeticion_ua.DataBind();
                 ClearAndInsertItem(DropDownListAsignarPeticion_pliego);
                 ClearAndInsertItem(DropDownListAsignarPeticion_categoria);
+                ClearAndInsertItem(DropDownListAsignarPeticion_subcategoria);
                 ClearAndInsertItem(DropDownListAsignarPeticion_peticion);
                 LabelZP.Text = string.Empty;
                 break;
             case 1:
                 ClearAndInsertItem(DropDownListAsignarPeticion_pliego);
                 ClearAndInsertItem(DropDownListAsignarPeticion_categoria);
+                ClearAndInsertItem(DropDownListAsignarPeticion_subcategoria);
                 ClearAndInsertItem(DropDownListAsignarPeticion_peticion);
                 break;
             case 2:
                 ClearAndInsertItem(DropDownListAsignarPeticion_categoria);
+                ClearAndInsertItem(DropDownListAsignarPeticion_subcategoria);
                 ClearAndInsertItem(DropDownListAsignarPeticion_peticion);
                 break;
             case 3:
+                ClearAndInsertItem(DropDownListAsignarPeticion_subcategoria);
+                ClearAndInsertItem(DropDownListAsignarPeticion_peticion);
+                break;
+            case 4:
                 ClearAndInsertItem(DropDownListAsignarPeticion_peticion);
                 break;
         }
@@ -161,17 +170,23 @@ public partial class PeticionAsignar : System.Web.UI.Page
         HiddenFieldMensajeRegistroExitoso_estatus.Value = string.Empty;
         HiddenFieldPeticionEliminar_id.Value = string.Empty;
 
+        LabelRegistrarGarantiaNotificacion_responsable.Text = string.Empty;
+        TextBoxRegistrarGarantiaNotificacion_correo.Text = string.Empty;
+
         DivAsignarPeticion_asignaciones.Visible = false;
         DivAsignarPeticion_unidades.Visible = false;
+        DivRegistrarGarantiaNotificacion_contenido.Visible = false;
+
+
     }
     private void ClearAndInsertItem(DropDownList dropDownList)
     {
         dropDownList.ClearSelection();
         dropDownList.Items.Clear();
-        if (!dropDownList.Items.Contains(new ListItem("Seleccionar", "")))
-        {
-            dropDownList.Items.Insert(0, new ListItem("Seleccionar", ""));
-        }
+        //if (!dropDownList.Items.Contains(new ListItem("Seleccionar", "")))
+        //{
+        //    dropDownList.Items.Insert(0, new ListItem("Seleccionar", ""));
+        //}
     }
 
 
@@ -207,9 +222,16 @@ public partial class PeticionAsignar : System.Web.UI.Page
     protected void DropDownListAsignarPeticion_categoria_SelectedIndexChanged(object sender, EventArgs e)
     {
         RestaurarDropDownListAsignar(3);
+    }
+    protected void DropDownListAsignarPeticion_subcategoria_DataBound(object sender, EventArgs e)
+    {
+        DropDownListAsignarPeticion_subcategoria.Items.Insert(0, new System.Web.UI.WebControls.ListItem("Seleccionar", ""));
+    }
+    protected void DropDownListAsignarPeticion_subcategoria_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        RestaurarDropDownListAsignar(4);
         DataBindDropDownListAsignarPeticion_peticion();
     }
-    
 
     protected void DropDownListAsignarPeticion_peticion_DataBound(object sender, EventArgs e)
     {
@@ -230,6 +252,7 @@ public partial class PeticionAsignar : System.Web.UI.Page
         string andListId = "";
         string stringListId = HiddenFieldDivPeticiones_selected.Value;
         string categoriaId = DropDownListAsignarPeticion_categoria.SelectedValue.ToString();
+        string subcategoriaId = DropDownListAsignarPeticion_subcategoria.SelectedValue.ToString();
         string pliegoId = DropDownListAsignarPeticion_pliego.SelectedValue.ToString();
 
         if (!String.IsNullOrEmpty(stringListId))
@@ -239,7 +262,7 @@ public partial class PeticionAsignar : System.Web.UI.Page
 
         string query = "select pet.ID_PETICION, pet.DESC_PETICION " +
                                 "from PETICIONES pet " +
-                                "where pet.ID_CAT_PETICION = '"+ categoriaId +"' and ID_PLIEGO = '"+ pliegoId +"' "+ andListId +"";
+                                "where pet.ID_CAT_PETICION = '"+ categoriaId +"' and ID_PLIEGO = '"+ pliegoId +"' and pet.ID_SUBCAT_PETICION = '"+ subcategoriaId +"' "+ andListId +"";
 
         using (SqlConnection con = new SqlConnection(constr))
         {
@@ -321,6 +344,10 @@ public partial class PeticionAsignar : System.Web.UI.Page
                 DivAsignarPeticion_asignaciones.Visible = false;
                 DivAsignarPeticion_unidades.Visible = false;
                 HiddenFieldDivUnidad_selected.Value = string.Empty;
+
+                LabelRegistrarGarantiaNotificacion_responsable.Text = string.Empty;
+                TextBoxRegistrarGarantiaNotificacion_correo.Text = string.Empty;
+                DivRegistrarGarantiaNotificacion_contenido.Visible = false;
             }
 
         }
@@ -342,6 +369,7 @@ public partial class PeticionAsignar : System.Web.UI.Page
             MostrarAlertPeticion();
             DataBindDropDownListAsignarPeticion_peticion();
         }
+
     }
     private List<int> AgregarListaPeticionesId()
     {
@@ -447,6 +475,24 @@ public partial class PeticionAsignar : System.Web.UI.Page
         btn.CssClass = "btn btn-sm btn-outline-success LoadingOverlay";
         rowGV.BackColor = System.Drawing.Color.LightGray;
 
+        string zp = LabelZP.Text;
+        int perfilExist = Consultas.ConsultaInt("select COUNT(ID_USER) total from AUTORIDADES_ZP where CLAVE_ZP = '"+ zp +"' and ID_PERFIL = '"+ idPerfil +"' and ESTATUS = 1");
+
+        if (perfilExist == 1)
+        {
+            int idUsuario = Consultas.ConsultaInt("select ID_USER from AUTORIDADES_ZP where CLAVE_ZP = '"+ zp +"' and ID_PERFIL = '"+ idPerfil +"' and ESTATUS = 1");
+
+            LabelRegistrarGarantiaNotificacion_responsable.Text = Consultas.ConsultaS("select CONCAT(NOMBRE,' ',APELLIDO_PAT, ' ', APELLIDO_MAT) NOMBRE from USERS where ID_USER = '"+ idUsuario +"'");
+            TextBoxRegistrarGarantiaNotificacion_correo.Text = Consultas.ConsultaS("select CORREO from AUTORIDADES_ZP where CLAVE_ZP ='"+ zp +"' and ID_PERFIL = '"+ idPerfil +"' and ESTATUS = 1");
+        }
+        else
+        {
+            LabelRegistrarGarantiaNotificacion_responsable.Text = "Sin datos registrados";
+            TextBoxRegistrarGarantiaNotificacion_correo.Text = string.Empty;
+        }
+
+            DivRegistrarGarantiaNotificacion_contenido.Visible = true;
+
     }
     private void InsertarAsignacion()
     {
@@ -454,6 +500,7 @@ public partial class PeticionAsignar : System.Web.UI.Page
         string peticionId = HiddenFieldDivPeticiones_selected.Value;
         string unidad = HiddenFieldDivUnidad_selected.Value;
         string descUnidad = Consultas.ConsultaS("select DESCRIPCION from CAT_PERFILES  where ID_PERFIL = '"+ unidad +"'");
+        string correo = TextBoxRegistrarGarantiaNotificacion_correo.Text;
 
         int idAsignacion = ObtenerIdAsignacion_siguiente();
 
@@ -465,7 +512,12 @@ public partial class PeticionAsignar : System.Web.UI.Page
             foreach (var id in stringId)
             {
                 int intId = Convert.ToInt32(id);
+                string limite = Consultas.ConsultaS("select IIF(FECHA_RESP_PETICION is null, 'sin dato registrado', FORMAT(FECHA_RESP_PETICION ,'dddd dd MMMM, yyyy', 'es-ES'))LIMITE from PETICIONES where ID_PETICION = '"+ intId +"'");
+
                 Consultas.miInsert("insert into ASIGNACION_PETICION (ID_ASIGNACION, CLAVE_ZP, ID_PETICION, ID_PERFIL, DESC_UNIDAD) values('"+ idAsignacion +"','"+ zp +"','"+ intId +"','"+ unidad +"','"+ descUnidad +"')");
+
+                string descPeticion = Consultas.ConsultaS("select DESC_PETICION from PETICIONES where ID_PETICION = '"+ intId +"'");
+                enviarCorreoAsignacion(correo, DropDownListAsignarPeticion_pliego.SelectedItem.Text, DropDownListAsignarPeticion_categoria.SelectedItem.Text, DropDownListAsignarPeticion_subcategoria.SelectedItem.Text, descPeticion, limite);
             }
 
         }
@@ -475,13 +527,101 @@ public partial class PeticionAsignar : System.Web.UI.Page
     {
         return Consultas.ConsultaInt("select COUNT(distinct ID_ASIGNACION) + 1 ID from ASIGNACION_PETICION");
     }
+    public bool enviarCorreoAsignacion(string destino, string plie, string cate, string subc, string peti, string lim)
+    {
+        System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
+
+        var mail = new MailMessage();
+        var smtp = new SmtpClient();
+
+        string from = "saiee.i.p.n.m.x@gmail.com";
+        string fromAlias = "sades@ipn.mx";
+        string password = "tjzq ixji anst dccv";
+
+        string html = "<!DOCTYPE html>\r\n<html>\r\n\r\n<head>\r\n    <title></title>\r\n    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\r\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\r\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />\r\n    <style type=\"text/css\">\r\n        @media screen {\r\n            @font-face {\r\n                font-family: \\'Lato\\';\r\n                font-style: normal;\r\n                font-weight: 400;\r\n                src: local(\\'Lato Regular\\'), local(\\'Lato-Regular\\'), url(https://fonts.gstatic.com/s/lato/v11/qIIYRU-oROkIk8vfvxw6QvesZW2xOQ-xsNqO47m55DA.woff) format(\\'woff\\');\r\n            }\r\n\r\n            @font-face {\r\n                font-family: \\'Lato\\';\r\n                font-style: normal;\r\n                font-weight: 700;\r\n                src: local(\\'Lato Bold\\'), local(\\'Lato-Bold\\'), url(https://fonts.gstatic.com/s/lato/v11/qdgUG4U09HnJwhYI-uK18wLUuEpTyoUstqEm5AMlJo4.woff) format(\\'woff\\');\r\n            }\r\n\r\n            @font-face {\r\n                font-family: \\'Lato\\';\r\n                font-style: italic;\r\n                font-weight: 400;\r\n                src: local(\\'Lato Italic\\'), local(\\'Lato-Italic\\'), url(https://fonts.gstatic.com/s/lato/v11/RYyZNoeFgb0l7W3Vu1aSWOvvDin1pK8aKteLpeZ5c0A.woff) format(\\'woff\\');\r\n            }\r\n\r\n            @font-face {\r\n                font-family: \\'Lato\\';\r\n                font-style: italic;\r\n                font-weight: 700;\r\n                src: local(\\'Lato Bold Italic\\'), local(\\'Lato-BoldItalic\\'), url(https://fonts.gstatic.com/s/lato/v11/HkF_qI1x_noxlxhrhMQYELO3LdcAZYWl9Si6vvxL-qU.woff) format(\\'woff\\');\r\n            }\r\n        }\r\n\r\n        /* CLIENT-SPECIFIC STYLES */\r\n        body,\r\n        table,\r\n        td,\r\n        a {\r\n            -webkit-text-size-adjust: 100%;\r\n            -ms-text-size-adjust: 100%;\r\n        }\r\n\r\n        table,\r\n        td {\r\n            mso-table-lspace: 0pt;\r\n            mso-table-rspace: 0pt;\r\n        }\r\n\r\n        img {\r\n            -ms-interpolation-mode: bicubic;\r\n        }\r\n\r\n        /* RESET STYLES */\r\n        img {\r\n            border: 0;\r\n            height: auto;\r\n            line-height: 100%;\r\n            outline: none;\r\n            text-decoration: none;\r\n        }\r\n\r\n        table {\r\n            border-collapse: collapse !important;\r\n        }\r\n\r\n        body {\r\n            height: 100% !important;\r\n            margin: 0 !important;\r\n            padding: 0 !important;\r\n            width: 100% !important;\r\n        }\r\n\r\n        /* iOS BLUE LINKS */\r\n        a[x-apple-data-detectors] {\r\n            color: inherit !important;\r\n            text-decoration: none !important;\r\n            font-size: inherit !important;\r\n            font-family: inherit !important;\r\n            font-weight: inherit !important;\r\n            line-height: inherit !important;\r\n        }\r\n\r\n        /* MOBILE STYLES */\r\n        @media screen and (max-width:600px) {\r\n            h1 {\r\n                font-size: 32px !important;\r\n                line-height: 32px !important;\r\n            }\r\n        }\r\n\r\n        /* ANDROID CENTER FIX */\r\n        div[style*=\"margin: 16px 0;\"] {\r\n            margin: 0 !important;\r\n        }\r\n\r\n    </style>\r\n</head>\r\n<body style=\"background-color: #f4f4f4; margin: 0 !important; padding: 0 !important;\">\r\n\r\n    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\r\n        <!-- LOGO -->\r\n        <tr>\r\n            <td bgcolor=\"#872456\" align=\"center\">\r\n                <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"max-width: 600px;\">\r\n                    <tr>\r\n                        <td align=\"center\" valign=\"top\" style=\"padding: 40px 10px 40px 10px;\"> </td>\r\n                    </tr>\r\n                </table>\r\n            </td>\r\n        </tr>\r\n        <tr>\r\n            <td bgcolor=\"#872456\" align=\"center\" style=\"padding: 0px 10px 0px 10px;\">\r\n                <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"max-width: 600px;\">\r\n                    <tr>\r\n                        <td bgcolor=\"#ffffff\" align=\"center\" valign=\"top\" style=\"padding: 40px 20px 20px 20px; border-radius: 4px 4px 0px 0px; color: #111111; font-family: \\'Lato\\', Helvetica, Arial, sans-serif; font-size: 48px; font-weight: 400; letter-spacing: 4px; line-height: 48px;\">\r\n                            <h1 style=\"font-size: 40px; font-weight: 400; margin: 2;\">Asignación de petición!</h1> <img src=\"http://148.204.112.186:8081/public/img/sadesCorreo.webp\" width=\"125\" height=\"120\" style=\"display: block; border: 0px;\" />\r\n                        </td>\r\n                    </tr>\r\n                </table>\r\n            </td>\r\n        </tr>\r\n        <tr>\r\n            <td bgcolor=\"#f4f4f4\" align=\"center\" style=\"padding: 0px 10px 0px 10px;\">\r\n                <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"max-width: 600px;\">\r\n                    <tr>\r\n                        <td bgcolor=\"#ffffff\" align=\"center\" style=\"padding: 20px 30px 40px 30px; color: #666666; font-family: \\'Lato\\', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;\">\r\n                            <p style=\"margin: 0;\">Bienvenido al Sistema de Apoyo para la Dirección de Educación Superior <strong>SADES</strong>.</p>\r\n                            <br>\r\n                            <p style=\"margin: 0;\">Una vez realizado el análisis al contenido de la solicitud realizada a la Unidad Académica y considerando el ámbito de atribución de la Unidad Administrativa que se encuentra a su cargo, le ha sido asignada la siguiente solicitud. .</p><br></td></tr> " +
+            "<tr> " +
+            "<td bgcolor=\"#ffffff\" align=\"left\" style=\"padding: 0px 30px 0px 30px; color: #666666; font-family: \\'Lato\\', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;\"> " +
+            "<table style=\"width: 85%\" border=\"1\" align=\"center\"> " +
+                "<tr > " +
+                    "<th >Pliego</th> " +
+                    "<th >Categoría</th> " +
+                    "<th >Sub categoría</th> " +
+                    "<th >Petición</th> " +
+                    "<th >Límite para atención</th> " +
+                "</tr> " +
+                "<tr align=\"center\"> " +
+                    "<td >"+ plie +"</td> " +
+                    "<td >"+ cate +"</td> " +
+                    "<td >"+ subc +"</td> " +
+                    "<td >"+ peti +"</td> " +
+                    "<td >"+ lim +"</td> " +
+                "</tr> " +
+            "</table> " +
+            "</td> " +
+            "</tr> " +
+            "<tr>\r\n                        <td bgcolor=\"#ffffff\" align=\"left\">\r\n                            <table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\r\n                                <tr>\r\n                                    <td bgcolor=\"#ffffff\" align=\"center\" style=\"padding: 40px 30px 10px 30px;\"> " +
+            "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\"> " +
+                "<tr> " +
+                    "<td align=\"center\" style=\"border-radius: 3px;\" bgcolor=\"#872456\"><a href=\"http://148.204.112.186:8081/\" target=\"_blank\" style=\"font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 2px; border: 1px solid #872456; display: inline-block;\"> " +
+                            "SADES | Ingresar</a> " +
+                        "</td> " +
+                "</tr> " +
+            "</table>\r\n                                    </td>\r\n                                </tr>\r\n                            </table>\r\n                        </td>\r\n                    </tr>\r\n\r\n                    <tr>\r\n                        <td bgcolor=\"#ffffff\" align=\"center\" style=\"padding: 0px 30px 40px 30px; border-radius: 0px 0px 4px 4px; color: #666666; font-family: \\'Lato\\', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 400; line-height: 25px;\">\r\n                            <img src=\"https://ipn.mx/assets/files/imageninstitucional/img/identidad/logotipos/portada-vertical.jpg\" height=\"200\" style=\"display: block; border: 0px;\" />\r\n                        </td>\r\n                    </tr>\r\n                </table>\r\n            </td>\r\n        </tr>\r\n\r\n        <tr>\r\n            <td bgcolor=\"#f4f4f4\" align=\"center\" style=\"padding: 0px 10px 0px 10px;\">\r\n                <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"max-width: 600px;\">\r\n                    <tr>\r\n                        <td bgcolor=\"#f4f4f4\" align=\"left\" style=\"padding: 0px 30px 30px 30px; color: #666666; font-family: \\'Lato\\', Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 400; line-height: 18px;\">\r\n                            <br>\r\n                            <p style=\"margin: 0;\">Secretaría Académica | Instituto Politécnico Nacional <a href=\"https://www.ipn.mx/seacademica/\" target=\"_blank\" style=\"color: #111111; font-weight: 700;\">(SECACADEMICA)</a>.</p>\r\n                        </td>\r\n                    </tr>\r\n                </table>\r\n            </td>\r\n        </tr>\r\n    </table>\r\n</body>\r\n</html>";
+
+        try
+        {
+            List<string> destinos = destino.Split(',').ToList();
+
+            foreach (var item in destinos)
+            {
+                mail.To.Add(item);
+            }
+            
+            mail.From = new MailAddress(fromAlias);
+
+            mail.SubjectEncoding = System.Text.Encoding.UTF8;
+
+            mail.Subject = "SADES - Asignación de petición ";
+            mail.Body = html;
+            mail.BodyEncoding = System.Text.Encoding.UTF8;
+            mail.IsBodyHtml = true;
+            mail.Priority = MailPriority.High;
+
+            smtp.Host = ("smtp.gmail.com");
+            smtp.Port = 587;
+
+            smtp.Credentials = new NetworkCredential(from, password);
+            smtp.EnableSsl = true;
+
+            smtp.Send(mail);
+
+            LabelEnvioCorreo_estatus.Text = "El correo se envió correctamente";
+            return true;
+
+        }
+        catch (Exception e)
+        {
+            LabelEnvioCorreo_estatus.Text = e.ToString();
+            return false;
+        }
+
+    }
     protected void LinkButtonAsignarPeticion_guardar_Click(object sender, EventArgs e)
     {
         InsertarAsignacion();
-
-        RestaurarDropDownListAsignar(0);
+        if (!String.IsNullOrEmpty(zp))
+        {
+            DropDownListAsignarPeticion_pliego.DataBind();
+            RestaurarDropDownListAsignar(2);
+        }
+        else
+        {
+            RestaurarDropDownListAsignar(0);
+        }
         ActualizarEstadisticas();
         HiddenFieldMensajeRegistroExitoso_estatus.Value = "1";
+
+
     }
 
 
@@ -491,7 +631,7 @@ public partial class PeticionAsignar : System.Web.UI.Page
         string IdModal = "ModalResumenAsignaciones";
         string zp = LabelZP.Text;
 
-        LabelModalResumenAsignaciones_titulo.Text = "Resúmen de asignaciónes";
+        LabelModalResumenAsignaciones_titulo.Text = "Resumen de asignaciónes";
         LabelModalResumenAsignaciones_subtitulo.Text = String.IsNullOrEmpty(zp) == true ? emptyZP_name : GetUaDesciption(zp); ;
 
         ShowModal(IdModal);
@@ -536,5 +676,7 @@ public partial class PeticionAsignar : System.Web.UI.Page
     {
 
     }
+
+
 
 }

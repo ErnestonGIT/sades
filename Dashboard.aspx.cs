@@ -120,7 +120,7 @@ public partial class Dashboard : System.Web.UI.Page
     }
     private void datosPanelEvento()
     {
-        LabelCardEventosRiesgo_total.Text =  Consultas.ConsultaS("select COUNT(distinct ID) total from EVENTOS_RIESGO where estatus =1");
+        LabelCardEventosRiesgo_total.Text =  "10";
         LabelCardEventosAtendidos_total.Text = "100 %";
         LabelCardDetallePendientes_total.Text = "0 %";
     }
@@ -1465,6 +1465,15 @@ public partial class Dashboard : System.Web.UI.Page
 
 
 
+    protected void DropDownListResumenUnidades_ua_DataBound(object sender, EventArgs e)
+    {
+        DropDownListResumenUnidades_ua.Items.Insert(0, new System.Web.UI.WebControls.ListItem("Buscar unidad", ""));
+    }
+    protected void DropDownListResumenUnidades_ua_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        DataBindGridViewUnidadesAcademicasNS_resumen();
+    }
+
     protected void DropDownListUnidadAcademica_resumen_SelectedIndexChanged(object sender, EventArgs e)
     {
         string zp = DropDownListUnidadAcademica_resumen.SelectedValue.ToString();
@@ -1501,7 +1510,7 @@ public partial class Dashboard : System.Web.UI.Page
         string telefono = "Sin datos registrados";
         string observacion = "";
 
-        string strClass = "alert alert-warning";
+        string strClass = "alert alert-danger";
         string descripcion = "<strong>vacante</strong>";
         string descripcionAnio = "";
 
@@ -1509,13 +1518,13 @@ public partial class Dashboard : System.Web.UI.Page
 
         if (exist == true)
         {
-            int difAnio = Consultas.ConsultaInt("select DATEDIFF(year, (select FORMAT(GETDATE(),'yyyy-M-dd')),FECHA_FIN) MESES from AUTORIDADES_ZP where CLAVE_ZP like '"+ zp +"%' and ID_PERFIL = '"+ idPerfil +"'");
-            int difMes = Consultas.ConsultaInt("select DATEDIFF(month, (select FORMAT(GETDATE(),'yyyy-M-dd')),FECHA_FIN) % 12 MESES from AUTORIDADES_ZP where CLAVE_ZP like '"+ zp +"%' and ID_PERFIL = '"+ idPerfil +"'");
+            int difAnio = Consultas.ConsultaInt("select DATEDIFF(year, (select FORMAT(GETDATE(),'yyyy-M-dd')),FECHA_FIN) MESES from AUTORIDADES_ZP where CLAVE_ZP like '"+ zp +"%' and ID_PERFIL = '"+ idPerfil +"' and ESTATUS = '1'");
+            int difMes = Consultas.ConsultaInt("select DATEDIFF(month, (select FORMAT(GETDATE(),'yyyy-M-dd')),FECHA_FIN) % 12 MESES from AUTORIDADES_ZP where CLAVE_ZP like '"+ zp +"%' and ID_PERFIL = '"+ idPerfil +"' and ESTATUS = '1'");
+            int difDia = Consultas.ConsultaInt("select DATEDIFF(day, (select FORMAT(GETDATE(),'yyyy-M-dd')),FECHA_FIN) dias from AUTORIDADES_ZP where CLAVE_ZP like '"+ zp +"%' and ID_PERFIL = '"+ idPerfil +"' and ESTATUS = '1'");
             int anioAbs = Math.Abs(difAnio);
 
             string idUser = Consultas.ConsultaS("select ID_USER from AUTORIDADES_ZP where CLAVE_ZP = '"+ zp +"' and ID_PERFIL = '"+ idPerfil +"' and ESTATUS = '1'");
-            
-            string  pdf = Consultas.ConsultaS("select CONCAT(CLAVE_ZP,'_',(FORMAT(FECHA_INICIO,'yyyy')),'_',ID_PERFIL,'_',ID_USER,'.pdf') NOMBRAMIENTO from AUTORIDADES_ZP where CLAVE_ZP = '"+ zp +"' and ID_USER = '"+ idUser +"'");
+            string pdf = Consultas.ConsultaS("select IIF(NOMBRAMIENTO is null,(select CONCAT(CLAVE_ZP,'_',(FORMAT(FECHA_INICIO,'yyyy')),'_',ID_PERFIL,'_',ID_USER,'.pdf')), NOMBRAMIENTO) NOMBRAMIENTO from AUTORIDADES_ZP where CLAVE_ZP = '"+ zp +"' and ID_USER = '"+ idUser +"' and ESTATUS = '1'");
 
             if (anioAbs >= 1)
             {
@@ -1534,52 +1543,59 @@ public partial class Dashboard : System.Web.UI.Page
             }
             else
             {
-                descripcion = difMes == 1 ? "vencido hace <strong>"+ descripcionAnio + Math.Abs(difMes) +" mes.</strong>" : "vencido hace <strong>"+ descripcionAnio + Math.Abs(difMes) +" meses.</strong>";
-                strClass = "alert alert-danger";
+                descripcion = difMes == 1 ? "<strong>"+ descripcionAnio + difMes +" mes</strong> restante. " : "<strong>"+ descripcionAnio + difMes +" meses</strong> restantes. ";
+                strClass = "alert alert-success";
+
+                if (difDia < 0)
+                {
+                    descripcion = difMes == 1 ? "vencido hace <strong>"+ descripcionAnio + Math.Abs(difMes) +" mes.</strong>" : "vencido hace <strong>"+ descripcionAnio + Math.Abs(difMes) +" meses.</strong>";
+                    strClass = "alert alert-danger";
+                }
+
             }
 
             nombre = Consultas.ConsultaS("select CONCAT(us.NOMBRE,' ',us.APELLIDO_PAT,' ',APELLIDO_MAT) NOMBRE " +
                                                   "from AUTORIDADES_ZP au  " +
                                                   "inner join USERS us on us.ID_USER = au.ID_USER " +
                                                   "inner join CAT_PERFILES per on per.ID_PERFIL = au.ID_PERFIL " +
-                                                  "where au.CLAVE_ZP = '"+ zp +"' and au.ID_PERFIL = '"+ idPerfil +"'");
+                                                  "where au.CLAVE_ZP = '"+ zp +"' and au.ID_PERFIL = '"+ idPerfil +"' and AU.ESTATUS = '1'");
             cargo = Consultas.ConsultaS("select per.DESCRIPCION " +
                                                   "from AUTORIDADES_ZP au  " +
                                                   "inner join USERS us on us.ID_USER = au.ID_USER " +
                                                   "inner join CAT_PERFILES per on per.ID_PERFIL = au.ID_PERFIL " +
-                                                  "where au.CLAVE_ZP = '"+ zp +"' and au.ID_PERFIL = '"+ idPerfil +"'");
+                                                  "where au.CLAVE_ZP = '"+ zp +"' and au.ID_PERFIL = '"+ idPerfil +"' and AU.ESTATUS = '1'");
             foto = Consultas.ConsultaS("select IIF(au.FOTO is null,'sin_foto.jpg', au.FOTO) FOTO " +
                                                   "from AUTORIDADES_ZP au  " +
                                                   "inner join USERS us on us.ID_USER = au.ID_USER " +
                                                   "inner join CAT_PERFILES per on per.ID_PERFIL = au.ID_PERFIL " +
-                                                  "where au.CLAVE_ZP = '"+ zp +"' and au.ID_PERFIL = '"+ idPerfil +"'");
+                                                  "where au.CLAVE_ZP = '"+ zp +"' and au.ID_PERFIL = '"+ idPerfil +"' and AU.ESTATUS = '1'");
 
             inicio = Consultas.ConsultaS("select FORMAT(au.FECHA_INICIO,'dddd dd MMMM, yyyy', 'es-ES') FECHA_I " +
                                                   "from AUTORIDADES_ZP au  " +
                                                   "inner join USERS us on us.ID_USER = au.ID_USER " +
                                                   "inner join CAT_PERFILES per on per.ID_PERFIL = au.ID_PERFIL " +
-                                                  "where au.CLAVE_ZP = '"+ zp +"' and au.ID_PERFIL = '"+ idPerfil +"'");
+                                                  "where au.CLAVE_ZP = '"+ zp +"' and au.ID_PERFIL = '"+ idPerfil +"' and AU.ESTATUS = '1'");
             fin = Consultas.ConsultaS("select FORMAT(au.FECHA_FIN,'dddd dd MMMM, yyyy', 'es-ES') FECHA_F " +
                                                   "from AUTORIDADES_ZP au  " +
                                                   "inner join USERS us on us.ID_USER = au.ID_USER " +
                                                   "inner join CAT_PERFILES per on per.ID_PERFIL = au.ID_PERFIL " +
-                                                  "where au.CLAVE_ZP = '"+ zp +"' and au.ID_PERFIL = '"+ idPerfil +"'");
+                                                  "where au.CLAVE_ZP = '"+ zp +"' and au.ID_PERFIL = '"+ idPerfil +"' and AU.ESTATUS = '1'");
 
             correo = Consultas.ConsultaS("select au.CORREO " +
                                                   "from AUTORIDADES_ZP au  " +
                                                   "inner join USERS us on us.ID_USER = au.ID_USER " +
                                                   "inner join CAT_PERFILES per on per.ID_PERFIL = au.ID_PERFIL " +
-                                                  "where au.CLAVE_ZP = '"+ zp +"' and au.ID_PERFIL = '"+ idPerfil +"'");
+                                                  "where au.CLAVE_ZP = '"+ zp +"' and au.ID_PERFIL = '"+ idPerfil +"' and AU.ESTATUS = '1'");
             telefono = Consultas.ConsultaS("select au.CELULAR " +
                                                   "from AUTORIDADES_ZP au  " +
                                                   "inner join USERS us on us.ID_USER = au.ID_USER " +
                                                   "inner join CAT_PERFILES per on per.ID_PERFIL = au.ID_PERFIL " +
-                                                  "where au.CLAVE_ZP = '"+ zp +"' and au.ID_PERFIL = '"+ idPerfil +"'");
+                                                  "where au.CLAVE_ZP = '"+ zp +"' and au.ID_PERFIL = '"+ idPerfil +"' and AU.ESTATUS = '1'");
             observacion = Consultas.ConsultaS("select au.OBSERVACION " +
                                                   "from AUTORIDADES_ZP au  " +
                                                   "inner join USERS us on us.ID_USER = au.ID_USER " +
                                                   "inner join CAT_PERFILES per on per.ID_PERFIL = au.ID_PERFIL " +
-                                                  "where au.CLAVE_ZP = '"+ zp +"' and au.ID_PERFIL = '"+ idPerfil +"'");
+                                                  "where au.CLAVE_ZP = '"+ zp +"' and au.ID_PERFIL = '"+ idPerfil +"' and AU.ESTATUS = '1'");
 
             foto = verificarFoto(foto) == true ? foto : "sin_foto.jpg";
 
@@ -1645,7 +1661,7 @@ public partial class Dashboard : System.Web.UI.Page
     }
     private void DataBindGridViewUnidadesAcademicasNS_resumen()
     {
-        string pe = LabelPE.Text;
+        string zp = DropDownListResumenUnidades_ua.SelectedValue.ToString();
 
         string qryNS = "select * " +
                         "from( " +
@@ -1653,7 +1669,7 @@ public partial class Dashboard : System.Web.UI.Page
                             "(select COUNT(CLAVE_ZP) total from AUTORIDADES_ZP where CLAVE_ZP = dp.CLAVE_ZP and FECHA_FIN < (select FORMAT(GETDATE(),'yyyy-M-dd')) and ESTATUS = 1) VENCIDOS , " +
 							"(select ((select COUNT(distinct ID_PERFIL) total from AUTORIDADES_ZP) - COUNT(ID_PERFIL)) TOTAL from AUTORIDADES_ZP where CLAVE_ZP = dp.CLAVE_ZP and estatus = 1) VACANTES " +
                             "from CAT_DEPENDENCIAS_POLITECNICAS dp " +
-                            "where dp.ID_NIVEL_EST = 2 " +
+                            "where dp.ID_NIVEL_EST = 2 and dp.CLAVE_ZP like '"+ zp +"%'" +
                         ")datos " +
                         "order by VENCIDOS desc, DESCRIPCION_DP asc";
 
@@ -1771,12 +1787,13 @@ public partial class Dashboard : System.Web.UI.Page
         bool existSseis = Consultas.ConsultaInt("select COUNT(*) total from AUTORIDADES_ZP where CLAVE_ZP like '"+ zp +"%' and ID_PERFIL = '13' and ESTATUS = '1'") >= 1 ? true : false;
         bool existAdm = Consultas.ConsultaInt("select COUNT(*) total from AUTORIDADES_ZP where CLAVE_ZP like '"+ zp +"%' and ID_PERFIL = '14' and ESTATUS = '1'") >= 1 ? true : false;
 
-        int tDir = Consultas.ConsultaInt("select COUNT(CLAVE_ZP) total from AUTORIDADES_ZP where CLAVE_ZP like '"+ zp +"%' and ID_PERFIL = '11' and FECHA_FIN < (select FORMAT(GETDATE(),'yyyy-M-dd'))");
-        int tAca = Consultas.ConsultaInt("select COUNT(CLAVE_ZP) total from AUTORIDADES_ZP where CLAVE_ZP like '"+ zp +"%' and ID_PERFIL = '12' and FECHA_FIN < (select FORMAT(GETDATE(),'yyyy-M-dd'))");
-        int tSseis = Consultas.ConsultaInt("select COUNT(CLAVE_ZP) total from AUTORIDADES_ZP where CLAVE_ZP like '"+ zp +"%' and ID_PERFIL = '13' and FECHA_FIN < (select FORMAT(GETDATE(),'yyyy-M-dd'))");
-        int tAdm = Consultas.ConsultaInt("select COUNT(CLAVE_ZP) total from AUTORIDADES_ZP where CLAVE_ZP like '"+ zp +"%' and ID_PERFIL = '14' and FECHA_FIN < (select FORMAT(GETDATE(),'yyyy-M-dd'))");
+        int tDir = Consultas.ConsultaInt("select COUNT(CLAVE_ZP) total from AUTORIDADES_ZP where CLAVE_ZP like '"+ zp +"%' and ID_PERFIL = '11' and FECHA_FIN < (select FORMAT(GETDATE(),'yyyy-M-dd')) and ESTATUS = '1'");
+        int tAca = Consultas.ConsultaInt("select COUNT(CLAVE_ZP) total from AUTORIDADES_ZP where CLAVE_ZP like '"+ zp +"%' and ID_PERFIL = '12' and FECHA_FIN < (select FORMAT(GETDATE(),'yyyy-M-dd')) and ESTATUS = '1'");
+        int tSseis = Consultas.ConsultaInt("select COUNT(CLAVE_ZP) total from AUTORIDADES_ZP where CLAVE_ZP like '"+ zp +"%' and ID_PERFIL = '13' and FECHA_FIN < (select FORMAT(GETDATE(),'yyyy-M-dd')) and ESTATUS = '1'");
+        int tAdm = Consultas.ConsultaInt("select COUNT(CLAVE_ZP) total from AUTORIDADES_ZP where CLAVE_ZP like '"+ zp +"%' and ID_PERFIL = '14' and FECHA_FIN < (select FORMAT(GETDATE(),'yyyy-M-dd')) and ESTATUS = '1'");
 
-        if (!String.IsNullOrEmpty(ua)) divAlertUnidadAcademicaResumen_seleccionada.Visible = true;
+        if (!String.IsNullOrEmpty(ua)) { divAlertUnidadAcademicaResumen_seleccionada.Visible = true; }
+        else { divAlertUnidadAcademicaResumen_seleccionada.Visible = false; }
 
         LabelUnidadAcademicaResumenSeleccionada_nombre.Text = ua;
         LabelUnidadesAcademicasNS_resumenDireccion_total.Text ="";
@@ -1819,7 +1836,7 @@ public partial class Dashboard : System.Web.UI.Page
                   "from AUTORIDADES_ZP au  " +
                   "inner join USERS us on us.ID_USER = au.ID_USER " +
                   "inner join CAT_PERFILES per on per.ID_PERFIL = au.ID_PERFIL " +
-                  "where au.CLAVE_ZP = '"+ zp +"' and au.ID_PERFIL = '11'");
+                  "where au.CLAVE_ZP = '"+ zp +"' and au.ID_PERFIL = '11' and au.ESTATUS = '1'");
 
             LabelUnidadesAcademicasNS_resumenDireccion_obs.Text = "<br><span class='badge border border-warning border-1 text-secondary' style='max-width: 150px;overflow-x: clip;'>"+ obsDir +"</span>";
 
@@ -1845,7 +1862,7 @@ public partial class Dashboard : System.Web.UI.Page
                   "from AUTORIDADES_ZP au  " +
                   "inner join USERS us on us.ID_USER = au.ID_USER " +
                   "inner join CAT_PERFILES per on per.ID_PERFIL = au.ID_PERFIL " +
-                  "where au.CLAVE_ZP = '"+ zp +"' and au.ID_PERFIL = '12'");
+                  "where au.CLAVE_ZP = '"+ zp +"' and au.ID_PERFIL = '12' and au.ESTATUS = '1'");
 
             LabelUnidadesAcademicasNS_resumenAcademica_obs.Text = "<br><span class='badge border border-warning border-1 text-secondary' style='max-width: 150px;overflow-x: clip;'>"+ obsAca +"</span>";
 
@@ -1871,7 +1888,7 @@ public partial class Dashboard : System.Web.UI.Page
                   "from AUTORIDADES_ZP au  " +
                   "inner join USERS us on us.ID_USER = au.ID_USER " +
                   "inner join CAT_PERFILES per on per.ID_PERFIL = au.ID_PERFIL " +
-                  "where au.CLAVE_ZP = '"+ zp +"' and au.ID_PERFIL = '13'");
+                  "where au.CLAVE_ZP = '"+ zp +"' and au.ID_PERFIL = '13' and au.ESTATUS = '1'");
 
             LabelUnidadesAcademicasNS_resumenSSEIS_obs.Text = "<br><span class='badge border border-warning border-1 text-secondary' style='max-width: 150px;overflow-x: clip;'>"+ obsSseis +"</span>";
 
@@ -1896,7 +1913,7 @@ public partial class Dashboard : System.Web.UI.Page
                   "from AUTORIDADES_ZP au  " +
                   "inner join USERS us on us.ID_USER = au.ID_USER " +
                   "inner join CAT_PERFILES per on per.ID_PERFIL = au.ID_PERFIL " +
-                  "where au.CLAVE_ZP = '"+ zp +"' and au.ID_PERFIL = '14'");
+                  "where au.CLAVE_ZP = '"+ zp +"' and au.ID_PERFIL = '14' and au.ESTATUS = '1'");
 
             LabelUnidadesAcademicasNS_resumenAdministracion_obs.Text = "<br><span class='badge border border-warning border-1 text-secondary' style='max-width: 150px;overflow-x: clip;'>"+ obsAdm +"</span>";
 
@@ -1923,6 +1940,7 @@ public partial class Dashboard : System.Web.UI.Page
     private void LimpiarValoresZP_resumen_seleccionada()
     {
         LabelZP.Text = string.Empty;
+        DropDownListResumenUnidades_ua.ClearSelection();
         LabelUnidadAcademicaResumenSeleccionada_nombre.Text = string.Empty;
         divAlertUnidadAcademicaResumen_seleccionada.Visible = false;
 
@@ -1996,7 +2014,7 @@ public partial class Dashboard : System.Web.UI.Page
         {
             DropDownListUnidadAcademica_resumen.SelectedIndex = -1;
 
-            LabelModalDetalleUnidadAdministrativa_title.Text = "Resúmen de vigencia de nombramientos vencidos";
+            LabelModalDetalleUnidadAdministrativa_title.Text = "Resumen de vigencia de nombramientos vencidos";
             LabelModalDetalleUnidadAdministrativa_subtitle.Text = emptyZP_name;
 
             DivDetalleDropDownList_seccion.Visible = true;
@@ -2018,7 +2036,7 @@ public partial class Dashboard : System.Web.UI.Page
     {
         string zp = LabelZP.Text;
         string IdModal = "ModalResumenNombramientos";
-        LabelModalResumenNombramientos_titulo.Text = "Resúmen de vigencia de nombramientos";
+        LabelModalResumenNombramientos_titulo.Text = "Resumen de vigencia de nombramientos";
         LabelModalResumenNombramientos_subtitulo.Text = String.IsNullOrEmpty(zp) ==  true ? emptyZP_name : GetUaDesciption(zp);
         
         GridViewResumenNombramientos.EditIndex = -1;
@@ -2037,8 +2055,8 @@ public partial class Dashboard : System.Web.UI.Page
             "case " +
 				"when (DATEDIFF(day, (select FORMAT(GETDATE(),'yyyy-M-dd')),FECHA_FIN)) >= 1 then 'VIGENTE'  " +
                 "when (DATEDIFF(day, (select FORMAT(GETDATE(),'yyyy-M-dd')),FECHA_FIN)) <= 0 then 'VENCIDO'  " +
-            "end NOMBRAMIENTO_EST," + 
-            "(select CONCAT(CLAVE_ZP,'_',(FORMAT(FECHA_INICIO,'yyyy')),'_',ID_PERFIL,'_',ID_USER,'.pdf') NOMBRAMIENTO from AUTORIDADES_ZP where ID_USER= au.ID_USER) PDF " +
+            "end NOMBRAMIENTO_EST," +
+            "IIF(au.NOMBRAMIENTO is null,(select CONCAT(CLAVE_ZP,'_',(FORMAT(FECHA_INICIO,'yyyy')),'_',ID_PERFIL,'_',ID_USER,'.pdf') NOMBRAMIENTO from AUTORIDADES_ZP where ID_USER= au.ID_USER and ESTATUS = '1'), au.NOMBRAMIENTO) PDF " +
                         "from AUTORIDADES_ZP au " +
                             "inner join CAT_DEPENDENCIAS_POLITECNICAS dp on dp.CLAVE_ZP = au.CLAVE_ZP " +
                             "inner join CAT_PERFILES per on per.ID_PERFIL = au.ID_PERFIL " +
@@ -2351,8 +2369,8 @@ public partial class Dashboard : System.Web.UI.Page
             query = "select SUM(TITULAR) TITULAR, SUM(INTERINO) INTERINO " +
                     "from( " +
                         "select dp.CLAVE_ZP, " +
-                            "(select COUNT(CLAVE_ZP) total from AUTORIDADES_ZP where CLAVE_ZP = dp.CLAVE_ZP and INTERINO = 0 and ESTATUS = 1) TITULAR, " +
-                            "(select COUNT(CLAVE_ZP) total from AUTORIDADES_ZP where CLAVE_ZP = dp.CLAVE_ZP and INTERINO = 1 and ESTATUS = 1) INTERINO " +
+                            "(select COUNT(CLAVE_ZP) total from AUTORIDADES_ZP where CLAVE_ZP = dp.CLAVE_ZP and TIPO = 0 and ESTATUS = 1) TITULAR, " +
+                            "(select COUNT(CLAVE_ZP) total from AUTORIDADES_ZP where CLAVE_ZP = dp.CLAVE_ZP and TIPO = 1 and ESTATUS = 1) INTERINO " +
                         "from CAT_DEPENDENCIAS_POLITECNICAS dp " +
                         "where dp.ID_NIVEL_EST = 2 " +
                     ")datos " +
@@ -2445,6 +2463,250 @@ public partial class Dashboard : System.Web.UI.Page
             }
         }
 
+    }
+
+
+
+    protected void LinkButtonUnidadesAcademicasNS_NuevoNombramiento_Click(object sender, EventArgs e)
+    {
+        string zp = LabelZP.Text;
+        string IdModal = "ModalNuevoNombramiento";
+        
+        LabelModalNuevoNombramiento_titulo.Text = "Registrar nuevo nombramiento";
+        LabelModalNuevoNombramiento_subtitulo.Text = String.IsNullOrEmpty(zp) ? emptyZP_name : GetUaDesciption(zp);
+
+        limpiarFormularioNuevoNombramiento();
+
+        if (!String.IsNullOrEmpty(zp))
+        {
+            DropDownListNuevoNombramiento_ua_SelectCommand();
+
+            DropDownListNuevoNombramiento_ua.SelectedValue = zp;
+            DropDownListNuevoNombramiento_ua.Enabled = false;
+        }
+
+        ShowModal(IdModal);
+    }
+    protected void limpiarFormularioNuevoNombramiento()
+    {
+
+        DropDownListNuevoNombramiento_uad.Items.Clear();
+        DropDownListNuevoNombramiento_tipo.SelectedIndex = 0;
+        InputNuevoNombramiento_fechaInicio.Value = "";
+        InputNuevoNombramiento_fechaFin.Value = "";
+        InputNuevoNombramiento_empleado.Value = "";
+
+
+        DropDownListNuevoNombramiento_ua.DataBind();
+        DropDownListNuevoNombramiento_uad.DataBind();
+
+        LabelFileUploadFoto_estatus.Text = string.Empty;
+        LabelFileUploadNombramiento_estatus.Text = string.Empty;
+
+    }
+    protected void DropDownListNuevoNombramiento_ua_SelectCommand()
+    {
+        SqlDataSourceDropDownNuevoNombramiento_ua.SelectCommand = "SELECT CLAVE_ZP, DESCRIPCION_DP FROM  CAT_DEPENDENCIAS_POLITECNICAS WHERE ID_NIVEL_EST = 2 ORDER BY DESCRIPCION_DP ASC";
+        DropDownListNuevoNombramiento_ua.DataBind();
+    }
+    protected void DropDownListNuevoNombramiento_ua_DataBound(object sender, EventArgs e)
+    {
+        DropDownListNuevoNombramiento_ua.Items.Insert(0, new System.Web.UI.WebControls.ListItem("Seleccionar", ""));
+    }
+    protected void DropDownListNuevoNombramiento_ua_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        LabelModalNuevoNombramiento_subtitulo.Text = DropDownListNuevoNombramiento_ua.SelectedItem.Text;
+    }
+    protected void DropDownListNuevoNombramiento_uad_DataBound(object sender, EventArgs e)
+    {
+        DropDownListNuevoNombramiento_uad.Items.Insert(0, new System.Web.UI.WebControls.ListItem("Seleccionar", ""));
+    }
+    protected void DropDownListNuevoNombramiento_uad_SelectedIndexChanged(object sender, EventArgs e)
+    {
+
+    }
+
+    [WebMethod]
+    public static string ValidarEmpleadoUsuario(string empleado)
+    {
+
+        string datos = "";
+
+        int status = Consultas.ConsultaInt("SELECT case when count(NUMERO_EMPLEADO) >= 1 then '1' else '0' end total from USERS where NUMERO_EMPLEADO = '"+ empleado +"'");
+
+        if (status == 1)
+        {
+            datos = Consultas.ConsultaS("SELECT CONCAT(NOMBRE,' ',APELLIDO_PAT,' ',APELLIDO_MAT) nombre from USERS where NUMERO_EMPLEADO = '"+ empleado +"'");
+        }
+        else
+        {
+            datos = status.ToString();
+        }
+
+            return datos;
+    }
+
+    protected void ButtonUpdateNombramiento_nuevo_Click(object sender, EventArgs e)
+    {
+        LabelFileUploadNombramiento_estatus.Text = string.Empty;
+
+        if (fileUploadNombramiento.HasFile)
+        {
+            if (fileUploadFoto.HasFile)
+            {
+                GuardarFotoNombramiento();
+            }
+            else
+            {
+                string nombreDoc = "sin_foto.jpg";
+                string num_emp = InputNuevoNombramiento_empleado.Value;
+                string idUsuario = Consultas.ConsultaS("select ID_USER from USERS where NUMERO_EMPLEADO = '"+ num_emp +"'");
+
+                InsertarNombramiento(nombreDoc, idUsuario);
+            }
+        }
+        else
+        {
+            LabelFileUploadNombramiento_estatus.Text = "Deberá seleccionar el nombramiento del funcionario.";
+        }
+
+    }
+    private void GuardarFotoNombramiento()
+    {
+        string num_emp = InputNuevoNombramiento_empleado.Value;
+        string idUsuario = Consultas.ConsultaS("select ID_USER from USERS where NUMERO_EMPLEADO = '"+ num_emp +"'");
+        string rutaFotos = verificarRutaFoto();
+        string nombreDoc = "sin_foto.jpg";
+
+        try
+        {
+            string zp = LabelZP.Text;
+            string tipoDoc = Path.GetExtension(fileUploadFoto.PostedFile.FileName);
+            nombreDoc = idUsuario + tipoDoc;
+
+            string rutaDoc = Path.Combine(rutaFotos, nombreDoc);
+
+            if (File.Exists(rutaDoc))
+            {
+                nombreDoc = Path.GetFileNameWithoutExtension(nombreDoc) + "_" + Guid.NewGuid().ToString() + Path.GetExtension(nombreDoc);
+                rutaDoc = Path.Combine(rutaFotos, nombreDoc);
+            }
+
+            fileUploadFoto.SaveAs(rutaDoc);
+            LabelFileUploadFoto_estatus.Text = "El archivo se cargo correctramente: " + nombreDoc;
+
+            InsertarNombramiento(nombreDoc, idUsuario);
+        }
+        catch (Exception ex)
+        {
+            LabelFileUploadFoto_estatus.Text = "Error al cargar el archivo: " + ex.Message;
+        }
+
+    }
+    private string GuardarDocumentoNombramiento()
+    {
+        string num_emp = InputNuevoNombramiento_empleado.Value;
+        string idUsuario = Consultas.ConsultaS("select ID_USER from USERS where NUMERO_EMPLEADO = '"+ num_emp +"'");
+        string zp = DropDownListNuevoNombramiento_ua.SelectedValue.ToString();
+        string idPerfil = DropDownListNuevoNombramiento_uad.SelectedValue.ToString();
+        string tipo = DropDownListNuevoNombramiento_tipo.SelectedValue.ToString();
+        string inicio = InputNuevoNombramiento_fechaInicio.Value;
+
+        string rutaNombramiento = verificarRutaNombramiento();
+        string nombreDoc = "sin_documento.pdf";
+
+        try
+        {//1751_2023_12_10653
+            string tipoDoc = Path.GetExtension(fileUploadNombramiento.PostedFile.FileName);
+            nombreDoc = zp + "_" + inicio.Substring(0,4) + "_" + idPerfil + "_" + idUsuario + tipoDoc;
+
+            string rutaDoc = Path.Combine(rutaNombramiento, nombreDoc);
+
+            if (File.Exists(rutaDoc))
+            {
+                nombreDoc = Path.GetFileNameWithoutExtension(nombreDoc) + "_" + Guid.NewGuid().ToString() + Path.GetExtension(nombreDoc);
+                rutaDoc = Path.Combine(rutaNombramiento, nombreDoc);
+            }
+
+            fileUploadNombramiento.SaveAs(rutaDoc);
+            LabelFileUploadNombramiento_estatus.Text = "El archivo se cargo correctramente: " + nombreDoc;
+
+        }
+        catch (Exception ex)
+        {
+            LabelFileUploadNombramiento_estatus.Text = "Error al cargar el archivo: " + ex.Message;
+        }
+
+        return nombreDoc;
+    }
+    private string verificarRutaNombramiento()
+    {
+        string ruta = HttpContext.Current.Server.MapPath(@"~/public/src/nombramientos/autoridades/");
+
+        if (!Directory.Exists(ruta))
+        {
+            Directory.CreateDirectory(ruta);
+        }
+
+        return ruta;
+
+    }
+    private string verificarRutaFoto()
+    {
+        string ruta = HttpContext.Current.Server.MapPath(@"~/public/img/Foto_perfil/autoridades/");
+
+        if (!Directory.Exists(ruta))
+        {
+            Directory.CreateDirectory(ruta);
+        }
+
+        return ruta;
+
+    }
+    private void InsertarNombramiento(string nombreDoc, string idUsuario)
+    {
+        string zp = DropDownListNuevoNombramiento_ua.SelectedValue.ToString();
+        string idPerfil = DropDownListNuevoNombramiento_uad.SelectedValue.ToString();
+        string tipo = DropDownListNuevoNombramiento_tipo.SelectedValue.ToString();
+        string inicio = InputNuevoNombramiento_fechaInicio.Value;
+        string fin = InputNuevoNombramiento_fechaFin.Value;
+        string correo = InputNuevoNombramiento_correo.Value;
+        string celular = InputNuevoNombramiento_celular.Value;
+        string extension = InputNuevoNombramiento_extension.Value;
+        string observacion = null;
+
+        string nombramiento = GuardarDocumentoNombramiento();
+
+        switch (tipo)
+        {
+            case "1":
+                observacion = "Interinato hasta designación de otro titular";
+                break;
+            case "2":
+                observacion = "prórroga hasta en tanto concluya el proceso de elección de terna.";
+                break;
+            case "3":
+                observacion = null;
+                break;
+
+        }
+
+        int nombExist = Consultas.ConsultaInt("select count(ID_USER) total from AUTORIDADES_ZP where CLAVE_ZP = '"+ zp +"' and ID_PERFIL = '"+ idPerfil +"' and ESTATUS = '1'");
+
+        if (nombExist == 1)
+        {
+            Consultas.miUpdate("UPDATE AUTORIDADES_ZP SET ESTATUS = 0 WHERE CLAVE_ZP = '"+ zp +"' and ID_PERFIL = '"+ idPerfil +"' and ESTATUS = '1'");
+        }
+
+        Consultas.miInsert("insert into AUTORIDADES_ZP " +
+                            "(CLAVE_ZP, ID_PERFIL, ID_USER, CORREO, CELULAR, EXTENSION, FOTO, FECHA_INICIO, FECHA_FIN, OBSERVACION, TIPO, NOMBRAMIENTO) " +
+                            "values ('"+zp+"', '"+idPerfil+"', '"+idUsuario+"', '"+correo+"', '"+celular+"', '"+extension+"', '"+nombreDoc+"', '"+inicio+"', '"+fin+"', '"+observacion+"', '"+tipo+"', '"+ nombramiento +"')");
+        
+        string ua = LabelUnidadAcademicaResumenSeleccionada_nombre.Text;
+        if (!String.IsNullOrEmpty(ua)){ AsignarValoresZP_resumen_seleccionada(ua); }
+        else { AsignarValoresZP_resumen_seleccionada(""); }
+
+        HiddenFieldAccionRegistrar_success.Value = "1";
     }
 
 

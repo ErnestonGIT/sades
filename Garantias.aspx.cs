@@ -117,18 +117,32 @@ public partial class Garantias : System.Web.UI.Page
                                                     "inner join PLIEGO pli on pli.ID_PLIEGO = pet.ID_PLIEGO " +
                                                     "where pet.ID_PETICION not in (select distinct ID_PETICION from GARANTIA_PETICION) and pli.CLAVE_ZP like '"+ zp +"%'");
 
-        string totalConcluidas = Consultas.ConsultaS("select count(distinct ID_PETICION) total from GARANTIA_PETICION where ESTATUS = 1  and CLAVE_ZP like '"+ zp +"%'");
-
-        string totalCategorias = Consultas.ConsultaS("select COUNT(distinct gar.ID_PETICION) AS 'value',cat_pet.DESCRIPCION_CAT_PETICION AS 'name' " +
+        string totalConcluidas = Consultas.ConsultaS("select count(distinct gar.ID_PETICION) total " +
                                                     "from GARANTIA_PETICION gar " +
-                                                    "inner join CAT_CATEGORIA_PETICION cat_pet on cat_pet.ID_CAT_PETICION = gar.ID_CAT_PETICION " +
-                                                    "inner join PLIEGO pli on pli.ID_PLIEGO = gar.ID_PLIEGO " +
+                                                    "inner join PETICIONES pet on pet.ID_PETICION = gar.ID_PETICION " +
+                                                    "inner join PLIEGO pli on pli.ID_PLIEGO = pet.ID_PLIEGO " +
+                                                    "where gar.ESTATUS = 1  and pli.CLAVE_ZP like '"+ zp +"%' ");
+
+        string totalCategorias = Consultas.ConsultaS("select COUNT(gar.ID_PETICION) AS 'value',cat_pet.DESCRIPCION_CAT_PETICION AS 'name' " +
+                                                    "from GARANTIA_PETICION gar " +
+                                                    "inner join PETICIONES pet on pet.ID_PETICION = gar.ID_PETICION " +
+                                                    "inner join CAT_CATEGORIA_PETICION cat_pet on cat_pet.ID_CAT_PETICION = pet.ID_CAT_PETICION " +
+                                                    "inner join PLIEGO pli on pli.ID_PLIEGO = pet.ID_PLIEGO " +
                                                     "where pli.CLAVE_ZP like '"+ zp +"%' " +
                                                     "group by cat_pet.DESCRIPCION_CAT_PETICION " +
                                                     "for JSON PATH ");
-
+        
+        string totalSubCategorias = Consultas.ConsultaS("select COUNT(gar.ID_PETICION) AS 'value', scat_pet.DESCRIPCION_SUBCAT_PETICION AS 'name' " +
+                                                    "from GARANTIA_PETICION gar  " +
+                                                    "inner join PETICIONES pet on pet.ID_PETICION = gar.ID_PETICION  " +
+                                                    "inner join CAT_SUBCATEGORIA_PETICION scat_pet on scat_pet.ID_CAT_PETICION = pet.ID_CAT_PETICION and scat_pet.ID_SUBCAT_PETICION = pet.ID_SUBCAT_PETICION " +
+                                                    "inner join PLIEGO pli on pli.ID_PLIEGO = pet.ID_PLIEGO  " +
+                                                    "where pli.CLAVE_ZP like '"+ zp +"%'  " +
+                                                    "group by scat_pet.DESCRIPCION_SUBCAT_PETICION " +
+                                                    "for JSON PATH ");
 
         HiddenFieldGraficoPieCategorias_datos.Value = totalCategorias;
+        HiddenFieldGraficoPieSubCategorias_datos.Value = totalSubCategorias;
         LabelGarantiasPendientes_total.Text = totalPendientes == "0" ? "0": totalPendientes;
         LabelGarantiasConcluidas_total.Text = totalConcluidas == "0" ? "0": totalConcluidas;
     }
@@ -171,6 +185,17 @@ public partial class Garantias : System.Web.UI.Page
     protected void DropDownListRegistrarGarantia_categoria_SelectedIndexChanged(object sender, EventArgs e)
     {
         RestaurarDropDownListGarantias(3);
+    }
+
+
+
+    protected void DropDownListRegistrarGarantia_subcategoria_DataBound(object sender, EventArgs e)
+    {
+        DropDownListRegistrarGarantia_subcategoria.Items.Insert(0, new System.Web.UI.WebControls.ListItem("Seleccionar", ""));
+    }
+    protected void DropDownListRegistrarGarantia_subcategoria_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        RestaurarDropDownListGarantias(4);
         DataBindDropDownListRegistrarGarantia_peticion();
     }
 
@@ -352,19 +377,26 @@ public partial class Garantias : System.Web.UI.Page
                 DropDownListRegistrarGarantia_ua.DataBind();
                 ClearAndInsertItem(DropDownListRegistrarGarantia_pliego);
                 ClearAndInsertItem(DropDownListRegistrarGarantia_categoria);
+                ClearAndInsertItem(DropDownListRegistrarGarantia_subcategoria);
                 ClearAndInsertItem(DropDownListRegistrarGarantia_peticion);
                 LabelZP.Text = string.Empty;
                 break;
             case 1:
                 ClearAndInsertItem(DropDownListRegistrarGarantia_pliego);
                 ClearAndInsertItem(DropDownListRegistrarGarantia_categoria);
+                ClearAndInsertItem(DropDownListRegistrarGarantia_subcategoria);
                 ClearAndInsertItem(DropDownListRegistrarGarantia_peticion);
                 break;
             case 2:
                 ClearAndInsertItem(DropDownListRegistrarGarantia_categoria);
+                ClearAndInsertItem(DropDownListRegistrarGarantia_subcategoria);
                 ClearAndInsertItem(DropDownListRegistrarGarantia_peticion);
                 break;
             case 3:
+                ClearAndInsertItem(DropDownListRegistrarGarantia_subcategoria);
+                ClearAndInsertItem(DropDownListRegistrarGarantia_peticion);
+                break;
+            case 4:
                 ClearAndInsertItem(DropDownListRegistrarGarantia_peticion);
                 break;
         }
@@ -382,10 +414,10 @@ public partial class Garantias : System.Web.UI.Page
     {
         dropDownList.ClearSelection();
         dropDownList.Items.Clear();
-        if (!dropDownList.Items.Contains(new ListItem("Seleccionar", "")))
-        {
-            dropDownList.Items.Insert(0, new ListItem("Seleccionar", ""));
-        }
+        //if (!dropDownList.Items.Contains(new ListItem("Seleccionar", "")))
+        //{
+        //    dropDownList.Items.Insert(0, new ListItem("Seleccionar", ""));
+        //}
     }
     protected void ButtonRegistrarGarantia_guardar_Click(object sender, EventArgs e)
     {
@@ -454,10 +486,10 @@ public partial class Garantias : System.Web.UI.Page
     private void InsertarGarantia(string rutaDocumento, string tipoDoc)
     {
         string zp = LabelZP.Text;
-        string pliegoId = DropDownListRegistrarGarantia_pliego.SelectedValue.ToString();
-        string categoriaId = DropDownListRegistrarGarantia_categoria.SelectedValue.ToString();
+        string idPliego = DropDownListRegistrarGarantia_pliego.SelectedValue.ToString();
         string peticionId = HiddenFieldDivPeticiones_selected.Value;
-        string peticionDesc = TextBoxRegistrarGarantia_descripcion.Text;
+        string garantiaDesc = TextBoxRegistrarGarantia_descripcion.Text;
+        string fecha = InputRegistrarGarantia_fechaRealizacion.Value;
         int idGarantia = ObtenerIdPeticion_siguiente();
 
         int documentoId = InsertarEvidenciaGarantia(rutaDocumento, tipoDoc);
@@ -470,12 +502,20 @@ public partial class Garantias : System.Web.UI.Page
             foreach (var id in stringId)
             {
                 int intId = Convert.ToInt32(id);
-                Consultas.miInsert("insert into GARANTIA_PETICION (ID_GARANTIA, CLAVE_ZP, ID_PLIEGO, ID_CAT_PETICION, ID_PETICION, DESC_GARANTIA, ID_DOCUMENTO) values('"+ idGarantia +"', '"+ zp +"','"+ pliegoId +"','"+ categoriaId +"','"+ intId +"','"+ peticionDesc +"','"+ documentoId +"')");
+                Consultas.miInsert("insert into GARANTIA_PETICION (ID_GARANTIA, ID_PLIEGO, ID_PETICION, DESC_GARANTIA, ID_DOCUMENTO, FECHA_REALIZACION) values('"+ idGarantia +"', '"+ idPliego +"','"+ intId +"','"+ garantiaDesc +"','"+ documentoId +"', '"+ fecha +"')");
             }
 
         }
 
-        RestaurarDropDownListGarantias(0);
+        if (!String.IsNullOrEmpty(zp))
+        {
+            DropDownListRegistrarGarantia_pliego.DataBind();
+            RestaurarDropDownListGarantias(2);
+        }
+        else
+        {
+            RestaurarDropDownListGarantias(0);
+        }
         ActualizarEstadisticas();
         HiddenFieldMensajeRegistroExitoso_estatus.Value = "1";
 
@@ -498,7 +538,7 @@ public partial class Garantias : System.Web.UI.Page
         string IdModal = "ModalResumenGarantias";
         string zp = LabelZP.Text;
         
-        LabelModalResumenGarantias_titulo.Text = "Resúmen de las garantias registradas";
+        LabelModalResumenGarantias_titulo.Text = "Resumen de las garantías registradas";
         LabelModalResumenGarantias_subtitulo.Text = String.IsNullOrEmpty(zp) == true ? emptyZP_name : GetUaDesciption(zp);
 
         ShowModal(IdModal);
@@ -511,13 +551,15 @@ public partial class Garantias : System.Web.UI.Page
         string qryNS = "select pli.CLAVE_ZP, IIF(pli.FOLIO_PLIEGO is null, CONCAT('PLG-',pli.CLAVE_ZP,'-',pli.ID_PLIEGO), pli.FOLIO_PLIEGO) FOLIO_PLIEGO, " +
 		                        "cat_pet.DESCRIPCION_CAT_PETICION, pet.DESC_PETICION, " +
                                 "gar.DESC_GARANTIA, " +
-		                        "doc.RUTA_DOCUMENTO " +
+		                        "doc.RUTA_DOCUMENTO, " +
+                                "scat_pet.DESCRIPCION_SUBCAT_PETICION " +
                             "from GARANTIA_PETICION gar " +
-                            "inner join PLIEGO pli on pli.ID_PLIEGO = gar.ID_PLIEGO " +
-                            "inner join CAT_CATEGORIA_PETICION  cat_pet on cat_pet.ID_CAT_PETICION = gar.ID_CAT_PETICION " +
                             "inner join PETICIONES pet on pet.ID_PETICION = gar.ID_PETICION " +
+                            "inner join PLIEGO pli on pli.ID_PLIEGO = pet.ID_PLIEGO " +
+                            "inner join CAT_CATEGORIA_PETICION  cat_pet on cat_pet.ID_CAT_PETICION = pet.ID_CAT_PETICION " +
+                            "inner join CAT_SUBCATEGORIA_PETICION  scat_pet on scat_pet.ID_CAT_PETICION = pet.ID_CAT_PETICION and scat_pet.ID_SUBCAT_PETICION = pet.ID_SUBCAT_PETICION " +
                             "inner join DOCUMENTO_GARANTIA doc on doc.ID_DOCUMENTO = gar.ID_DOCUMENTO " +
-                            "where gar.CLAVE_ZP like '"+ zp +"%'";
+                            "where pli.CLAVE_ZP like '"+ zp +"%'";
 
         using (SqlConnection con = new SqlConnection(constr))
         {
@@ -576,14 +618,16 @@ public partial class Garantias : System.Web.UI.Page
         string peticion = commandArgs[3];
         string garantia = commandArgs[4];
         string pdf = commandArgs[5];
+        string subcategoria = commandArgs[6];
         
         LabelModalVisualizarEvidenciaGarantia_titulo.Text = "Evidencia de garantía";
         LabelModalVisualizarEvidenciaGarantia_subtitulo.Text = GetUaDesciption(zp);
 
         LabelModalVisualizarEvidenciaGarantia_text0.Text = pliego;
         LabelModalVisualizarEvidenciaGarantia_text1.Text = categoria;
-        LabelModalVisualizarEvidenciaGarantia_text2.Text = peticion;
-        LabelModalVisualizarEvidenciaGarantia_text3.Text = garantia;
+        LabelModalVisualizarEvidenciaGarantia_text2.Text = subcategoria;
+        LabelModalVisualizarEvidenciaGarantia_text3.Text = peticion;
+        LabelModalVisualizarEvidenciaGarantia_text4.Text = garantia;
 
         string IdModal = "ModalVisualizarEvidenciaGarantia";
 
@@ -591,4 +635,6 @@ public partial class Garantias : System.Web.UI.Page
 
         ShowModal(IdModal);
     }
+
+
 }
