@@ -1,9 +1,10 @@
-﻿using System;
+﻿using Org.BouncyCastle.Asn1.Ocsp;
+using System;
+using System.IO;
 using System.Web;
+using System.Web.Security;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Web.Security;
-using System.IO;
 
 public partial class MasterPage : System.Web.UI.MasterPage
 {
@@ -273,6 +274,7 @@ public partial class MasterPage : System.Web.UI.MasterPage
         LabelE1.Text = "";
         LabelE2.Text = "";
         LabelerrorCC.Text = "";
+        LabelCambioPassword_valor.Text = "1";
 
         if (TextBoxClaveActual.Text == "" || TextBoxClaveCambio1.Text == "" || TextBoxClaveCambio.Text == "")
         {
@@ -371,10 +373,50 @@ public partial class MasterPage : System.Web.UI.MasterPage
     {
         Consultas.miUpdate(" Update Users set Password = '" + TextBoxClaveCambio.Text + "', Cambio_password = 1 where ID_USER = '" + Request.Cookies["id_usuario"].Value + "'  ");
 
+        string nomb = Request.Cookies["Nombre"].Value;
+        string host = GetClientIpAddress();
+        string esMovil = IsMobileDevice(Request);
+        fs.miBitacoraClient(1, host, nomb+" actualizó su contraseña de acceso al sistema", esMovil);
+
         ExpireCookies();
 
         FormsAuthentication.SignOut();
         Response.Redirect("Default.aspx");
+    }
+
+
+
+    private string GetClientIpAddress()
+    {
+        string ipAddress = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+        if (string.IsNullOrEmpty(ipAddress))
+        {
+            ipAddress = Request.ServerVariables["REMOTE_ADDR"];
+        }
+        return ipAddress;
+    }
+    private string IsMobileDevice(HttpRequest request)
+    {
+        string userAgent = request.UserAgent.ToLower();
+
+        if (userAgent.Contains("mobil"))
+        {
+            userAgent = "Móvil";
+        }
+        if (userAgent.Contains("android"))
+        {
+            userAgent = "Móvil android";
+        }
+        if (userAgent.Contains("iphone"))
+        {
+            userAgent = "Móvil iphone";
+        }
+        if (userAgent.Contains("windows phone"))
+        {
+            userAgent = "Móvil windows phone";
+        }
+
+        return userAgent;//!= null && (userAgent.Contains("mobile") || userAgent.Contains("android") || userAgent.Contains("iphone"));
     }
 
 }

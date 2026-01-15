@@ -377,7 +377,7 @@
                             <div id="collapseContenido_bitacora" class="accordion-collapse collapse">
                               <div class="accordion-body">
                                 <div class="row-cols-1" style="margin-block:5px">
-                                    <asp:LinkButton runat="server" ID="LinkButtonVaciar_bitacora" CssClass="btn btn-outline-danger" OnClick="LinkButtonVaciar_bitacora_Click">Vaciar bitácora</asp:LinkButton>
+                                    <asp:LinkButton runat="server" ID="LinkButtonVaciar_bitacora" CssClass="btn btn-outline-danger" OnClick="LinkButtonVaciar_bitacora_Click" Visible="true">Vaciar bitácora</asp:LinkButton>
                                 </div>
                                 <div class="col-md-12 table-responsive">
 

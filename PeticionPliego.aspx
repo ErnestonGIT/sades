@@ -5,7 +5,12 @@
 <%@ Register Src="~/ModalConfirm.ascx" TagPrefix="uc" TagName="ModalConfirm" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
+    <!---------------------->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+
     <link href="public/css/StyleModules.css" rel="stylesheet" />
+    <link href="public/css/StyleTimeLine.css" rel="stylesheet" /> 
 
     <main id="main1" class="main">
         <div class="pagetitle">
@@ -25,6 +30,39 @@
         </div>
         <!-- End Page Title -->
         <section class="section">
+            <div id="divSellectUA" class="row" runat="server" visible="false">
+                <div class="col-md-12">
+                    <div class="card rounded-2">
+                        <asp:UpdatePanel ID="UpdatePanel15" runat="server">
+                            <ContentTemplate>
+                                <div class="row mb-2 mt-2 ms-1">
+                                    <%--Dropdown unidad academica--%>
+                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-12">
+                                        <label for="ctl00_ContentPlaceHolder1_DropDownListUnidadAcademica" class="form-label text-dark font-weight-bolder">Unidad académica: </label>
+                                    </div>
+                                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 ">
+                                        <asp:DropDownList ID="DropDownListUnidadAcademica" runat="server" AutoPostBack="true" DataSourceID="SqlDataSourceDropUA"
+                                            DataTextField="DESCRIPCION_DP" DataValueField="CLAVE_ZP" CssClass="form-select border-primary"
+                                            data-control="select2" OnDataBound="DropDownListUnidadAcademica_DataBound">
+                                            <%--OnSelectedIndexChanged="DropDownListUnidadAcademica_SelectedIndexChanged"--%>
+                                        </asp:DropDownList>
+                                        <asp:SqlDataSource ID="SqlDataSourceDropUA" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
+                                            SelectCommand="SELECT DISTINCT dp.CLAVE_ZP, dp.DESCRIPCION_DP FROM CAT_DEPENDENCIAS_POLITECNICAS dp, PROGRAMAS_ACADEMICOS pa
+WHERE dp.CLAVE_ZP = pa.CLAVE_ZP
+AND pa.ID_NIVEL_EST IN (2)
+ORDER BY dp.DESCRIPCION_DP">
+                                            <%-- <SelectParameters>
+                                                        <asp:ControlParameter ControlID="LabelNivelEst" Name="nivelEst" PropertyName="Text" />
+                                                    </SelectParameters>--%>
+                                        </asp:SqlDataSource>
+                                    </div>
+                                </div>
+                            </ContentTemplate>
+                        </asp:UpdatePanel>
+                    </div>
+                </div>
+            </div>
+
             <div class="row">
                 <div class="col-md-12">
                     <div class="card rounded-2">
@@ -39,7 +77,7 @@
                                 <asp:HiddenField ID="HiddenActiveTab" runat="server" />
 
                                 <div class="row">
-                                    <div class="col-xl-10 col-lg-10 col-md-10 col-sm-10 col-10">
+                                    <div class="col-xl-10 col-lg-10 col-md-9 col-sm-12 col-12">
                                         <!-- Pills Tabs -->
                                         <ul class="nav nav-pills mb-2 mt-1" id="pills-tab" role="tablist">
                                             <li class="nav-item" role="presentation">
@@ -51,11 +89,16 @@
                                                 <button class="nav-link" id="addRespuesta" data-bs-toggle="pill" data-bs-target="#pills-addRespuesta" type="button" role="tab" aria-controls="pills-addRespuesta"
                                                     aria-selected="false">
                                                     Respuesta</button>
+                                            </li> 
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="addAcciones" data-bs-toggle="pill" data-bs-target="#pills-addAcciones" type="button" role="tab" aria-controls="pills-addAcciones"
+                                                    aria-selected="false">
+                                                    Acciones de respuesta</button>
                                             </li>
                                         </ul>
                                     </div>
                                     <%--Ver peticiones por pliego--%>
-                                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2 col-2 align-content-center">
+                                    <div class="col-xl-2 col-lg-2 col-md-3 col-sm-12 col-12 align-content-center">
                                         <asp:UpdatePanel ID="UpdatePanel7" runat="server">
                                             <ContentTemplate>
                                                 <span class="d-inline-block" tabindex="0" data-bs-toggle="popover" data-bs-placement="top" data-bs-custom-class="custom-popover"
@@ -139,9 +182,12 @@
 
                                                                 </div>
                                                                 <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-1">
-                                                                    <asp:LinkButton ID="LinkButtonSelectPetiPliegoPDF" runat="server" CssClass="color-btn1 small" Text='<i class="far fa-file-pdf fa-2x fa-fw fa-pull-left" ></i>'
-                                                                        OnClick="LinkButtonSelectPetiPliegoPDF_Click">
-                                                                    </asp:LinkButton>
+                                                                    <span class="d-inline-block" tabindex="0" data-bs-toggle="popover" data-bs-placement="right" data-bs-custom-class="custom-popover"
+                                                                        data-bs-trigger="hover focus" data-bs-content="Ver documento">
+                                                                        <asp:LinkButton ID="LinkButtonSelectPetiPliegoPDF" runat="server" CssClass="color-btn1 small" Text='<i class="far fa-file-pdf fa-2x fa-fw fa-pull-left" ></i>'
+                                                                            OnClick="LinkButtonSelectPetiPliegoPDF_Click">
+                                                                        </asp:LinkButton>
+                                                                    </span>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -162,18 +208,41 @@
                                                     <div class="row">
                                                         <div class="col-md-6 mb-3">
                                                             <asp:Label ID="LabelCategoria" runat="server" Text="Categoría:" CssClass="form-label fw-bold"></asp:Label>
-                                                            <asp:DropDownList ID="DropDownListCategoria" runat="server" CssClass="form-select" AutoPostBack="false" DataSourceID="SqlDataSourceDdlCategoriaPet"
+                                                            <asp:DropDownList ID="DropDownListCategoria" runat="server" CssClass="form-select" AutoPostBack="true" DataSourceID="SqlDataSourceDdlCategoriaPet"
                                                                 DataTextField="DESCRIPCION_CAT_PETICION" DataValueField="ID_CAT_PETICION" OnDataBound="DDLCategoriaPeticion_DataBound">
                                                             </asp:DropDownList>
                                                             <asp:SqlDataSource ID="SqlDataSourceDdlCategoriaPet" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
                                                                 SelectCommand="SELECT ID_CAT_PETICION, DESCRIPCION_CAT_PETICION
-FROM CAT_CATEGORIA_PETICION"></asp:SqlDataSource>
+	FROM CAT_CATEGORIA_PETICION
+	WHERE ID_CAT_PETICION > 7 ORDER BY ID_CAT_PETICION"></asp:SqlDataSource>
                                                             <asp:RequiredFieldValidator ID="RFVDropDownListCategoria" runat="server" CssClass="text-danger small fw-bold" ControlToValidate="DropDownListCategoria"
                                                                 ErrorMessage="Seleccione una opción de categoría."
                                                                 Display="None" SetFocusOnError="True" ValidationGroup="AddPeticionPliego" />
                                                         </div>
+                                                        <div class="col-md-6">
+                                                            <asp:Label ID="LabelSubCategoria" runat="server" Text="Procedimiento:" CssClass="form-label fw-bold"></asp:Label>
+                                                            <asp:DropDownList ID="DropDownListSubCat" runat="server" CssClass="form-select" AutoPostBack="false" DataSourceID="SqlDataSourceSubCat"
+                                                                DataTextField="DESCRIPCION_SUBCAT_PETICION" DataValueField="ID_SUBCAT_PETICION" OnDataBound="DDLSubCategoriaPeticion_DataBound">
+                                                            </asp:DropDownList>
+                                                            <asp:SqlDataSource ID="SqlDataSourceSubCat" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
+                                                                SelectCommand="SELECT ID_SUBCAT_PETICION, DESCRIPCION_SUBCAT_PETICION
+	FROM CAT_SUBCATEGORIA_PETICION
+	WHERE ID_CAT_PETICION = @categoria">
+                                                                <SelectParameters>
+                                                                    <asp:ControlParameter ControlID="DropDownListCategoria" Name="categoria" PropertyName="SelectedValue" />
+                                                                </SelectParameters>
+                                                            </asp:SqlDataSource>
+                                                            <asp:RequiredFieldValidator ID="RFVDropDownListSubCat" runat="server" CssClass="text-danger small fw-bold" ControlToValidate="DropDownListSubCat"
+                                                                ErrorMessage="Seleccione una opción de procedimiento."
+                                                                Display="None" SetFocusOnError="True" ValidationGroup="AddPeticionPliego" />
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row mb-3">                                                        
                                                         <div class="col-md-6 mb-3">
-                                                            <asp:Label ID="LabelFechaPeticion" runat="server" Text="Fecha de petición:" CssClass="form-label fw-bold"></asp:Label>
+                                                           <%--  <i class="bi bi-info-circle icon-info small" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                                                                data-bs-custom-class="custom-tooltip" data-bs-title="Fecha establecida en el pliego"></i>--%>
+                                                            <asp:Label ID="LabelFechaPeticion" runat="server" Text="Fecha de petición:" CssClass="form-label fw-bold"></asp:Label>                                                            
                                                             <asp:TextBox ID="TextBoxFechaPeticion" runat="server" CssClass="form-control" TextMode="Date"></asp:TextBox>
                                                             <asp:RequiredFieldValidator ID="RFVTextBoxFechaPeticion" runat="server" CssClass="text-danger small fw-bold" ControlToValidate="TextBoxFechaPeticion"
                                                                 ErrorMessage="Ingrese la fecha de la petición."
@@ -204,7 +273,7 @@ FROM CAT_CATEGORIA_PETICION"></asp:SqlDataSource>
                                             </Triggers>
                                         </asp:UpdatePanel>
                                     </div>
-                                    <%--Tap respuesta--%>
+                                    <%--Tab respuesta--%>
                                     <div class="tab-pane fade" id="pills-addRespuesta" role="tabpanel" aria-labelledby="profile-tab">
                                         <asp:UpdatePanel ID="UpdatePanel11" runat="server">
                                             <ContentTemplate>
@@ -252,9 +321,12 @@ FROM CAT_CATEGORIA_PETICION"></asp:SqlDataSource>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-1">
-                                                                    <asp:LinkButton ID="LinkButtonSelectRespPliegoPDF" runat="server" CssClass="color-btn1 small" Text='<i class="far fa-file-pdf fa-2x fa-fw fa-pull-left" ></i>'
-                                                                        OnClick="LinkButtonSelectRespPliegoPDF_Click">
-                                                                    </asp:LinkButton>
+                                                                    <span class="d-inline-block" tabindex="0" data-bs-toggle="popover" data-bs-placement="right" data-bs-custom-class="custom-popover"
+                                                                        data-bs-trigger="hover focus" data-bs-content="Ver documento">
+                                                                        <asp:LinkButton ID="LinkButtonSelectRespPliegoPDF" runat="server" CssClass="color-btn1 small" Text='<i class="far fa-file-pdf fa-2x fa-fw fa-pull-left" ></i>'
+                                                                            OnClick="LinkButtonSelectRespPliegoPDF_Click">
+                                                                        </asp:LinkButton>
+                                                                    </span>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -274,14 +346,17 @@ FROM CAT_CATEGORIA_PETICION"></asp:SqlDataSource>
                                                                     <asp:BoundField DataField="ID_PLIEGO" ItemStyle-CssClass="d-none" HeaderStyle-CssClass="d-none" />
                                                                     <asp:BoundField DataField="ID_CAT_PETICION" ItemStyle-CssClass="d-none" HeaderStyle-CssClass="d-none" />
                                                                     <asp:BoundField DataField="ID_PETICION" ItemStyle-CssClass="d-none" HeaderStyle-CssClass="d-none" />
+                                                                    <asp:BoundField DataField="ID_SUBCAT_PETICION" ItemStyle-CssClass="d-none" HeaderStyle-CssClass="d-none" />
                                                                     <%--Columnas visibles--%> 
                                                                     <asp:BoundField DataField="DESCRIPCION_CAT_PETICION" HeaderText="Categoría" SortExpression="DESCRIPCION_CAT_PETICION" />
+                                                                    <asp:BoundField DataField="DESCRIPCION_SUBCAT_PETICION" HeaderText="Procedimiento" SortExpression="DESCRIPCION_SUBCAT_PETICION" />
                                                                     <asp:BoundField DataField="FECHA_PETICION" HeaderText="Fecha de petición" SortExpression="FECHA_PETICION" ItemStyle-HorizontalAlign="Center" />
                                                                     <asp:BoundField DataField="DESC_PETICION" HeaderText="Petición" SortExpression="DESC_PETICION" />
                                                                     <asp:BoundField DataField="FECHA_RESP_PETICION" HeaderText="Fecha de respuesta" SortExpression="FECHA_RESP_PETICION" ItemStyle-HorizontalAlign="Center" />
                                                                     <asp:BoundField DataField="DESC_RESP_PETICION" HeaderText="Respuesta" SortExpression="DESC_RESP_PETICION" />
+                                                                    <asp:BoundField DataField="FECHA_CUMPLIMIENTO" HeaderText="Fecha de cumplimiento" SortExpression="FECHA_CUMPLIMIENTO" ItemStyle-HorizontalAlign="Center" />
 
-                                                                    <asp:TemplateField HeaderText="..." ItemStyle-HorizontalAlign="Center">
+                                                                    <asp:TemplateField HeaderText="..." ItemStyle-HorizontalAlign="Center" ItemStyle-VerticalAlign="Middle">
                                                                         <ItemTemplate>
                                                                             <asp:Button ID="ButtonSelectPeticion" runat="server" Text="Seleccionar" CausesValidation="false" CssClass="btn btn-dark btn-sm"
                                                                                 OnClick="ButtonSelectPeticion_Click" />
@@ -298,10 +373,15 @@ FROM CAT_CATEGORIA_PETICION"></asp:SqlDataSource>
                                                             </asp:GridView>
                                                             <%------------------------------------datasource del gridview para peticiones pliego----------------------------------%>
                                                             <asp:SqlDataSource ID="SqlDataSourceGetPeticionResp" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
-                                                                SelectCommand="SELECT  pE.ID_PLIEGO,pe.ID_CAT_PETICION,cp.DESCRIPCION_CAT_PETICION,pe.ID_PETICION,
-		FORMAT(pe.FECHA_PETICION, 'dd/MM/yyyy') as FECHA_PETICION,pe.DESC_PETICION,FORMAT(pe.FECHA_RESP_PETICION, 'dd/MM/yyyy') as FECHA_RESP_PETICION,PE.DESC_RESP_PETICION
-	FROM PETICIONES pe, CAT_CATEGORIA_PETICION cp
+                                                                SelectCommand="SELECT  pe.ID_PLIEGO,pe.ID_CAT_PETICION,cp.DESCRIPCION_CAT_PETICION,
+		sub.ID_SUBCAT_PETICION, sub.DESCRIPCION_SUBCAT_PETICION,
+		pe.ID_PETICION,
+		FORMAT(pe.FECHA_PETICION, 'dd/MM/yyyy') as FECHA_PETICION, pe.DESC_PETICION,FORMAT(pe.FECHA_RESP_PETICION, 'dd/MM/yyyy') as FECHA_RESP_PETICION,
+		pe.DESC_RESP_PETICION, FORMAT(pe.FECHA_CUMPLIMIENTO, 'dd/MM/yyyy') as FECHA_CUMPLIMIENTO
+	FROM PETICIONES pe, CAT_CATEGORIA_PETICION cp, CAT_SUBCATEGORIA_PETICION sub
 	WHERE pe.ID_CAT_PETICION = cp.ID_CAT_PETICION
+		AND sub.ID_CAT_PETICION = cp.ID_CAT_PETICION
+        AND sub.ID_SUBCAT_PETICION = pe.ID_SUBCAT_PETICION
 		AND pe.ID_PLIEGO = @pliego">
                                                                 <SelectParameters>
                                                                     <asp:ControlParameter ControlID="LblIdPliegoResp" Name="pliego" PropertyName="Text" />
@@ -322,6 +402,13 @@ FROM CAT_CATEGORIA_PETICION"></asp:SqlDataSource>
                                                         </div>
                                                     </div>
 
+                                                    <div class="row mb-3">
+                                                        <spam class="col-md-2 col-form-label">Procedimientos:</spam>
+                                                         <div class="col-md-4 col-form-label">
+                                                            <asp:Label ID="LabelSubCategoriaGridResp" runat="server" CssClass="fw-bold"></asp:Label>
+                                                        </div>
+                                                    </div>
+
                                                     <!-- Campos de respuesta -->
                                                     <div class="row mb-3">
                                                         <div class="col-md-6">
@@ -330,6 +417,13 @@ FROM CAT_CATEGORIA_PETICION"></asp:SqlDataSource>
                                                             <asp:TextBox ID="TextBoxFechaRespuesta" runat="server" TextMode="Date" CssClass="form-control"></asp:TextBox>
                                                             <asp:RequiredFieldValidator ID="RFVTextBoxFechaRespuesta" runat="server" CssClass="text-danger small fw-bold" ControlToValidate="TextBoxFechaRespuesta"
                                                                 ErrorMessage="Ingrese la fecha de la respuesta."
+                                                                Display="None" SetFocusOnError="True" ValidationGroup="AddRespuestaPliego" />
+                                                        </div> 
+                                                        <div class="col-md-6">
+                                                            <asp:Label ID="Label13" runat="server" Text="Fecha de cumplimiento:" CssClass="form-label fw-bold"></asp:Label>
+                                                            <asp:TextBox ID="TextBoxFechaVigencia" runat="server" TextMode="Date" CssClass="form-control"></asp:TextBox>
+                                                            <asp:RequiredFieldValidator ID="RFVTextBoxFechaVigencia" runat="server" CssClass="text-danger small fw-bold" ControlToValidate="TextBoxFechaRespuesta"
+                                                                ErrorMessage="Ingrese la fecha de cumplimiento."
                                                                 Display="None" SetFocusOnError="True" ValidationGroup="AddRespuestaPliego" />
                                                         </div>
                                                     </div>
@@ -384,9 +478,12 @@ FROM CAT_CATEGORIA_PETICION"></asp:SqlDataSource>
                                                                     <asp:Label ID="Label6" runat="server" Text="" CssClass="md-chip specific mb-1 mx-1 fw-bold">Seleccionado <i class="far fa-check-square text-success"></i></asp:Label>
                                                                 </div>
                                                                 <div class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-1">
-                                                                    <asp:LinkButton ID="LinkButtonSelectRespDocPDF" runat="server" CssClass="color-btn1 small" Text='<i class="far fa-file-pdf fa-2x fa-fw fa-pull-left" ></i>'
-                                                                        OnClick="LinkButtonSelectRespDocPDF_Click">
-                                                                    </asp:LinkButton>
+                                                                    <span class="d-inline-block" tabindex="0" data-bs-toggle="popover" data-bs-placement="right" data-bs-custom-class="custom-popover"
+                                                                        data-bs-trigger="hover focus" data-bs-content="Ver documento">
+                                                                        <asp:LinkButton ID="LinkButtonSelectRespDocPDF" runat="server" CssClass="color-btn1 small" Text='<i class="far fa-file-pdf fa-2x fa-fw fa-pull-left" ></i>'
+                                                                            OnClick="LinkButtonSelectRespDocPDF_Click">
+                                                                        </asp:LinkButton>
+                                                                    </span>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -411,6 +508,223 @@ FROM CAT_CATEGORIA_PETICION"></asp:SqlDataSource>
                                                 <asp:PostBackTrigger ControlID="ButtonGuardarRespuesta" />
                                             </Triggers>
                                         </asp:UpdatePanel>
+                                    </div>
+                                    <%--Tab acciones de respuesta--%>
+                                    <div class="tab-pane fade" id="pills-addAcciones" role="tabpanel" aria-labelledby="profile-tab">
+                                        <div class="card shadow rounded-4 p-4">
+                                            <h4 class="mb-3 text-primary">
+                                                <i class="far fa-file-alt"></i>&nbsp;Registro de acciones
+                                                                <%--<i class="bi bi-file-earmark-text"></i>Registro de Petición--%>
+                                            </h4>
+                                            <asp:UpdatePanel ID="UpdatePanel8" runat="server">
+                                                <ContentTemplate>
+                                                    <%--filtros--%>
+                                                    <div class="row">
+                                                        <div class="col-md-6 mb-3">
+                                                            <asp:Label ID="Label3" runat="server" Text="Pliego:" CssClass="form-label fw-bold"></asp:Label>
+                                                            <asp:DropDownList ID="DropDownListPliegoAccionResp" runat="server" CssClass="form-select" AutoPostBack="true" DataSourceID="SqlDataSourceDdlPliegoAccionResp"
+                                                                DataTextField="FOLIO_PLIEGO" DataValueField="ID_PLIEGO" OnDataBound="DropDownListPliegoAccionResp_DataBound">
+                                                            </asp:DropDownList>
+                                                            <asp:SqlDataSource ID="SqlDataSourceDdlPliegoAccionResp" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
+                                                                SelectCommand="SELECT ID_PLIEGO, FOLIO_PLIEGO FROM PLIEGO
+WHERE CLAVE_ZP = @claveZP">
+                                                                <SelectParameters>
+                                                                    <asp:ControlParameter ControlID="LabelClaveZP" Name="claveZP" PropertyName="Text" />
+                                                                </SelectParameters>
+                                                            </asp:SqlDataSource>
+                                                            <asp:RequiredFieldValidator ID="RFVDropDownListPliegoAccionResp" runat="server" CssClass="text-danger small fw-bold" ControlToValidate="DropDownListPliegoAccionResp"
+                                                                ErrorMessage="Seleccione una opción de pliego."
+                                                                Display="None" SetFocusOnError="True" ValidationGroup="AddAccionResp" />
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <asp:Label ID="Label8" runat="server" Text="Respuesta:" CssClass="form-label fw-bold"></asp:Label>
+                                                            <asp:DropDownList ID="DropDownListRespuestaAccion" runat="server" CssClass="form-select" AutoPostBack="true" DataSourceID="SqlDataSourceRespuestaAccion"
+                                                                DataTextField="DESC_RESP_PETICION" DataValueField="ID_PETICION" OnDataBound="DropDownListRespuestaAccion_DataBound"
+                                                                OnSelectedIndexChanged="DropDownListRespuestaAccion_SelectedIndexChanged">
+                                                            </asp:DropDownList>
+                                                            <asp:SqlDataSource ID="SqlDataSourceRespuestaAccion" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
+                                                                SelectCommand="SELECT ID_PETICION, DESC_RESP_PETICION FROM PETICIONES
+WHERE ID_PLIEGO = @pliego AND DESC_RESP_PETICION IS NOT NULL">
+                                                                <SelectParameters>
+                                                                    <asp:ControlParameter ControlID="DropDownListPliegoAccionResp" Name="pliego" PropertyName="SelectedValue" />
+                                                                </SelectParameters>
+                                                            </asp:SqlDataSource>
+                                                            <asp:RequiredFieldValidator ID="RFVDropDownListRespuestaAccion" runat="server" CssClass="text-danger small fw-bold" ControlToValidate="DropDownListRespuestaAccion"
+                                                                ErrorMessage="Seleccione una opción de respuesta."
+                                                                Display="None" SetFocusOnError="True" ValidationGroup="AddAccionResp" />
+                                                        </div>
+                                                    </div>
+
+                                                    <%--Campos seleccionados--%>
+                                                    <div class="row mb-3">
+                                                        <span class="col-md-3 col-form-label">Fecha de respuesta:</span>
+                                                        <div class="col-md-3 col-form-label">
+                                                            <asp:Label ID="LabelFechaRespAction" runat="server" CssClass="fw-bold"></asp:Label>
+                                                        </div>
+                                                         <span class="col-md-3 col-form-label">Fecha de cumplimiento:</span>
+                                                        <div class="col-md-3 col-form-label">
+                                                            <asp:Label ID="LabelFechaCumplimiento" runat="server" CssClass="fw-bold"></asp:Label>
+                                                        </div>
+                                                    </div>
+
+                                                    <%--detail acciones--%>
+                                                    <div class="row justify-content-end mx-auto">
+                                                        <div class="col-1 text-end">
+                                                            <span class="d-inline-block" tabindex="0" data-bs-toggle="popover" data-bs-placement="right" data-bs-custom-class="custom-popover"
+                                                                data-bs-trigger="hover focus" data-bs-content="De clic, para mostrar las acciones">
+                                                                <asp:LinkButton ID="LinkButtonAcciones" runat="server" CssClass="btn btn-sm btn-light" 
+                                                                    Text='<i class="fas fa-ellipsis-h fa-sm fa-fw"></i>' OnClick="LinkButtonAcciones_Click">
+                                                                </asp:LinkButton>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </ContentTemplate>
+                                            </asp:UpdatePanel>
+
+                                            <%--Acordeon carga reglamentaria--%>
+                                            <div class="row mb-3">
+                                                <%--Acordeon de accion de diagnostico--%>
+                                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                                                    <div class="accordion" id="accordionActionPlan">
+                                                        <div class="accordion-item">
+                                                            <h2 class="accordion-header" id="headingActionPlan">
+                                                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseActionPlan" aria-expanded="true" aria-controls="collapseActionPlan">
+                                                                    Acción de  planeación / diagnóstico
+                                                                </button>
+                                                            </h2>
+                                                            <div id="collapseActionPlan" class="accordion-collapse collapse show" aria-labelledby="headingActionPlan">
+                                                                <div class="accordion-body">
+                                                                    <asp:UpdatePanel ID="UpdatePanel12" runat="server">
+                                                                        <ContentTemplate>
+                                                                            <div id="divAlertActionPlan" runat="server" class="alert alert-info alert-dismissible fade show small" role="alert" visible="false">
+                                                                                <%--<i class="bi bi-info-circle me-1"></i>--%>
+                                                                                <i class="fas fa-info-circle me-1"></i>
+                                                                                Ya existe una acción de planeación o diagnóstico para esta respuesta.
+                <%--<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>--%>
+                                                                            </div>
+
+                                                                            <div class="mt-3">
+                                                                                <asp:Label ID="LabelMensajeActionPlan" runat="server" CssClass="fw-bold"></asp:Label>
+                                                                            </div>
+                                                                            <asp:ValidationSummary runat="server" ID="ValidationSummary3" CssClass="alert alert-danger alert-dismissible fade show fw-bold small"
+                                                                                DisplayMode="BulletList" ValidationGroup="AddActionPlan" HeaderText='<i class="fas fa-exclamation-triangle fa-fw"></i> Por favor verifique lo siguiente:'
+                                                                                ShowMessageBox="false" ShowSummary="True" EnableClientScript="true" />
+
+                                                                            <!-- Campos de respuesta -->
+                                                                            <div class="row mb-3">
+                                                                                <div class="col-md-12">
+                                                                                    <asp:Label ID="Label11" runat="server" Text="Fecha:" CssClass="form-label fw-bold"></asp:Label>
+                                                                                    <asp:TextBox ID="TextBoxFechaActionPlan" runat="server" TextMode="Date" CssClass="form-control"></asp:TextBox>
+                                                                                    <asp:RequiredFieldValidator ID="RFVTextBoxFechaActionPlan" runat="server" CssClass="text-danger small fw-bold" ControlToValidate="TextBoxFechaActionPlan"
+                                                                                        ErrorMessage="Ingrese la fecha de la acción de planeación ó diagnóstico."
+                                                                                        Display="None" SetFocusOnError="True" ValidationGroup="AddActionPlan" />
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="mb-3">
+                                                                                <asp:Label ID="Label12" runat="server" Text="Acción:" CssClass="form-label fw-bold"></asp:Label>
+                                                                                <asp:TextBox ID="TextBoxActionPlan" runat="server" TextMode="MultiLine" Rows="4" CssClass="form-control"></asp:TextBox>
+                                                                                <asp:RequiredFieldValidator ID="RFVTextBoxActionPlan" runat="server" CssClass="text-danger small fw-bold" ControlToValidate="TextBoxActionPlan"
+                                                                                    ErrorMessage="Ingrese la acción."
+                                                                                    Display="None" SetFocusOnError="True" ValidationGroup="AddActionPlan" />
+                                                                            </div>
+
+                                                                            <!-- Si selecciona nuevo pliego -->
+                                                                            <div class="mb-3" id="div1" runat="server" visible="true">
+                                                                                <asp:Label ID="Label14" runat="server" Text="Subir archivo de acción:" CssClass="form-label fw-bold"></asp:Label>
+                                                                                <asp:FileUpload ID="FileUploadActionPlan" runat="server" CssClass="form-control" />
+                                                                                <asp:RequiredFieldValidator ID="RFVFileUploadActionPlan" runat="server" CssClass="text-danger small fw-bold" ControlToValidate="FileUploadActionPlan"
+                                                                                    ErrorMessage="Cargue el archivo PDF."
+                                                                                    Display="None" SetFocusOnError="True" ValidationGroup="AddActionPlan" />
+                                                                            </div>
+
+                                                                            <div class="text-end">
+                                                                                <asp:Button ID="ButtonGuardarActionPlan" runat="server" Text="Guardar" CssClass="btn btn-success"
+                                                                                    OnClick="ButtonGuardarActionPlan_Click" ValidationGroup="AddActionPlan" />
+                                                                            </div>
+                                                                        </ContentTemplate>
+                                                                        <Triggers>
+                                                                            <asp:PostBackTrigger ControlID="ButtonGuardarActionPlan" />
+                                                                        </Triggers>
+                                                                    </asp:UpdatePanel>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <%--Acordeon de accion de gestion--%>
+                                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                                                    <div class="accordion" id="accordionActionGestion">
+                                                        <div class="accordion-item">
+                                                            <h2 class="accordion-header" id="headingActionGestion">
+                                                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseActionGestion" aria-expanded="true" aria-controls="collapseActionGestion">
+                                                                    Acción de  gestión
+                                                                </button>
+                                                            </h2>
+                                                            <div id="collapseActionGestion" class="accordion-collapse collapse show" aria-labelledby="headingActionGestion">
+                                                                <div class="accordion-body">
+                                                                    <asp:UpdatePanel ID="UpdatePanel13" runat="server">
+                                                                        <ContentTemplate>
+                                                                            <asp:Label ID="LabelIdDiagnostico" runat="server" CssClass="d-none" ></asp:Label>
+                                                                               <div id="divAlertActionGestion" runat="server" class="alert alert-warning alert-dismissible fade show small" role="alert" visible="false">
+                                                                                   <%--<i class="bi bi-exclamation-triangle me-1"></i>--%>
+                                                                                   <i class="fas fa-exclamation-triangle me-1"></i>
+                                                                                   Para poder agregar una acción de gestión, primero agregue una acción de planeación o diagnóstico.
+                <%--<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>--%>
+                                                                               </div>
+
+                                                                             <div class="mt-3">
+                                                                                <asp:Label ID="LabelMensajeActionGestion" runat="server" CssClass="fw-bold"></asp:Label>
+                                                                            </div>
+                                                                            <asp:ValidationSummary runat="server" ID="ValidationSummary4" CssClass="alert alert-danger alert-dismissible fade show fw-bold small"
+                                                                                DisplayMode="BulletList" ValidationGroup="AddActionGestion" HeaderText='<i class="fas fa-exclamation-triangle fa-fw"></i> Por favor verifique lo siguiente:'
+                                                                                ShowMessageBox="false" ShowSummary="True" EnableClientScript="true" />
+
+                                                                            <!-- Campos de respuesta -->
+                                                                            <div class="row mb-3">
+                                                                                <div class="col-md-12">
+                                                                                    <asp:Label ID="Label15" runat="server" Text="Fecha:" CssClass="form-label fw-bold"></asp:Label>
+                                                                                    <asp:TextBox ID="TextBoxFechaActionGest" runat="server" TextMode="Date" CssClass="form-control"></asp:TextBox>
+                                                                                    <asp:RequiredFieldValidator ID="RFVTextBoxFechaActionGest" runat="server" CssClass="text-danger small fw-bold" ControlToValidate="TextBoxFechaActionGest"
+                                                                                        ErrorMessage="Ingrese la fecha de la acción de gestión."
+                                                                                        Display="None" SetFocusOnError="True" ValidationGroup="AddActionGestion" />
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="mb-3">
+                                                                                <asp:Label ID="Label16" runat="server" Text="Acción:" CssClass="form-label fw-bold"></asp:Label>
+                                                                                <asp:TextBox ID="TextBoxActionGestion" runat="server" TextMode="MultiLine" Rows="4" CssClass="form-control"></asp:TextBox>
+                                                                                <asp:RequiredFieldValidator ID="RFVTextBoxActionGestion" runat="server" CssClass="text-danger small fw-bold" ControlToValidate="TextBoxActionGestion"
+                                                                                    ErrorMessage="Ingrese la acción."
+                                                                                    Display="None" SetFocusOnError="True" ValidationGroup="AddActionGestion" />
+                                                                            </div>
+
+                                                                            <!-- Si selecciona nuevo pliego -->
+                                                                            <div class="mb-3" id="div2" runat="server" visible="true">
+                                                                                <asp:Label ID="Label17" runat="server" Text="Subir archivo de acción:" CssClass="form-label fw-bold"></asp:Label>
+                                                                                <asp:FileUpload ID="FileUploadActionGestion" runat="server" CssClass="form-control" />
+                                                                                <asp:RequiredFieldValidator ID="RFVFileUploadActionGestion" runat="server" CssClass="text-danger small fw-bold" ControlToValidate="FileUploadActionGestion"
+                                                                                    ErrorMessage="Cargue el archivo PDF."
+                                                                                    Display="None" SetFocusOnError="True" ValidationGroup="AddActionGestion" />
+                                                                            </div>
+
+                                                                            <div class="text-end">
+                                                                                <asp:Button ID="ButtonGuardarActionGestion" runat="server" Text="Guardar" CssClass="btn btn-success"
+                                                                                    OnClick="ButtonGuardarActionGestion_Click" ValidationGroup="AddActionGestion" />
+                                                                            </div>
+                                                                        </ContentTemplate>
+                                                                        <Triggers>
+                                                                            <asp:PostBackTrigger ControlID="ButtonGuardarActionGestion" />
+                                                                        </Triggers>
+                                                                    </asp:UpdatePanel>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -454,7 +768,7 @@ FROM CAT_CATEGORIA_PETICION"></asp:SqlDataSource>
                                             <asp:TemplateField HeaderText="Documento" ItemStyle-HorizontalAlign="Center" ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
                                                     <span class="d-inline-block" tabindex="0" data-bs-toggle="popover" data-bs-placement="left" data-bs-custom-class="custom-popover"
-                                                        data-bs-trigger="hover focus" data-bs-content="Ver pliego">
+                                                        data-bs-trigger="hover focus" data-bs-content="Ver documento">
                                                         <asp:LinkButton ID="LinkButtonVerPliego" runat="server" CssClass="color-btn mb-2" Text='<i class="fas fa-file-pdf fa-2x fa-fw"></i>'
                                                             OnClick="LinkButtonPliegoPDF_Click">                                                                                        
                                                         </asp:LinkButton>
@@ -517,12 +831,12 @@ FROM CAT_CATEGORIA_PETICION"></asp:SqlDataSource>
                                             <asp:BoundField DataField="TIPO_DOCUMENTO" ItemStyle-CssClass="d-none" HeaderStyle-CssClass="d-none" />
                                             <asp:BoundField DataField="ID_PLIEGO" ItemStyle-CssClass="d-none" HeaderStyle-CssClass="d-none" />
                                             <%--Columnas visibles--%> 
-                                            <asp:BoundField DataField="FECHA_SUBIDA" HeaderText="Fecha" SortExpression="FECHA_SUBIDA" />
+                                            <asp:BoundField DataField="FECHA_SUBIDA" HeaderText="Fecha" SortExpression="FECHA_SUBIDA"  ItemStyle-HorizontalAlign="Center"/>
                                             <%--Documento--%> 
                                             <asp:TemplateField HeaderText="Documento" ItemStyle-HorizontalAlign="Center" ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
                                                     <span class="d-inline-block" tabindex="0" data-bs-toggle="popover" data-bs-placement="left" data-bs-custom-class="custom-popover"
-                                                        data-bs-trigger="hover focus" data-bs-content="Ver documento de respuesta">
+                                                        data-bs-trigger="hover focus" data-bs-content="Ver documento">
                                                         <asp:LinkButton ID="LinkButtonVerDocResp" runat="server" CssClass="color-btn mb-2" Text='<i class="fas fa-file-pdf fa-2x fa-fw"></i>'
                                                             OnClick="LinkButtonVerDocRespPDF_Click">                                                                                        
                                                         </asp:LinkButton>
@@ -591,7 +905,7 @@ FROM CAT_CATEGORIA_PETICION"></asp:SqlDataSource>
 
     <%--visualizar peticiones--%>
     <div class="modal fade" id="modalVerPeticiones" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="exampleModalLabel2">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel2">Peticiones </h5>
@@ -607,7 +921,8 @@ FROM CAT_CATEGORIA_PETICION"></asp:SqlDataSource>
                                 </div>
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
                                     <asp:DropDownList ID="DropDownListPliego" runat="server" CssClass="form-select" AutoPostBack="true" DataSourceID="SqlDataSourcePliego"
-                                        DataTextField="FOLIO_PLIEGO" DataValueField="ID_PLIEGO" OnDataBound="DropDownListPliego_DataBound">
+                                        DataTextField="FOLIO_PLIEGO" DataValueField="ID_PLIEGO" OnDataBound="DropDownListPliego_DataBound"
+                                        OnSelectedIndexChanged="DropDownListPliego_SelectedIndexChanged">
                                     </asp:DropDownList>
 
                                     <asp:SqlDataSource ID="SqlDataSourcePliego" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
@@ -617,6 +932,14 @@ WHERE CLAVE_ZP = @claveZP">
                                             <asp:ControlParameter ControlID="LabelClaveZP" Name="claveZP" PropertyName="Text" />
                                         </SelectParameters>
                                     </asp:SqlDataSource>
+                                </div>
+                                <div id="divViewPliego" runat="server" class="col-xl-1 col-lg-1 col-md-1 col-sm-1 col-1" visible="false">
+                                    <span class="d-inline-block" tabindex="0" data-bs-toggle="popover" data-bs-placement="right" data-bs-custom-class="custom-popover"
+                                        data-bs-trigger="hover focus" data-bs-content="Ver documento">
+                                        <asp:LinkButton ID="LinkButtonPliego" runat="server" CssClass="color-btn1 small" Text='<i class="far fa-file-pdf fa-2x fa-fw fa-pull-left" ></i>'
+                                           OnClick="LinkButtonPliego_Click">
+                                        </asp:LinkButton>
+                                    </span>
                                 </div>
                             </div>
 
@@ -637,12 +960,15 @@ WHERE CLAVE_ZP = @claveZP">
                                             <asp:BoundField DataField="ID_PETICION" ItemStyle-CssClass="d-none" HeaderStyle-CssClass="d-none" />
                                             <asp:BoundField DataField="ID_DOCUMENTO" ItemStyle-CssClass="d-none" HeaderStyle-CssClass="d-none" />
                                             <asp:BoundField DataField="ID_EST_PETICION" ItemStyle-CssClass="d-none" HeaderStyle-CssClass="d-none" />
+                                            <asp:BoundField DataField="ID_SUBCAT_PETICION" ItemStyle-CssClass="d-none" HeaderStyle-CssClass="d-none" />
                                             <%--Columnas visibles--%> 
                                             <asp:BoundField DataField="DESCRIPCION_CAT_PETICION" HeaderText="Categoría" SortExpression="DESCRIPCION_CAT_PETICION" />
+                                            <asp:BoundField DataField="DESCRIPCION_SUBCAT_PETICION" HeaderText="Procedimiento" SortExpression="DESCRIPCION_SUBCAT_PETICION" />
                                             <asp:BoundField DataField="FECHA_PETICION" HeaderText="Fecha de petición" SortExpression="FECHA_PETICION" ItemStyle-HorizontalAlign="Center" />
                                             <asp:BoundField DataField="DESC_PETICION" HeaderText="Petición" SortExpression="DESC_PETICION" />
                                             <asp:BoundField DataField="FECHA_RESP_PETICION" HeaderText="Fecha de respuesta" SortExpression="FECHA_RESP_PETICION" ItemStyle-HorizontalAlign="Center" />
                                             <asp:BoundField DataField="DESC_RESP_PETICION" HeaderText="Respuesta" SortExpression="DESC_RESP_PETICION" />
+                                            <asp:BoundField DataField="FECHA_CUMPLIMIENTO" HeaderText="Fecha de cumplimiento" SortExpression="FECHA_CUMPLIMIENTO" ItemStyle-HorizontalAlign="Center" />
                                             <asp:TemplateField HeaderText="Estatus" ItemStyle-HorizontalAlign="Center" ItemStyle-VerticalAlign="Middle">
                                                 <ItemTemplate>
                                                     <asp:Label ID="LblEstatus" runat="server" Text='<%# Eval("DESCRIPCION_PETICION") %>' ></asp:Label>
@@ -660,6 +986,17 @@ WHERE CLAVE_ZP = @claveZP">
                                                     <asp:Label ID="LabelNoExistDoc" runat="server" Text="" CssClass="small fw-bold" Visible="false"></asp:Label>
                                                 </ItemTemplate>
                                             </asp:TemplateField>
+                                            <%--Acciones--%>
+                                            <asp:TemplateField HeaderText="Acciones" ItemStyle-HorizontalAlign="Center" ItemStyle-VerticalAlign="Middle">
+                                                <ItemTemplate>
+                                                    <span class="d-inline-block" tabindex="0" data-bs-toggle="popover" data-bs-placement="left" data-bs-custom-class="custom-popover"
+                                                        data-bs-trigger="hover focus" data-bs-content="Ver acciones">
+                                                        <asp:LinkButton ID="LinkButtonAccionesPLG" runat="server" CssClass="color-btn mb-2" Text='<i class="fas fa-eye fa-lg fa-fw"></i>'
+                                                            OnClick="LinkButtonAccionesPLG_Click">                                                                                        
+                                                        </asp:LinkButton>
+                                                    </span>
+                                                </ItemTemplate>
+                                            </asp:TemplateField>
                                         </Columns>
                                         <%--  <EmptyDataTemplate>
                                             <div class="text-center">
@@ -669,16 +1006,20 @@ WHERE CLAVE_ZP = @claveZP">
                                     </asp:GridView>
                                     <%------------------------------------datasource del gridview para peticiones pliego----------------------------------%>
                                     <asp:SqlDataSource ID="SqlDataSourceGetPLGPeticionResp" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
-                                        SelectCommand="SELECT pl.CLAVE_ZP, pe.ID_PLIEGO,pe.ID_CAT_PETICION,cp.DESCRIPCION_CAT_PETICION,pe.ID_PETICION, 
+                                        SelectCommand="SELECT pl.CLAVE_ZP, pe.ID_PLIEGO,pe.ID_CAT_PETICION,cp.DESCRIPCION_CAT_PETICION,pe.ID_PETICION,
+		sub.ID_SUBCAT_PETICION, sub.DESCRIPCION_SUBCAT_PETICION, 
 		pe.ID_EST_PETICION, ep.DESCRIPCION_PETICION,
 		FORMAT(pe.FECHA_PETICION, 'dd/MM/yyyy') as FECHA_PETICION,pe.DESC_PETICION,
 		FORMAT(pe.FECHA_RESP_PETICION, 'dd/MM/yyyy') as FECHA_RESP_PETICION,PE.DESC_RESP_PETICION,
 		(SELECT vp.ID_DOCUMENTO FROM VINCULAR_PETICION_DOCUMENTO vp
 			WHERE vp.ID_PLIEGO = pe.ID_PLIEGO 
 				AND vp.ID_PETICION = pe.ID_PETICION
-		) AS ID_DOCUMENTO
-	FROM PETICIONES pe, CAT_CATEGORIA_PETICION cp, PLIEGO pl, ESTATUS_PETICION ep
+		) AS ID_DOCUMENTO,
+        FORMAT(pe.FECHA_CUMPLIMIENTO, 'dd/MM/yyyy') as FECHA_CUMPLIMIENTO
+	FROM PETICIONES pe, CAT_CATEGORIA_PETICION cp, PLIEGO pl, ESTATUS_PETICION ep, CAT_SUBCATEGORIA_PETICION sub
 	WHERE pe.ID_CAT_PETICION = cp.ID_CAT_PETICION
+		AND sub.ID_CAT_PETICION = cp.ID_CAT_PETICION
+        AND sub.ID_SUBCAT_PETICION = pe.ID_SUBCAT_PETICION
 		AND pe.ID_PLIEGO = pl.ID_PLIEGO
 		AND pe.ID_EST_PETICION = ep.ID_EST_PETICION
 		AND pe.ID_PLIEGO = @pliego">
@@ -708,11 +1049,83 @@ WHERE CLAVE_ZP = @claveZP">
             </div>
         </div>
     </div>
+    
+    <%--visualizar acciones--%>
+    <div class="modal fade" id="modalAcciones" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="exampleModalLabel3">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel3">Acciones petición / respuesta </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <asp:UpdatePanel runat="server">
+                        <ContentTemplate>
+                            <div id="tracking-pre"></div>
+
+                            <div id="tracking">
+                                <div class="text-center tracking-status-intransit">
+                                    <p class="tracking-status text-tight">Acciones</p>
+                                </div>
+
+
+                                <div class="tracking-list">
+                                    <%--                            <div style="background:red; color:white">PRUEBA DE TEXTO</div>--%>
+                                    <asp:PlaceHolder ID="phTimeline" runat="server"></asp:PlaceHolder>
+                                </div>
+                            </div>
+
+                        </ContentTemplate>
+                    </asp:UpdatePanel>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <%--scripts--%>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+        
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/i18n/es.js"></script>
 
     <script src="public/js/TooltipPopover.js"></script>
+
+     <%--aplicar select2 en los dropdowlists--%>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            const themeBtp5 = "bootstrap-5";
+            const cssClassCont = "form-select border-primary";
+            const dimension = '100%';
+
+            $(function () {
+                //para establecer el lenguaje en español
+                $.fn.select2.defaults.set('language', 'es');
+
+                $("[id*=DropDownListUnidadAcademica]").select2({
+                    theme: themeBtp5,
+                    containerCssClass: cssClassCont,
+                    width: dimension,
+                });                
+            });
+
+            var prm = Sys.WebForms.PageRequestManager.getInstance();
+
+            if (prm != null) {
+                prm.add_endRequest(function (sender, e) {
+                    $(function () {
+                        $("[id*=DropDownListUnidadAcademica]").select2({
+                            theme: themeBtp5,
+                            containerCssClass: cssClassCont,
+                            width: dimension,
+                        });                                                
+                    });
+                });
+            }
+        });
+    </script>
 
     <%--Modals--%>
     <script>
@@ -754,7 +1167,6 @@ WHERE CLAVE_ZP = @claveZP">
         }
 
         function ShowModalVerPDF() {
-
             var myModal = document.getElementById('modalVerPDF');
             var modal = bootstrap.Modal.getOrCreateInstance(myModal);
             modal.show();
@@ -762,10 +1174,27 @@ WHERE CLAVE_ZP = @claveZP">
         }
 
         function ShowModalVerPeticiones() {
-
             var myModal = document.getElementById('modalVerPeticiones');
             var modal = bootstrap.Modal.getOrCreateInstance(myModal);
             modal.show();
+        }
+
+        function ShowModalAcciones() {
+            var myModal = document.getElementById('modalAcciones');
+            var modal = bootstrap.Modal.getOrCreateInstance(myModal);
+            modal.show();
+        }
+
+
+        function VerPdfDesdeTimeline(elem) {
+            var ruta = elem.getAttribute("data-ruta");
+
+            // Asignar ruta al iframe
+            var iframe = document.getElementById('<%= verPDF.ClientID %>');
+            var lblVisualizar = document.getElementById('<%= LabelVisualizar.ClientID %>');
+            iframe.src = ruta;
+            lblVisualizar.innerText = "Documento de acción";
+            ShowModalVerPDF();
         }
     </script>
 
@@ -809,11 +1238,5 @@ WHERE CLAVE_ZP = @claveZP">
         }
     });
 </script>
-
- <%--  <script>
-    function QuitarFocusAntesPostback() {
-        document.activeElement.blur();
-    }
-</script>--%>
 
 </asp:Content>

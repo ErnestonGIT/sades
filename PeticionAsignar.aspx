@@ -616,7 +616,7 @@
                                                                                             AutoGenerateColumns="False" ShowHeader="true"
                                                                                                 CssClass="table table-sm table-bordered table-striped table-responsive" HeaderStyle-CssClass=" bg-gradient bg-primary-light text-gray-100 text-center"
                                                                                                     PagerStyle-CssClass="pagination-ys"
-                                                                                                        PageSize="1000" AllowPaging="false" >
+                                                                                                        PageSize="1000" AllowPaging="false" OnRowDataBound="GridViewUnidadesAdministrativas_RowDataBound" >
                                             
                                                                                             <Columns>
                                                                                                 <asp:TemplateField HeaderText="NÚM." ItemStyle-Font-Bold="true" ItemStyle-HorizontalAlign="Center">
@@ -1252,8 +1252,23 @@
             }
             else {
 
-                let btn = document.getElementById('<%=LinkButtonAsignarPeticion_guardar.ClientID%>');
-                btn.click()
+                Swal.fire({
+                    title: "confirma la asignación de la petición?",
+                    text: "Esta acción no podrá revertirse",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Si, asignar",
+                    cancelButtonText: "Cancelar"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+
+                        let btn = document.getElementById('<%=LinkButtonAsignarPeticion_guardar.ClientID%>');
+                        btn.click()
+                    }
+                });
+
             }
 
         }

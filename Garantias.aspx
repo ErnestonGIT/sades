@@ -1031,6 +1031,7 @@
             else {
                 let btn = document.getElementById('<%=ButtonRegistrarGarantia_guardar.ClientID%>');
                 btn.click()
+
             }
 
         }

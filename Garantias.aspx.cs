@@ -503,6 +503,7 @@ public partial class Garantias : System.Web.UI.Page
             {
                 int intId = Convert.ToInt32(id);
                 Consultas.miInsert("insert into GARANTIA_PETICION (ID_GARANTIA, ID_PLIEGO, ID_PETICION, DESC_GARANTIA, ID_DOCUMENTO, FECHA_REALIZACION) values('"+ idGarantia +"', '"+ idPliego +"','"+ intId +"','"+ garantiaDesc +"','"+ documentoId +"', '"+ fecha +"')");
+                Consultas.miUpdate("update PETICIONES set ID_EST_PETICION = '2' where ID_EST_PETICION = '1' and ID_PETICION = '"+ intId +"' and ID_PLIEGO = '"+ idPliego +"'");
             }
 
         }

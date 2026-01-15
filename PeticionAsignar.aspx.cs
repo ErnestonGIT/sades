@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
@@ -468,11 +469,21 @@ public partial class PeticionAsignar : System.Web.UI.Page
             btnGV.Text = "Seleccionar";
             btnGV.CssClass = "btn btn-sm btn-outline-danger LoadingOverlay";
             row.BackColor = System.Drawing.Color.White;
+
+            string idPerfilRow = btnGV.CommandArgument;
+            int asignado = Consultas.ConsultaInt("select COUNT(ID_ASIGNACION) asignado from ASIGNACION_PETICION where CLAVE_ZP = '1751' and ID_PETICION = '332' and ID_PERFIL ='"+ idPerfilRow +"' and ESTATUS = 1");
+
+            if (asignado == 1)
+            {
+                btnGV.Text = "Asignada";
+                btnGV.CssClass = "btn btn-sm btn-outline-warning disabled LoadingOverlay";
+                row.BackColor = System.Drawing.Color.White;
+            }
         }
 
 
         btn.Text = "Seleccionado";
-        btn.CssClass = "btn btn-sm btn-outline-success LoadingOverlay";
+        btn.CssClass = "btn btn-sm btn-outline-success disabled LoadingOverlay";
         rowGV.BackColor = System.Drawing.Color.LightGray;
 
         string zp = LabelZP.Text;
@@ -512,7 +523,7 @@ public partial class PeticionAsignar : System.Web.UI.Page
             foreach (var id in stringId)
             {
                 int intId = Convert.ToInt32(id);
-                string limite = Consultas.ConsultaS("select IIF(FECHA_RESP_PETICION is null, 'sin dato registrado', FORMAT(FECHA_RESP_PETICION ,'dddd dd MMMM, yyyy', 'es-ES'))LIMITE from PETICIONES where ID_PETICION = '"+ intId +"'");
+                string limite = Consultas.ConsultaS("select IIF(FECHA_CUMPLIMIENTO is null, 'sin dato registrado', FORMAT(FECHA_CUMPLIMIENTO ,'dddd dd MMMM, yyyy', 'es-ES'))LIMITE from PETICIONES where ID_PETICION = '"+ intId +"'");
 
                 Consultas.miInsert("insert into ASIGNACION_PETICION (ID_ASIGNACION, CLAVE_ZP, ID_PETICION, ID_PERFIL, DESC_UNIDAD) values('"+ idAsignacion +"','"+ zp +"','"+ intId +"','"+ unidad +"','"+ descUnidad +"')");
 
@@ -545,7 +556,7 @@ public partial class PeticionAsignar : System.Web.UI.Page
                 "<tr > " +
                     "<th >Pliego</th> " +
                     "<th >Categoría</th> " +
-                    "<th >Sub categoría</th> " +
+                    "<th >Subcategoría</th> " +
                     "<th >Petición</th> " +
                     "<th >Límite para atención</th> " +
                 "</tr> " +
@@ -679,4 +690,19 @@ public partial class PeticionAsignar : System.Web.UI.Page
 
 
 
+
+    protected void GridViewUnidadesAdministrativas_RowDataBound(object sender, GridViewRowEventArgs e)
+    {
+        int idPerfil = Convert.ToInt32(DataBinder.Eval(e.Row.DataItem, "ID_PERFIL"));
+        int asignado = Consultas.ConsultaInt("select COUNT(ID_ASIGNACION) asignado from ASIGNACION_PETICION where CLAVE_ZP = '1751' and ID_PETICION = '332' and ID_PERFIL ='"+ idPerfil +"' and ESTATUS = 1");
+
+        if (asignado == 1)
+        {
+            LinkButton btnGV = ((LinkButton)e.Row.FindControl("LinkButtonUnidadesAdministrativas_selecionar"));
+            btnGV.Text = "Asignada";
+            btnGV.CssClass = "btn btn-sm btn-outline-warning disabled LoadingOverlay";
+            e.Row.BackColor = System.Drawing.Color.White;
+        }
+
+    }
 }

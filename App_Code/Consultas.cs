@@ -102,6 +102,18 @@ public static class Consultas
         }
     }
 
+    public static string ConsultaSDes(string consulta)
+    {
+        using (SqlConnection conn = ConnectionManager.GetConnection())
+        {
+            using (SqlCommand cmd = new SqlCommand(consulta, conn))
+            {
+
+                return Convert.ToString(cmd.ExecuteScalar());
+            }
+        }
+    }
+
     public static string ConsultaSP(string consulta)
     {
         using (SqlConnection conn = ConnectionManager.GetConnectionPrueb())

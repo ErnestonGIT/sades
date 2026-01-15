@@ -557,7 +557,7 @@
                 </ContentTemplate></asp:UpdatePanel>
             <div class="alert alert-warning" role="alert">
               <h4 class="alert-heading">Confirmar actualización</h4>
-              <p>Con esta acción se actualizará su contraseña de acceso al SAIEE, ¿desea continuar?.</p>
+              <p>Con esta acción se actualizará su contraseña de acceso al SADES, ¿desea continuar?.</p>
                 <div style="text-align:center;padding-block:revert;">
                     <button type="button" class="btn btn-outline-danger" onclick="actualizarPass();">Continuar</button>
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -587,7 +587,7 @@
 		<div class="copyright">
 				Copyright <strong>
 				<span>IPN </span>
-			</strong> 2025
+			</strong> 2026
 		</div>
 		<div class="credits">
 			Dirección de Educación Superior

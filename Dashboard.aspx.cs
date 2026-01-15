@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using Microsoft.Ajax.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -1524,7 +1525,7 @@ public partial class Dashboard : System.Web.UI.Page
             int anioAbs = Math.Abs(difAnio);
 
             string idUser = Consultas.ConsultaS("select ID_USER from AUTORIDADES_ZP where CLAVE_ZP = '"+ zp +"' and ID_PERFIL = '"+ idPerfil +"' and ESTATUS = '1'");
-            string pdf = Consultas.ConsultaS("select IIF(NOMBRAMIENTO is null,(select CONCAT(CLAVE_ZP,'_',(FORMAT(FECHA_INICIO,'yyyy')),'_',ID_PERFIL,'_',ID_USER,'.pdf')), NOMBRAMIENTO) NOMBRAMIENTO from AUTORIDADES_ZP where CLAVE_ZP = '"+ zp +"' and ID_USER = '"+ idUser +"' and ESTATUS = '1'");
+            string pdf = Consultas.ConsultaS("select IIF(NOMBRAMIENTO is null,(select CONCAT(CLAVE_ZP,'_',(FORMAT(FECHA_INICIO,'yyyy')),'_',ID_PERFIL,'_',ID_USER,'.pdf')), NOMBRAMIENTO) NOMBRAMIENTO from AUTORIDADES_ZP where CLAVE_ZP = '"+ zp +"'  and ID_PERFIL = '"+ idPerfil +"' and ID_USER = '"+ idUser +"' and ESTATUS = '1'");
 
             if (anioAbs >= 1)
             {
@@ -1625,7 +1626,8 @@ public partial class Dashboard : System.Web.UI.Page
         }
         if (!String.IsNullOrEmpty(observacion))
         {
-            fin = observacion.Substring(0, 3) == "pró" ? "prórroga" : fin;
+            if (observacion.Substring(0, 3) == "pró") { fin =  "prórroga"; }
+            else if (observacion.Substring(0, 3) == "Int") { fin =  "interinato"; }
         }
 
         string datos = "<div class='card-body profile-card pt-4 d-flex flex-column align-items-center'> " +
@@ -2351,26 +2353,27 @@ public partial class Dashboard : System.Web.UI.Page
 
         chartData.Add(new object[]
             {
-                "TITULAR", "INTERINO"
+                "TITULAR", "INTERINO", "PRORROGA"
             });
 
         string constr = ConfigurationManager.ConnectionStrings["ConnectionDES"].ConnectionString;
 
-        bool exist = Consultas.ConsultaInt("select COUNT(ID_USER) total from AUTORIDADES_ZP where CLAVE_ZP like '"+ zp +"%'") == 0 ? false : true;
+        bool exist = Consultas.ConsultaInt("select COUNT(ID_USER) total from AUTORIDADES_ZP where CLAVE_ZP like '"+ zp +"%' and ESTATUS = 1") == 0 ? false : true;
 
         string query = "select SUM(TITULAR) TITULAR, SUM(INTERINO) INTERINO " +
                         "FROM( " +
-                            "select 0 TITULAR, 0 INTERINO " +
+                            "select 0 TITULAR, 0 INTERINO , 0 PRORROGA" +
                             "from AUTORIDADES_ZP " +
                         ")DATOS";
 
         if (exist == true)
         {
-            query = "select SUM(TITULAR) TITULAR, SUM(INTERINO) INTERINO " +
+            query = "select SUM(TITULAR) TITULAR, SUM(INTERINO) INTERINO, SUM(PRORROGA) PRORROGA " +
                     "from( " +
                         "select dp.CLAVE_ZP, " +
                             "(select COUNT(CLAVE_ZP) total from AUTORIDADES_ZP where CLAVE_ZP = dp.CLAVE_ZP and TIPO = 0 and ESTATUS = 1) TITULAR, " +
-                            "(select COUNT(CLAVE_ZP) total from AUTORIDADES_ZP where CLAVE_ZP = dp.CLAVE_ZP and TIPO = 1 and ESTATUS = 1) INTERINO " +
+                            "(select COUNT(CLAVE_ZP) total from AUTORIDADES_ZP where CLAVE_ZP = dp.CLAVE_ZP and TIPO = 1 and ESTATUS = 1) INTERINO, " +
+                            "(select COUNT(CLAVE_ZP) total from AUTORIDADES_ZP where CLAVE_ZP = dp.CLAVE_ZP and TIPO = 2 and ESTATUS = 1) PRORROGA " +
                         "from CAT_DEPENDENCIAS_POLITECNICAS dp " +
                         "where dp.ID_NIVEL_EST = 2 " +
                     ")datos " +
@@ -2392,7 +2395,7 @@ public partial class Dashboard : System.Web.UI.Page
 
                         chartData.Add(new object[]
                         {
-                            sdr["TITULAR"],sdr["INTERINO"]
+                            sdr["TITULAR"],sdr["INTERINO"], sdr["PRORROGA"]
                         });
 
                     }
@@ -2502,6 +2505,8 @@ public partial class Dashboard : System.Web.UI.Page
 
         LabelFileUploadFoto_estatus.Text = string.Empty;
         LabelFileUploadNombramiento_estatus.Text = string.Empty;
+
+        DropDownListNuevoNombramiento_ua.Enabled = true;
 
     }
     protected void DropDownListNuevoNombramiento_ua_SelectCommand()

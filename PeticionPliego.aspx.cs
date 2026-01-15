@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.HtmlControls;
@@ -16,13 +14,26 @@ public partial class PeticionPliego : System.Web.UI.Page
     string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["ConnectionDES"].ConnectionString;
     //string connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["ConnectionStringSAIEE"].ConnectionString;
     string CLAVEZP = HttpContext.Current.Request.Cookies["claveZP"].Value.ToString();
+    string idPerfil = HttpContext.Current.Request.Cookies["Tipo"].Value.ToString();
 
     protected void Page_Load(object sender, EventArgs e)
     {
         if (!IsPostBack)
         {
-            LabelDependencia.Text = DependenciaIPN.ObtenerNombreDependencia(CLAVEZP);
-            LabelClaveZP.Text = CLAVEZP;
+            if (idPerfil == "19")
+            {
+                //labeldependencia.text = dependenciaipn.obtenernombredependencia(clavezp);
+                //labelclavezp.text = clavezp;
+                divSellectUA.Visible = false;
+            }
+            else
+            {
+                //labeldependencia.text = dependenciaipn.obtenernombredependencia(dropdownlistunidadacademica.selectedvalue);
+                //labelclavezp.text = dropdownlistunidadacademica.selectedvalue;
+                divSellectUA.Visible = true;
+            }
+
+            VisibleAlertAcciones();
         }
         else
         {
@@ -43,6 +54,29 @@ public partial class PeticionPliego : System.Web.UI.Page
 
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "RestoreTabScript", script, true);
             }
+
+            //VisibleAlertAcciones();
+
+            //if (ViewState["pliegoTimeline"] != null && ViewState["peticionTimeline"] != null)
+            //{
+            //    //CargarTimeline(ViewState["pliegoTimeline"].ToString(), ViewState["peticionTimeline"].ToString());
+            //    CargarTimeline(DropDownListPliegoAccionResp.SelectedValue, DropDownListRespuestaAccion.SelectedValue);
+            //}
+
+
+            if (idPerfil == "19")
+            {
+                LabelDependencia.Text = DependenciaIPN.ObtenerNombreDependencia(CLAVEZP);
+                LabelClaveZP.Text = CLAVEZP;
+                divSellectUA.Visible = false;
+            }
+            else
+            {
+                LabelDependencia.Text = DependenciaIPN.ObtenerNombreDependencia(DropDownListUnidadAcademica.SelectedValue);
+                LabelClaveZP.Text = DropDownListUnidadAcademica.SelectedValue;
+                divSellectUA.Visible = true;
+            }
+
         }
     }
 
@@ -73,7 +107,7 @@ public partial class PeticionPliego : System.Web.UI.Page
     // show modals
     private void modalGridPliegosUA()
     {
-        GenerateGridDocumentosPliegoUA(CLAVEZP);
+        GenerateGridDocumentosPliegoUA(LabelClaveZP.Text);
         string scriptSMAP = "ShowModalSelectPliego();";
         ScriptManager.RegisterStartupScript(this, GetType(), "script", scriptSMAP, true);
     }
@@ -81,6 +115,12 @@ public partial class PeticionPliego : System.Web.UI.Page
     private void showModalVerPdf()
     {
         string javaScript = "ShowModalVerPDF();";
+        ScriptManager.RegisterStartupScript(this, this.GetType(), "script", javaScript, true);
+    }
+
+    private void showModalAcciones()
+    {
+        string javaScript = "ShowModalAcciones();";
         ScriptManager.RegisterStartupScript(this, this.GetType(), "script", javaScript, true);
     }
 
@@ -116,10 +156,20 @@ public partial class PeticionPliego : System.Web.UI.Page
         return true;
     }
 
+    protected void DropDownListUnidadAcademica_DataBound(object sender, EventArgs e)
+    {
+        DdlInsertItemZero(DropDownListUnidadAcademica);
+    }
+
     /// --- REGISTRO DE PETICION --- ///
     protected void DDLCategoriaPeticion_DataBound(object sender, EventArgs e)
     {
         DdlInsertItemZero(DropDownListCategoria);
+    }
+
+    protected void DDLSubCategoriaPeticion_DataBound(object sender, EventArgs e)
+    {
+        DdlInsertItemZero(DropDownListSubCat);
     }
 
     protected void RadioButtonListPliego_SelectedIndexChanged(object sender, EventArgs e)
@@ -176,17 +226,17 @@ public partial class PeticionPliego : System.Web.UI.Page
         int i = G_B.RowIndex;
         GridViewPliego.SelectedIndex = i;
 
-        string claveZP = CLAVEZP;
+        string claveZP = LabelClaveZP.Text;
         string folioPliego = GridViewPliego.Rows[i].Cells[1].Text;
 
-        LabelVisualizar.Text = "Visualizar Pliego";
+        LabelVisualizar.Text = "Pliego " + folioPliego;
         VerDocPliego(claveZP, folioPliego);
     }
 
     protected void LinkButtonSelectPetiPliegoPDF_Click(object sender, EventArgs e)
     {
-        LabelVisualizar.Text = "Visualizar Pliego";
-        VerDocPliego(CLAVEZP, LblFolioPliego.Text);
+        LabelVisualizar.Text = "Pliego " + LblFolioPliego.Text;
+        VerDocPliego(LabelClaveZP.Text, LblFolioPliego.Text);
     }
 
     protected void ButtonSelectPliego_Click(object sender, EventArgs e)
@@ -222,6 +272,7 @@ public partial class PeticionPliego : System.Web.UI.Page
             LabelIdPeticionGridResp.Text = string.Empty;
             LabelPeticionGridResp.Text = string.Empty;
             LabelCategoriaGridResp.Text = string.Empty;
+            LabelSubCategoriaGridResp.Text = string.Empty;
         }
 
         string javaScript2 = "HideModalSelectPliego();";
@@ -270,6 +321,15 @@ public partial class PeticionPliego : System.Web.UI.Page
         {
             MostrarAlerta("Seleccione una categoría.");
             return false;
+        }
+
+        if (DropDownListCategoria.SelectedIndex != 0)
+        {
+            if (DropDownListSubCat.SelectedIndex == 0)
+            {
+                MostrarAlerta("Seleccione un procedimiento.");
+                return false;
+            }
         }
 
         if (string.IsNullOrEmpty(TextBoxFechaPeticion.Text))
@@ -350,8 +410,9 @@ public partial class PeticionPliego : System.Web.UI.Page
             idPliego = ObtenerIdMaxPliego();
             //string folio = "PLG-" + DateTime.Now.Year + "-" + Guid.NewGuid().ToString().Substring(0, 3);
             string folio = "PLG-" + DateTime.Now.Year + "-" + idPliego.ToString("D3");
+            string claveZP = LabelClaveZP.Text;
 
-            string rutaArchivoMultiGral = CrearDirectorios.Crear_carpeta(CLAVEZP, folio);
+            string rutaArchivoMultiGral = CrearDirectorios.Crear_carpeta(claveZP, folio);
             string nombreArchivoGral =  folio + ".pdf";
 
             try
@@ -368,7 +429,7 @@ public partial class PeticionPliego : System.Web.UI.Page
             }
 
            
-            string rutaArchivo = "Archivos/UnidadAcademica/" + CLAVEZP + "/" + folio + "/" + nombreArchivoGral;
+            string rutaArchivo = "Archivos/UnidadAcademica/" + claveZP + "/" + folio + "/" + nombreArchivoGral;
 
             // Registrar pliego
             Consultas.miInsertPDes(InsertarPliego(),
@@ -376,7 +437,7 @@ public partial class PeticionPliego : System.Web.UI.Page
                    new SqlParameter("@FOLIO", folio),
                    new SqlParameter("@RUTA", rutaArchivo), 
                    new SqlParameter("@FECHA", DateTime.Now),
-                   new SqlParameter("@CLAVE", CLAVEZP));
+                   new SqlParameter("@CLAVE", claveZP));
 
             // Registrar petición
             Consultas.miInsertPDes(InsertarPeticion(),
@@ -429,14 +490,14 @@ public partial class PeticionPliego : System.Web.UI.Page
         // Acceder al control LabelMensaje y establecer el texto
         Label LabelMensaje = modalConfirm.FindControl("LabelMensaje") as Label;
 
+        // Validaciones
+        if (!ValidarFormularioPeticion())
+            return;
+
         int idPliego = 0;
         int idPeticion = ObtenerIdMaxPeticion();
         string rutaCarpeta = "";
         string rutaArchivo = "";
-
-        // Validaciones
-        if (!ValidarFormularioPeticion())
-            return;
 
         // Si se sube archivo nuevo
         if (RadioButtonListPliego.SelectedValue == "nuevo")
@@ -446,8 +507,9 @@ public partial class PeticionPliego : System.Web.UI.Page
 
             idPliego = ObtenerIdMaxPliego();
             string folio = "PLG-" + DateTime.Now.Year + "-" + idPliego.ToString("D3");
+            string claveZP = LabelClaveZP.Text;
 
-            rutaCarpeta = CrearDirectorios.Crear_carpeta(CLAVEZP, folio);
+            rutaCarpeta = CrearDirectorios.Crear_carpeta(claveZP, folio);
             rutaArchivo = rutaCarpeta + folio + ".pdf";
 
             try
@@ -461,7 +523,7 @@ public partial class PeticionPliego : System.Web.UI.Page
                 return;
             }
 
-            string rutaWeb = "Archivos/UnidadAcademica/" + CLAVEZP + "/" + folio + "/" + folio + ".pdf";
+            string rutaWeb = "Archivos/UnidadAcademica/" + claveZP + "/" + folio + "/" + folio + ".pdf";
 
             // SQL con transacción
             string sql = @"
@@ -484,13 +546,14 @@ public partial class PeticionPliego : System.Web.UI.Page
                     new SqlParameter("@FOLIO", folio),
                     new SqlParameter("@RUTA", rutaWeb),
                     new SqlParameter("@FECHA", DateTime.Now),
-                    new SqlParameter("@CLAVE", CLAVEZP),
+                    new SqlParameter("@CLAVE", claveZP),
 
                     new SqlParameter("@CATEGORIA", DropDownListCategoria.SelectedValue),
                     new SqlParameter("@ESTATUS", 1),
                     new SqlParameter("@IDPETICION", idPeticion),
                     new SqlParameter("@FECHAP", TextBoxFechaPeticion.Text),
-                    new SqlParameter("@PETICION", TextBoxPeticion.Text)
+                    new SqlParameter("@PETICION", TextBoxPeticion.Text),
+                    new SqlParameter("@SUBCATEGORIA", DropDownListSubCat.SelectedValue)
                 );
 
                 // Agregar mensaje de éxito
@@ -541,7 +604,8 @@ public partial class PeticionPliego : System.Web.UI.Page
                     new SqlParameter("@ESTATUS", 1),
                     new SqlParameter("@IDPETICION", idPeticion),
                     new SqlParameter("@FECHAP", TextBoxFechaPeticion.Text),
-                    new SqlParameter("@PETICION", TextBoxPeticion.Text)
+                    new SqlParameter("@PETICION", TextBoxPeticion.Text),
+                    new SqlParameter("@SUBCATEGORIA", DropDownListSubCat.SelectedValue)
                 );
 
                 // Agregar mensaje de éxito
@@ -565,8 +629,8 @@ public partial class PeticionPliego : System.Web.UI.Page
 
     private string InsertarPeticion()
     {
-        string insertPeticion = "INSERT INTO PETICIONES (ID_PLIEGO, ID_CAT_PETICION, ID_EST_PETICION, ID_PETICION, FECHA_PETICION, DESC_PETICION) " +
-            "VALUES(@PLIEGO, @CATEGORIA, @ESTATUS, @IDPETICION, @FECHAP, @PETICION)";
+        string insertPeticion = "INSERT INTO PETICIONES (ID_PLIEGO, ID_CAT_PETICION, ID_EST_PETICION, ID_PETICION, FECHA_PETICION, DESC_PETICION, ID_SUBCAT_PETICION) " +
+            "VALUES(@PLIEGO, @CATEGORIA, @ESTATUS, @IDPETICION, @FECHAP, @PETICION, @SUBCATEGORIA)";
 
         return insertPeticion;
     }
@@ -600,6 +664,7 @@ public partial class PeticionPliego : System.Web.UI.Page
     private void ClearAddPeticion()
     {
         DropDownListCategoria.ClearSelection();
+        DropDownListSubCat.ClearSelection();
         TextBoxFechaPeticion.Text = string.Empty;
         TextBoxPeticion.Text = string.Empty;
     }
@@ -614,8 +679,8 @@ public partial class PeticionPliego : System.Web.UI.Page
 
     protected void LinkButtonSelectRespPliegoPDF_Click(object sender, EventArgs e)
     {
-        LabelVisualizar.Text = "Visualizar Pliego";
-        VerDocPliego(CLAVEZP, LblFolioPliegoResp.Text);
+        LabelVisualizar.Text = "Pliego " + LblFolioPliegoResp.Text;
+        VerDocPliego(LabelClaveZP.Text, LblFolioPliegoResp.Text);
     }
 
     protected void GridViewPeticionResp_RowDataBound(object sender, GridViewRowEventArgs e)
@@ -627,7 +692,7 @@ public partial class PeticionPliego : System.Web.UI.Page
             Label LblPeticionResp = (Label)row.FindControl("LabelPeticionConResp");
 
             //HttpUtility.HtmlDecode(
-            string respuesta = e.Row.Cells[7].Text.Trim();
+            string respuesta = e.Row.Cells[9].Text.Trim();
 
             //if (String.IsNullOrEmpty(respuesta))
             if (respuesta == "&nbsp;" || string.IsNullOrWhiteSpace(respuesta))
@@ -657,9 +722,10 @@ public partial class PeticionPliego : System.Web.UI.Page
         GridViewPeticionResp.SelectedRow.Font.Bold = true;
 
         LabelIdPeticionGridResp.Text = GridViewPeticionResp.Rows[i].Cells[2].Text;
-        LabelPeticionGridResp.Text = GridViewPeticionResp.Rows[i].Cells[5].Text; ;
-        LabelCategoriaGridResp.Text = GridViewPeticionResp.Rows[i].Cells[3].Text; ;
-        LabelFechaPeticionGridResp.Text = GridViewPeticionResp.Rows[i].Cells[4].Text; ;
+        LabelPeticionGridResp.Text = GridViewPeticionResp.Rows[i].Cells[7].Text; ;
+        LabelCategoriaGridResp.Text = GridViewPeticionResp.Rows[i].Cells[4].Text; ;
+        LabelFechaPeticionGridResp.Text = GridViewPeticionResp.Rows[i].Cells[6].Text; ;
+        LabelSubCategoriaGridResp.Text = GridViewPeticionResp.Rows[i].Cells[5].Text; ;
 
     }
 
@@ -685,7 +751,7 @@ public partial class PeticionPliego : System.Web.UI.Page
 
     private void GenerateGridDocumentosRespPliegoUA(string pliego, string tipoDoc)
     {
-        string query = @"SELECT ID_DOCUMENTO, TIPO_DOCUMENTO, FECHA_SUBIDA, ID_PLIEGO from DOCUMENTO_PETICION WHERE ID_PLIEGO = '" + pliego + @"' AND TIPO_DOCUMENTO = '" + tipoDoc + @"'";
+        string query = @"SELECT ID_DOCUMENTO, TIPO_DOCUMENTO, FORMAT(FECHA_SUBIDA, 'dd/MM/yyyy') as FECHA_SUBIDA, ID_PLIEGO from DOCUMENTO_PETICION WHERE ID_PLIEGO = '" + pliego + @"' AND TIPO_DOCUMENTO = '" + tipoDoc + @"'";
 
         // Ejecuta la consulta manualmente
         DataTable dt = new DataTable();
@@ -704,7 +770,7 @@ public partial class PeticionPliego : System.Web.UI.Page
 
     protected void VerDocRespuesta(string claveZP, string folio, string tipoDoc, string nombreArchivo)
     {
-        verPDF.Attributes["src"] = "Archivos/UnidadAcademica/" + CLAVEZP + "/" + folio + "/" + tipoDoc + "/" + nombreArchivo + ".pdf";
+        verPDF.Attributes["src"] = "Archivos/UnidadAcademica/" + claveZP + "/" + folio + "/" + tipoDoc + "/" + nombreArchivo + ".pdf";
         verPDF.DataBind();
 
         showModalVerPdf();
@@ -717,26 +783,26 @@ public partial class PeticionPliego : System.Web.UI.Page
         int i = G_B.RowIndex;
         GridViewDocRespuesta.SelectedIndex = i;
 
-        string claveZP = CLAVEZP;
-        string folioPliego = GridViewPliego.Rows[i].Cells[1].Text;
+        string claveZP = LabelClaveZP.Text;
+        string folioPliego = LblFolioPliegoResp.Text;
         string idDoc = GridViewDocRespuesta.Rows[i].Cells[0].Text;
         string tipoDoc = "RespuestasDoc";
         string archivo = "Respuesta_Id_" + idDoc;
 
-        LabelVisualizar.Text = "Visualizar documento respuesta";
+        LabelVisualizar.Text = "Documento respuesta";
 
         VerDocRespuesta(claveZP, folioPliego, tipoDoc, archivo);
     }
 
     protected void LinkButtonSelectRespDocPDF_Click(object sender, EventArgs e)
     {
-        string claveZP = CLAVEZP;
+        string claveZP = LabelClaveZP.Text;
         string folioPliego = LblFolioPliegoResp.Text;
         string idDoc = LabelIdDocumentoResp.Text;
         string tipoDoc = "RespuestasDoc";
         string archivo = "Respuesta_Id_" + idDoc;
 
-        LabelVisualizar.Text = "Visualizar documento respuesta";
+        LabelVisualizar.Text = "Documento respuesta";
 
         VerDocRespuesta(claveZP, folioPliego, tipoDoc, archivo);
     }
@@ -783,6 +849,24 @@ public partial class PeticionPliego : System.Web.UI.Page
         if (DateTime.Parse(TextBoxFechaRespuesta.Text) < DateTime.Parse(LabelFechaPeticionGridResp.Text))
         {
             MostrarAlerta("La fecha de la respuesta debe ser mayor a la fecha de la petición.");
+            return false;
+        }
+
+        if (String.IsNullOrEmpty(TextBoxFechaVigencia.Text))
+        {
+            MostrarAlerta("Ingrese la fecha de cumplimiento.");
+            return false;
+        }
+
+        if (DateTime.Parse(TextBoxFechaVigencia.Text) < DateTime.Parse(LabelFechaPeticionGridResp.Text))
+        {
+            MostrarAlerta("La fecha de cumplimiento debe ser mayor a la fecha de la petición.");
+            return false;
+        }
+
+        if (DateTime.Parse(TextBoxFechaVigencia.Text) < DateTime.Parse(TextBoxFechaRespuesta.Text))
+        {
+            MostrarAlerta("La fecha de cumplimiento debe ser mayor a la fecha de respuesta.");
             return false;
         }
 
@@ -972,15 +1056,16 @@ public partial class PeticionPliego : System.Web.UI.Page
         // Acceder al control LabelMensaje y establecer el texto
         Label LabelMensaje = modalConfirm.FindControl("LabelMensaje") as Label;
 
+        // Validaciones
+        if (!ValidarFormularioRespuesta())
+            return;
+        
         int idPliego = Convert.ToInt32(LblIdPliegoResp.Text);
         int idDocumento = 0;
         string rutaCarpeta = "";
         string rutaArchivoFisico = "";
 
-        // Validaciones
-        if (!ValidarFormularioRespuesta())
-            return;
-
+       
         // ======== NUEVO DOCUMENTO DE RESPUESTA ========
         if (RadioButtonListRespuesta.SelectedValue == "nuevo")
         {
@@ -991,8 +1076,8 @@ public partial class PeticionPliego : System.Web.UI.Page
             string tipoDoc = "RespuestasDoc";
 
             idDocumento = ObtenerIdMaxDocumento();
-
-            rutaCarpeta = CrearDirectorios.Crear_carpeta(CLAVEZP, folio, tipoDoc);
+            string claveZP = LabelClaveZP.Text;
+            rutaCarpeta = CrearDirectorios.Crear_carpeta(claveZP, folio, tipoDoc);
             string nombreArchivo = "Respuesta_Id_" + idDocumento + ".pdf";
 
             rutaArchivoFisico = rutaCarpeta + nombreArchivo;
@@ -1008,7 +1093,7 @@ public partial class PeticionPliego : System.Web.UI.Page
                 return;
             }
                        
-            string rutaArchivoWeb = "Archivos/UnidadAcademica/" + CLAVEZP + "/" + folio + "/" + tipoDoc + "/" + nombreArchivo;
+            string rutaArchivoWeb = "Archivos/UnidadAcademica/" + claveZP + "/" + folio + "/" + tipoDoc + "/" + nombreArchivo;
 
             // SQL con transacción
             string sql = @"
@@ -1036,7 +1121,8 @@ public partial class PeticionPliego : System.Web.UI.Page
 
                     new SqlParameter("@IDPETICION", LabelIdPeticionGridResp.Text),
                     new SqlParameter("@FECHARESP", TextBoxFechaRespuesta.Text),
-                    new SqlParameter("@RESP", TextBoxRespuesta.Text)
+                    new SqlParameter("@RESP", TextBoxRespuesta.Text),
+                    new SqlParameter("@FECHACUMPLIMIENTO", TextBoxFechaVigencia.Text)
                 );
 
                 // Agregar mensaje de éxito
@@ -1088,7 +1174,8 @@ public partial class PeticionPliego : System.Web.UI.Page
                     new SqlParameter("@PLIEGO", idPliego),
 
                     new SqlParameter("@FECHA", TextBoxFechaRespuesta.Text),
-                    new SqlParameter("@RESP", TextBoxRespuesta.Text)
+                    new SqlParameter("@RESP", TextBoxRespuesta.Text),
+                    new SqlParameter("@FECHACUMPLIMIENTO", TextBoxFechaVigencia.Text)
                 );
 
                 DivConfirmCheck.Visible = true;
@@ -1126,7 +1213,8 @@ public partial class PeticionPliego : System.Web.UI.Page
 
     private string UpdateInfoPeticion()
     {
-        string updatePeticion = "UPDATE PETICIONES SET FECHA_RESP_PETICION = @FECHARESP, DESC_RESP_PETICION = @RESP WHERE ID_PETICION = @IDPETICION AND ID_PLIEGO = @PLIEGO";
+        string updatePeticion = "UPDATE PETICIONES SET FECHA_RESP_PETICION = @FECHARESP, DESC_RESP_PETICION = @RESP, FECHA_CUMPLIMIENTO = @FECHACUMPLIMIENTO " +
+            "WHERE ID_PETICION = @IDPETICION AND ID_PLIEGO = @PLIEGO";
 
         return updatePeticion;
     }
@@ -1145,8 +1233,10 @@ public partial class PeticionPliego : System.Web.UI.Page
         LabelIdPeticionGridResp.Text = string.Empty;
         LabelPeticionGridResp.Text = string.Empty;
         LabelCategoriaGridResp.Text = string.Empty;
+        LabelSubCategoriaGridResp.Text = string.Empty;
         TextBoxFechaRespuesta.Text = string.Empty;
         TextBoxRespuesta.Text = string.Empty;
+        TextBoxFechaVigencia.Text = string.Empty;
         RadioButtonListRespuesta.ClearSelection();
         divNuevoDocResp.Visible = false;
     }
@@ -1163,6 +1253,22 @@ public partial class PeticionPliego : System.Web.UI.Page
         DdlInsertItemZero(DropDownListPliego);
     }
 
+    protected void DropDownListPliego_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        DropDownList DdlPliego = DropDownListPliego;
+
+        bool indexDDL = DdlPliego.SelectedIndex != 0;
+
+        divViewPliego.Visible = indexDDL;
+
+        
+    }
+    protected void LinkButtonPliego_Click(object sender, EventArgs e)
+    {
+        LabelVisualizar.Text = "Pliego " + DropDownListPliego.SelectedItem.Text;
+        VerDocPliego(LabelClaveZP.Text, DropDownListPliego.SelectedItem.Text);
+    }
+
     protected void LinkButtonVeDocRespuesta_Click(object sender, EventArgs e)
     {
         LinkButton S_B = (LinkButton)sender;
@@ -1176,9 +1282,23 @@ public partial class PeticionPliego : System.Web.UI.Page
         string tipoDoc = "RespuestasDoc";
         string archivo = "Respuesta_Id_" + idDoc;
 
-        LabelVisualizar.Text = "Visualizar documento respuesta";
+        LabelVisualizar.Text = "Documento respuesta";
 
         VerDocRespuesta(claveZP, folioPliego, tipoDoc, archivo);
+    }
+
+    protected void LinkButtonAccionesPLG_Click(object sender, EventArgs e)
+    {
+        LinkButton S_B = (LinkButton)sender;
+        GridViewRow G_B = (GridViewRow)S_B.NamingContainer;
+        int i = G_B.RowIndex;
+        GridViewPliegoPeticion.SelectedIndex = i;
+
+        string idPliego = GridViewPliegoPeticion.Rows[i].Cells[1].Text;
+        string idPeticion = GridViewPliegoPeticion.Rows[i].Cells[3].Text;
+
+        CargarTimeline(idPliego, idPeticion);
+        showModalAcciones();
     }
 
     protected void GridViewPliegoPeticion_RowDataBound(object sender, System.Web.UI.WebControls.GridViewRowEventArgs e)
@@ -1222,4 +1342,602 @@ public partial class PeticionPliego : System.Web.UI.Page
             }
         }
     }
+
+    /// --- REGISTRO DE ACCIONES DE RESPUESTA --- ///
+    protected void DropDownListPliegoAccionResp_DataBound(object sender, EventArgs e)
+    {
+        DdlInsertItemZero(DropDownListPliegoAccionResp);
+    }
+
+    protected void DropDownListRespuestaAccion_DataBound(object sender, EventArgs e)
+    {
+        DdlInsertItemZero(DropDownListRespuestaAccion);
+    }
+
+    protected void DropDownListRespuestaAccion_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        DropDownList ddlProgramAcadEspecDlt = DropDownListRespuestaAccion;
+
+        bool indexDDL = ddlProgramAcadEspecDlt.SelectedIndex != 0;
+
+        if (ddlProgramAcadEspecDlt.SelectedIndex != 0)
+        {
+            LabelFechaRespAction.Text = ObtenerFechaRespAction(DropDownListPliegoAccionResp.SelectedValue, DropDownListRespuestaAccion.SelectedValue);
+            LabelFechaCumplimiento.Text = ObtenerFechaCumplimientoAction(DropDownListPliegoAccionResp.SelectedValue, DropDownListRespuestaAccion.SelectedValue);
+        }
+
+        VisibleAlertAcciones();
+    }
+
+    protected void VisibleAlertAcciones()
+    {
+        int accionPlan = ExisteActionPlan(DropDownListPliegoAccionResp.SelectedValue, DropDownListRespuestaAccion.SelectedValue);
+        if (accionPlan == 0)
+        {
+            divAlertActionPlan.Visible = false;
+            divAlertActionGestion.Visible = true;
+            ButtonGuardarActionPlan.Enabled = true;
+            ButtonGuardarActionGestion.Enabled = false;
+            LabelIdDiagnostico.Text = string.Empty;
+        }
+        else
+        {
+            divAlertActionPlan.Visible = true;
+            divAlertActionGestion.Visible = false;
+            ButtonGuardarActionPlan.Enabled = false;
+            ButtonGuardarActionGestion.Enabled = true;
+            LabelIdDiagnostico.Text = ObtenerActionPlan(DropDownListPliegoAccionResp.SelectedValue, DropDownListRespuestaAccion.SelectedValue);
+        }
+    }
+
+    private int ExisteActionPlan(string idPliego, string idPeticion)
+    {
+        int conteoAccionPlan = 0;
+        conteoAccionPlan = Consultas.ConsultaIntDes("SELECT COUNT(*) FROM DIAGNOSTICO WHERE ID_PLIEGO = '" + idPliego + "' AND ID_PETICION = '" + idPeticion + "'");
+
+        return conteoAccionPlan;
+    }
+
+    private string ObtenerActionPlan(string idPliego, string idPeticion)
+    {
+        string idAccionPlan;
+
+        idAccionPlan = Consultas.ConsultaSDes("SELECT ID_DIAGNOSTICO FROM DIAGNOSTICO WHERE ID_PLIEGO = '" + idPliego + "' AND ID_PETICION = '" + idPeticion + "'");
+
+        return idAccionPlan;
+    }
+
+    private bool ValidarFormularioActionPlan()
+    {       
+        if (DropDownListPliegoAccionResp.SelectedIndex == 0)
+        {
+            MostrarAlerta("Seleccione un pliego.");
+            return false;
+        }
+
+        if (DropDownListRespuestaAccion.SelectedIndex == 0)
+        {
+            MostrarAlerta("Seleccione una respuesta.");
+            return false;
+        }
+
+        if (String.IsNullOrEmpty(TextBoxFechaActionPlan.Text))
+        {
+            MostrarAlerta("Ingrese la fecha.");
+            return false;
+        }
+
+        if (DateTime.Parse(TextBoxFechaActionPlan.Text) < DateTime.Parse(LabelFechaRespAction.Text))
+        {
+            MostrarAlerta("La fecha de la acción de diagnóstico debe ser mayor a la fecha de la respuesta.");
+            return false;
+        }
+
+        if (String.IsNullOrEmpty(TextBoxActionPlan.Text))
+        {
+            MostrarAlerta("Ingrese la acción.");
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool ValidarFormularioActionGestion()
+    {
+        if (DropDownListPliegoAccionResp.SelectedIndex == 0)
+        {
+            MostrarAlerta("Seleccione un pliego.");
+            return false;
+        }
+
+        if (DropDownListRespuestaAccion.SelectedIndex == 0)
+        {
+            MostrarAlerta("Seleccione una respuesta.");
+            return false;
+        }
+
+        if (String.IsNullOrEmpty(TextBoxFechaActionGest.Text))
+        {
+            MostrarAlerta("Ingrese la fecha.");
+            return false;
+        }
+
+        if (DateTime.Parse(TextBoxFechaActionGest.Text) < DateTime.Parse(LabelFechaRespAction.Text))
+        {
+            MostrarAlerta("La fecha de la acción de gestión debe ser mayor a la fecha de la respuesta.");
+            return false;
+        }
+
+        if (String.IsNullOrEmpty(TextBoxActionGestion.Text))
+        {
+            MostrarAlerta("Ingrese la acción.");
+            return false;
+        }
+
+        return true;
+    }
+
+    protected void ButtonGuardarActionPlan_Click(object sender, EventArgs e)
+    {
+        HtmlGenericControl DivConfirmCheck = modalConfirm.FindControl("DivConfirmCheck") as HtmlGenericControl;
+        HtmlGenericControl DivConfirmError = modalConfirm.FindControl("DivConfirmError") as HtmlGenericControl;
+        // Acceder al control LabelMensaje y establecer el texto
+        Label LabelMensaje = modalConfirm.FindControl("LabelMensaje") as Label;
+
+        // Validaciones
+        if (!ValidarFormularioActionPlan())
+            return;
+
+        int idDiagnostico = 0;
+        string rutaCarpeta = "";
+        string rutaArchivoFisico = "";
+
+        // ======== NUEVO DOCUMENTO DE RESPUESTA ========
+        if (!ValidarArchivoPDF(FileUploadActionPlan, LabelMensajeActionPlan))
+            return;
+
+        string folio = DropDownListPliegoAccionResp.SelectedItem.Text;
+        string tipoDoc = "AccionesRespuesta";
+        string carpetaPeticion = "PTC-ID-" + DropDownListRespuestaAccion.SelectedValue;
+
+        idDiagnostico = ObtenerIdMaxDiagnostico(DropDownListPliegoAccionResp.SelectedValue, DropDownListRespuestaAccion.SelectedValue);
+        string claveZP = LabelClaveZP.Text;
+
+        rutaCarpeta = CrearDirectorios.Crear_carpeta(claveZP, folio, tipoDoc, carpetaPeticion);
+        string nombreArchivo = "Diagnostico_Id_" + idDiagnostico + ".pdf";
+
+        rutaArchivoFisico = rutaCarpeta + nombreArchivo;
+
+        try
+        {
+            FileUploadActionPlan.SaveAs(rutaArchivoFisico);
+            MostrarMensaje(LabelMensajeActionPlan, "Archivo guardado correctamente", "alert-success");
+        }
+        catch
+        {
+            MostrarMensaje(LabelMensajeActionPlan, "Error al guardar archivo.", "text-danger");
+            return;
+        }
+
+        string rutaArchivoWeb = "Archivos/UnidadAcademica/" + claveZP + "/" + folio + "/" + tipoDoc + "/" + carpetaPeticion + "/" + nombreArchivo;
+
+        // SQL con transacción
+        string sql = @"
+                BEGIN TRY
+                    BEGIN TRANSACTION;
+                    " + InsertarAccionDiagnostico() + @"
+                    COMMIT TRANSACTION;
+                END TRY
+                BEGIN CATCH
+                    ROLLBACK TRANSACTION;
+                END CATCH;";
+
+        try
+        {
+            Consultas.miInsertPDes(sql,
+                new SqlParameter("@PLIEGO", DropDownListPliegoAccionResp.SelectedValue),
+                new SqlParameter("@IDPETICION", DropDownListRespuestaAccion.SelectedValue),
+                new SqlParameter("@IDDIAGNOSTICO", idDiagnostico),
+                new SqlParameter("@DIAGNOSTICO", TextBoxActionPlan.Text),
+                new SqlParameter("@FECHADIAGNOSTICO", TextBoxFechaActionPlan.Text),
+                new SqlParameter("@RUTA", rutaArchivoWeb)
+            );
+
+            // Agregar mensaje de éxito
+            DivConfirmCheck.Visible = true;
+            LabelMensaje.Text = "✅ Acción registrada correctamente.";
+            MostrarMensaje(LabelMensajeActionPlan, "✅ Acción registrada correctamente.", "text-success");
+            ClearAddActionPlan();
+        }
+        catch 
+        {
+            // Rollback archivo físico
+            try
+            {
+                if (File.Exists(rutaArchivoFisico))
+                    File.Delete(rutaArchivoFisico);
+
+                if (Directory.Exists(rutaCarpeta))
+                    Directory.Delete(rutaCarpeta, true);
+            }
+            catch { }
+
+            // Agregar mensaje de error
+            DivConfirmError.Visible = true;
+            LabelMensaje.Text = "❎ En este momento no podemos procesar su registro. Por favor, inténtelo de nuevo más tarde.";
+            MostrarMensaje(LabelMensajeActionPlan, "❎ Error al registrar la información.", "text-danger");
+        }
+
+        ShowModalConfirm();
+        VisibleAlertAcciones();
+    }
+
+    private void ClearAddActionPlan()
+    {
+        TextBoxFechaActionPlan.Text = string.Empty;
+        TextBoxActionPlan.Text = string.Empty;
+    }
+
+    private string ObtenerFechaRespAction(string idPliego, string idPeticion)
+    {
+        string idFecha = Consultas.ConsultaSDes("SELECT FORMAT(FECHA_RESP_PETICION, 'dd/MM/yyyy') as FECHA_RESP_PETICION FROM PETICIONES " +
+            "WHERE ID_PLIEGO = '" + idPliego + "' AND ID_PETICION = '" + idPeticion + "' ");
+
+        return idFecha;
+    }
+
+    private string ObtenerFechaCumplimientoAction(string idPliego, string idPeticion)
+    {
+        string idFecha = Consultas.ConsultaSDes("SELECT FORMAT(FECHA_CUMPLIMIENTO, 'dd/MM/yyyy') as FECHA_RESP_PETICION FROM PETICIONES " +
+            "WHERE ID_PLIEGO = '" + idPliego + "' AND ID_PETICION = '" + idPeticion + "' ");
+
+        return idFecha;
+    }
+
+    private string InsertarAccionDiagnostico()
+    {
+        string insertActionDiagnostico = "INSERT INTO DIAGNOSTICO (ID_PLIEGO, ID_PETICION, ID_DIAGNOSTICO, DESCRIPCION_DIAGNOSTICO, FECHA_DIAGNOSTICO, ARCHIVO_DIAGNOSTICO) " +
+            "VALUES(@PLIEGO, @IDPETICION, @IDDIAGNOSTICO, @DIAGNOSTICO, @FECHADIAGNOSTICO, @RUTA)";
+
+        return insertActionDiagnostico;
+    }
+
+    private int ObtenerIdMaxDiagnostico(string idPliego, string idPeticion)
+    {
+        int idMaxDiagnostico = 0;
+
+        idMaxDiagnostico = Consultas.ConsultaIntDes("SELECT ISNULL(MAX(ID_DIAGNOSTICO), 0) + 1 FROM DIAGNOSTICO WHERE ID_PLIEGO = '" + idPliego + "' AND ID_PETICION = '" + idPeticion + "' ");
+
+        return idMaxDiagnostico;
+    }
+
+    protected void ButtonGuardarActionGestion_Click(object sender, EventArgs e)
+    {
+        HtmlGenericControl DivConfirmCheck = modalConfirm.FindControl("DivConfirmCheck") as HtmlGenericControl;
+        HtmlGenericControl DivConfirmError = modalConfirm.FindControl("DivConfirmError") as HtmlGenericControl;
+        // Acceder al control LabelMensaje y establecer el texto
+        Label LabelMensaje = modalConfirm.FindControl("LabelMensaje") as Label;
+
+        // Validaciones
+        if (!ValidarFormularioActionGestion())
+            return;
+
+        int idGestion = 0;
+        string rutaCarpetaG = "";
+        string rutaArchivoFisicoG = "";
+
+        // ======== NUEVO DOCUMENTO DE RESPUESTA ========
+        if (!ValidarArchivoPDF(FileUploadActionGestion, LabelMensajeActionGestion))
+            return;
+
+        string folio = DropDownListPliegoAccionResp.SelectedItem.Text;
+        string tipoDoc = "AccionesRespuesta";
+        string carpetaPeticion = "PTC-ID-" + DropDownListRespuestaAccion.SelectedValue;
+
+        idGestion = ObtenerIdMaxGestion(DropDownListPliegoAccionResp.SelectedValue, DropDownListRespuestaAccion.SelectedValue, LabelIdDiagnostico.Text.Trim());
+        string claveZP = LabelClaveZP.Text;
+
+        rutaCarpetaG = CrearDirectorios.Crear_carpeta(claveZP, folio, tipoDoc, carpetaPeticion);
+        string nombreArchivo = "Gestion_Id_" + idGestion + ".pdf";
+
+        rutaArchivoFisicoG = rutaCarpetaG + nombreArchivo;
+
+        try
+        {
+            FileUploadActionGestion.SaveAs(rutaArchivoFisicoG);
+            MostrarMensaje(LabelMensajeActionGestion, "Archivo guardado correctamente", "alert-success");
+        }
+        catch
+        {
+            MostrarMensaje(LabelMensajeActionGestion, "Error al guardar archivo.", "text-danger");
+            return;
+        }
+
+        string rutaArchivoWeb = "Archivos/UnidadAcademica/" + claveZP + "/" + folio + "/" + tipoDoc + "/" + carpetaPeticion + "/" + nombreArchivo;
+
+        // SQL con transacción
+        string sql = @"
+                BEGIN TRY
+                    BEGIN TRANSACTION;
+                    " + InsertarAccionGestion() + @"
+                    COMMIT TRANSACTION;
+                END TRY
+                BEGIN CATCH
+                    ROLLBACK TRANSACTION;
+                END CATCH;";
+
+        try
+        {
+            Consultas.miInsertPDes(sql,
+                new SqlParameter("@PLIEGO", DropDownListPliegoAccionResp.SelectedValue),
+                new SqlParameter("@IDPETICION", DropDownListRespuestaAccion.SelectedValue),
+                new SqlParameter("@IDDIAGNOSTICO", LabelIdDiagnostico.Text.Trim()),
+                new SqlParameter("@IDGESTION", idGestion),
+                new SqlParameter("@GESTION", TextBoxActionGestion.Text),
+                new SqlParameter("@FECHAGESTION", TextBoxFechaActionGest.Text),
+                new SqlParameter("@RUTA", rutaArchivoWeb)
+            );
+
+            // Agregar mensaje de éxito
+            DivConfirmCheck.Visible = true;
+            LabelMensaje.Text = "✅ Acción registrada correctamente.";
+            MostrarMensaje(LabelMensajeActionGestion, "✅ Acción registrada correctamente.", "text-success");
+            ClearAddActionGestion();
+        }
+        catch 
+        {
+            // Rollback archivo físico
+            try
+            {
+                if (File.Exists(rutaArchivoFisicoG))
+                    File.Delete(rutaArchivoFisicoG);
+
+                if (Directory.Exists(rutaCarpetaG))
+                    Directory.Delete(rutaCarpetaG, true);
+            }
+            catch { }
+
+            // Agregar mensaje de error
+            DivConfirmError.Visible = true;
+            LabelMensaje.Text = "❎ En este momento no podemos procesar su registro. Por favor, inténtelo de nuevo más tarde.";
+            MostrarMensaje(LabelMensajeActionGestion, "❎ Error al registrar la información.", "text-danger");
+        }
+
+        ShowModalConfirm();
+    }
+
+    private void ClearAddActionGestion()
+    {       
+        TextBoxFechaActionGest.Text = string.Empty;
+        TextBoxActionGestion.Text = string.Empty;
+    }
+    
+    private string InsertarAccionGestion()
+    {
+        string insertActionGestion = "INSERT INTO GESTIONES (ID_PLIEGO, ID_PETICION, ID_DIAGNOSTICO, ID_GESTIONES, DESCRIPCION_GESTIONES, FECHA_GESTIONES, ARCHIVO_GESTIONES) " +
+            "VALUES(@PLIEGO, @IDPETICION, @IDDIAGNOSTICO, @IDGESTION, @GESTION, @FECHAGESTION, @RUTA)";
+
+        return insertActionGestion;
+    }
+
+    private int ObtenerIdMaxGestion(string idPliego, string idPeticion, string idDiagnostico)
+    {
+        int idMaxGestion = 0;
+
+        idMaxGestion = Consultas.ConsultaIntDes("SELECT ISNULL(MAX(ID_GESTIONES), 0) + 1 FROM GESTIONES WHERE ID_PLIEGO = '" + idPliego + "' AND ID_PETICION = '" + idPeticion + "' AND ID_DIAGNOSTICO = '" + idDiagnostico + "'");
+
+        return idMaxGestion;
+    }
+
+    protected void LinkButtonAcciones_Click(object sender, EventArgs e)
+    {
+        CargarTimeline(DropDownListPliegoAccionResp.SelectedValue, DropDownListRespuestaAccion.SelectedValue);
+        showModalAcciones();
+    }
+
+    //private void CargarTimeline(string idPliego, string idPeticion)
+    //{
+    //    phTimeline.Controls.Clear();
+
+    //    string query = "SELECT 'DIAGNOSTICO' AS ACCION, DESCRIPCION_DIAGNOSTICO AS DESCRIPCION, FORMAT(FECHA_DIAGNOSTICO, 'dd/MM/yyyy') AS FECHA, ARCHIVO_DIAGNOSTICO AS RUTA " +
+    //                            "FROM DIAGNOSTICO WHERE ID_PLIEGO = @PLIEGO AND ID_PETICION = @PETICION " +
+    //                        "UNION " +
+    //                    "SELECT 'GESTION' AS ACCION, DESCRIPCION_GESTIONES AS DESCRIPCION, FORMAT(FECHA_GESTIONES, 'dd/MM/yyyy') AS FECHA, ARCHIVO_GESTIONES AS RUTA " +
+    //                            "FROM GESTIONES WHERE ID_PLIEGO = @PLIEGO AND ID_PETICION = @PETICION";
+
+    //    Debug.Write("consulta " + query);
+
+    //    using (SqlConnection con = new SqlConnection(connectionString))
+    //    using (SqlCommand cmd = new SqlCommand(query, con))
+    //    {
+    //        cmd.Parameters.AddWithValue("@PLIEGO", 5);
+    //        cmd.Parameters.AddWithValue("@PETICION", 7);
+
+    //        con.Open();
+    //        SqlDataReader dr = cmd.ExecuteReader();
+
+    //        Debug.WriteLine("cuenta" + dr.FieldCount);
+
+    //        while (dr.Read())
+    //        {
+    //            string accion = dr["ACCION"].ToString();
+    //            string descripcion = dr["DESCRIPCION"].ToString();
+    //            string fecha = dr["FECHA"].ToString();
+    //            string ruta = dr["RUTA"].ToString();
+
+    //            //ITEM PRINCIPAL
+    //            var divItem = new Literal();
+    //            divItem.Text = "<div class='tracking-item'>";
+
+    //            phTimeline.Controls.Add(divItem);
+
+    //            // ICONO Y LinkButton
+    //            Literal ltIconOpen = new Literal();
+    //            ltIconOpen.Text = "<div class='tracking-icon status-intransit'><i class='fas fa-circle'></i>";
+
+    //            phTimeline.Controls.Add(ltIconOpen);
+
+    //            LinkButton btn = new LinkButton();
+    //            btn.Text = "<i class='fas fa-file-pdf fa-2x fa-fw'></i>";
+    //            btn.CssClass = "color-btn mb-2";
+    //            btn.CommandArgument = ruta;             // RUTA PDF
+    //            btn.Click += new EventHandler(VerPdfAccion_Click);
+
+    //            phTimeline.Controls.Add(btn);
+
+    //            Literal ltIconClose = new Literal();
+    //            ltIconClose.Text = "</div>";
+
+    //            phTimeline.Controls.Add(ltIconClose);
+
+    //            // FECHA Y ACCION
+    //            Literal ltFecha = new Literal();
+    //            ltFecha.Text =
+    //                "<div class='tracking-date'>" + accion +
+    //                "<span>" + fecha + "</span></div>";
+
+    //            phTimeline.Controls.Add(ltFecha);
+
+    //            // DESCRIPCION
+    //            Literal ltDesc = new Literal();
+    //            ltDesc.Text =
+    //                "<div class='tracking-content'>" + descripcion + "</div>";
+
+    //            phTimeline.Controls.Add(ltDesc);
+
+    //            // Cierre del item
+    //            Literal ltClose = new Literal();
+    //            ltClose.Text = "</div>";
+
+    //            phTimeline.Controls.Add(ltClose);
+    //        }
+    //        dr.Close();
+    //    }
+    //}
+
+    private void CargarTimeline(string idPliego, string idPeticion)
+    {
+        phTimeline.Controls.Clear();
+
+        // Seguridad: convertir a int si se esperan números
+        int pliegoInt = 0;
+        int peticionInt = 0;
+        int.TryParse(idPliego, out pliegoInt);
+        int.TryParse(idPeticion, out peticionInt);
+
+        string query =
+            "SELECT 'DIAGNÓSTICO' AS ACCION, DESCRIPCION_DIAGNOSTICO AS DESCRIPCION, " +
+                    "FORMAT(FECHA_DIAGNOSTICO, 'dd/MM/yyyy') AS FECHA, ARCHIVO_DIAGNOSTICO AS RUTA " +
+                "FROM DIAGNOSTICO WHERE ID_PLIEGO = @PLIEGO AND ID_PETICION = @PETICION " +
+            "UNION " +
+            "SELECT 'GESTIÓN' AS ACCION, DESCRIPCION_GESTIONES AS DESCRIPCION, " +
+                    "FORMAT(FECHA_GESTIONES, 'dd/MM/yyyy') AS FECHA, ARCHIVO_GESTIONES AS RUTA " +
+                "FROM GESTIONES WHERE ID_PLIEGO = @PLIEGO AND ID_PETICION = @PETICION";
+
+        try
+        {
+            using (SqlConnection con = new SqlConnection(connectionString))
+            using (SqlCommand cmd = new SqlCommand(query, con))
+            {
+                cmd.Parameters.AddWithValue("@PLIEGO", pliegoInt);
+                cmd.Parameters.AddWithValue("@PETICION", peticionInt);
+
+                con.Open();
+                using (SqlDataReader dr = cmd.ExecuteReader())
+                {
+                    if (!dr.HasRows)
+                    {
+                        // Mostrar mensaje cuando no hay acciones
+                        phTimeline.Controls.Add(new Literal { Text = "<div class='p-3 text-center text-muted'>No hay acciones registradas para este pliego/petición.</div>" });
+                        return;
+                    }
+
+                    while (dr.Read())
+                    {                        
+                        string accion = dr["ACCION"].ToString();
+                        string descripcion = dr["DESCRIPCION"].ToString();
+                        string fecha = dr["FECHA"].ToString();
+                        string ruta = dr["RUTA"].ToString();
+
+                        string borderClase;
+                        borderClase = (accion == "GESTIÓN") ? "border-gestion" : "border-diagnostico";
+
+                        //ITEM PRINCIPAL
+                        phTimeline.Controls.Add(new Literal { Text = "<div class='tracking-item fade-slide  " + borderClase + "'>" });
+
+                        //ICONO ACCIÓN
+                        //phTimeline.Controls.Add(new Literal { Text = "<div class='tracking-icon " + colorClase + "'>" + iconoAccion });
+
+                        // ICONO Y LinkButton
+                        phTimeline.Controls.Add(new Literal { Text = "<div class='tracking-icon status-intransit'>" });
+
+                        phTimeline.Controls.Add(new Literal { Text = "<asp:UpdatePanel runat='server'><ContentTemplate>" });
+
+                        //LinkButton btn = new LinkButton();
+                        //btn.Text = "<i class='fas fa-file-pdf fa-2x fa-fw'></i>";
+                        //btn.CssClass = "color-btn1 mb-2";
+                        //btn.CommandArgument = ruta;             // RUTA PDF
+                        //btn.Click += new EventHandler(VerPdfAccion_Click);
+
+                        //phTimeline.Controls.Add(btn);
+
+                        phTimeline.Controls.Add(new Literal
+                        {
+                            Text = "<span class='d-inline-block' tabindex='0' data-bs-toggle='popover' data-bs-placement='left' data-bs-custom-class='custom-popover' " +
+                                        "data-bs-trigger='hover focus' data-bs-content='Ver documento'>"
+                        });
+                                                
+                        HtmlAnchor a = new HtmlAnchor();
+                        a.HRef = "javascript:void(0);";
+                        a.InnerHtml = "<i class='fas fa-file-pdf fa-2x fa-fw'></i>";
+                        a.Attributes["class"] = "color-btn1 mb-2";
+                        a.Attributes["data-ruta"] = ruta;
+                        a.Attributes["onclick"] = "VerPdfDesdeTimeline(this);";
+                        phTimeline.Controls.Add(a);
+
+                        phTimeline.Controls.Add(new Literal { Text = "</span>" });
+
+                        phTimeline.Controls.Add(new Literal { Text = "</ContentTemplate></asp:UpdatePanel>" });
+
+                        phTimeline.Controls.Add(new Literal { Text = "</div>" });
+
+                        // FECHA Y ACCION
+                        phTimeline.Controls.Add(new Literal
+                        {
+                            Text = "<div class='tracking-date'><span class='fw-bolder'>" + accion +
+                                "</span><span>" + fecha + "</span></div>"
+                        });
+
+                        // DESCRIPCION
+                        phTimeline.Controls.Add(new Literal { Text = "<div class='tracking-content'>" + descripcion + "</div>" });
+
+                        // Cierre del item
+                        phTimeline.Controls.Add(new Literal { Text = "</div>" });
+                    }
+                    dr.Close();
+
+                } // using dr
+            } // using cmd/con
+        }
+        catch (Exception ex)
+        {
+            // Mostrar mensaje de error simple en UI para debug (remover en producción)
+            phTimeline.Controls.Add(new Literal { Text = "<div class='text-danger p-2'>Error al cargar timeline: " + HttpUtility.HtmlEncode(ex.Message) + "</div>" });
+
+            // y loguear a Debug
+            Debug.WriteLine("Error CargarTimeline: " + ex.ToString());
+        }
+    }
+
+    //protected void VerPdfAccion_Click(object sender, EventArgs e)
+    //{
+    //    LinkButton btn = (LinkButton)sender;
+    //    string ruta = btn.CommandArgument;
+
+    //    //LblRutaPDF.Text = ruta; // O lo cargas en un iframe
+    //    verPDF.Attributes["src"] = ruta; // O lo cargas en un iframe
+    //    verPDF.DataBind();
+
+    //    showModalVerPdf();
+    //}
 }

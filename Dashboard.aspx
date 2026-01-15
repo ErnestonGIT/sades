@@ -428,7 +428,11 @@
                                                 </div>
                                                 <div class="card-body">
                                                     <h5 class="card-title">
-                                                        Resumen de nombramientos
+                                                        Resumen de nombramientos 
+                                                        <span class="badge bg-secondary">
+                                                            <i class="bi bi-file-earmark-person fs-5"  style="color:white"></i>
+                                                            <asp:Label runat="server" ID="LabelResumenNombramientos_total" CssClass="fs-5" style="color:white" ></asp:Label>
+                                                        </span>
                                                     </h5>
                                                     <div class="row col-xl-12 mt-3">
                                                         <div class="col-xl-4">
@@ -1389,7 +1393,7 @@
                                         </asp:DropDownList>
                                         <asp:SqlDataSource ID="SqlDataSourceDropDownNuevoNombramiento_ua" runat="server" ConnectionString="<%$ ConnectionStrings:ConnectionDES %>"
                                             SelectCommand="SELECT CLAVE_ZP, DESCRIPCION_DP FROM  CAT_DEPENDENCIAS_POLITECNICAS
-                                                            WHERE ID_NIVEL_EST = 2 and CLAVE_ZP in (select distinct CLAVE_ZP from PLIEGO)
+                                                            WHERE ID_NIVEL_EST = 2
                                                             ORDER BY DESCRIPCION_DP ASC">
                                         </asp:SqlDataSource>
                                     </div>
@@ -3483,6 +3487,7 @@
                             text: ''
                         },
                         tooltip: {
+                            useHTML: true,
                             formatter: function () {
                                 // 'this' refers to the point object in the formatter function
                                 let value = this.y; // Raw value of the point
@@ -3556,6 +3561,7 @@
 
                         data.push(parseInt(value[0]));
                         data.push(parseInt(value[1]));
+                        data.push(parseInt(value[2]));
 
                     });
 
@@ -3606,6 +3612,10 @@
                         },
                         exporting: { enabled: false },
                         series: [{
+                            name: 'Prórroga',
+                            data: [data[2]],
+                            color: "#E53935"
+                        },{
                             name: 'Interinato',
                             data: [data[1]],
                             color: "#FDD835"
@@ -3652,6 +3662,9 @@
 
                     });
 
+                    var totalSum = data[0] + data[1] + data[2];
+                    $('[id*=LabelResumenNombramientos_total]').text(totalSum);
+
                     // Substring template helper for the responsive labels
                     Highcharts.Templating.helpers.substr = (s, from, length) =>
                         s.substr(from, length);
@@ -3671,7 +3684,8 @@
                             useHTML: true,
                             formatter: function () {
                                 return '<b>' + this.series.name + '</b><br/><br/><span style="color:' + this.color + '">\u25CF</span> ' +
-                                    this.key + ': <b>' + this.y + '</b>';
+                                    this.key + ': <b>' + this.y + '</b><br/> ' +
+                                    '<br />Total: <b>' + totalSum + '</b> ';
                             }
                         },
                         accessibility: {

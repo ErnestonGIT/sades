@@ -75,7 +75,28 @@ insert into AUTORIDADES_ZP (CLAVE_ZP, ID_PERFIL, ID_USER, CORREO, CELULAR, EXTEN
 --  insert into GARANTIA_PETICION (ID_GARANTIA, ID_PLIEGO,ID_PETICION,DESC_GARANTIA,ID_DOCUMENTO, ESTATUS, FECHA_REGISTRO) values('1','12','332','Se solicita mantenimiento del camión a la dirección de servicios generales','1','1','2025-11-21 15:06:04.713')
 --	insert into DOCUMENTO_GARANTIA (TIPO_DOCUMENTO, RUTA_DOCUMENTO, FECHA_REGISTRO) OUTPUT INSERTED.ID_DOCUMENTO  values('.pdf','/public/src/garantias/1751/GAR-2025-2-85b.pdf','2025-11-21 15:06:04.710')
 
-
 select IIF(FECHA_RESP_PETICION is null, 'sin dato registrado', FORMAT(FECHA_RESP_PETICION ,'dddd dd MMMM, yyyy', 'es-ES'))LIMITE from PETICIONES where ID_PETICION = '332'
 
 select DESC_PETICION from PETICIONES where ID_PETICION = '332'
+
+
+select * from USERS where USERNAME like '%2300675%'
+select * from USERS_PERFIL where ID_USER = '11828'
+
+select * from CAT_PERFILES
+
+
+/*
+                
+select top 1 (ID_USER + 1) ID_USER from users order by ID_USER desc
+
+INSERT INTO USERS (ID_USER, USERNAME, PASSWORD, NUMERO_EMPLEADO, NOMBRE,APELLIDO_PAT, APELLIDO_MAT, CURP, RFC, HOMOCLAVE, CORREO_INSTITUCIONAL, CORREO_PERSONAL, DOMICILIO, GENERO, ESTATUS)
+			VALUES('66666669', 'kantonio', 'k4ntonio', '66666669', 'KARLA', 'ANTONIO', 'VARGAS', '', '', '', 'kantonio@ipn.mx', 'kantonio@ipn.mx', '', 'F', '1')
+
+insert into USERS_PERFIL (ID_USER, ID_PERFIL, ESTATUS) 
+				   values('66666669','7','1')
+
+insert into USER_ZP (CLAVE_ZP, ID_USER) 
+			  values('1031','66666669')
+
+*/
